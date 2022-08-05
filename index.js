@@ -1,17 +1,9 @@
-module.exports = {
-    root: true,
-    'extends': [
-        'plugin:react/recommended'
-    ],
-    parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
-    overrides: [{
-        files: ['*.ts', '*.tsx'],
-        rules: {
-            '@typescript-eslint/no-shadow': ['error'],
-            'no-shadow': 'off',
-            'no-undef': 'off',
-            'no-unused-vars': 'off',
-        },
-    }, ],
-};
+/**
+ * @format
+ */
+
+import { AppRegistry } from 'react-native';
+import App from './src/App';
+import { name as appName } from './app.json';
+
+AppRegistry.registerComponent(appName, () => App);

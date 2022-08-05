@@ -1,17 +1,16 @@
 module.exports = {
-    root: true,
-    'extends': [
-        'plugin:react/recommended'
-    ],
-    parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
-    overrides: [{
-        files: ['*.ts', '*.tsx'],
-        rules: {
-            '@typescript-eslint/no-shadow': ['error'],
-            'no-shadow': 'off',
-            'no-undef': 'off',
-            'no-unused-vars': 'off',
-        },
-    }, ],
+    presets: ['module:metro-react-native-babel-preset'],
+    plugins: [
+        [
+            'module-resolver',
+            {
+                root: ['./src'],
+                extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
+                alias: {
+                    tests: ['./tests/'],
+                    "@components": "./src/components",
+                }
+            }
+        ]
+    ]
 };

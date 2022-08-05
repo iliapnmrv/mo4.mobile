@@ -9,6 +9,11 @@
       "*": ["src/*"],
       "tests": ["tests/*"],
       "@components/*": ["src/components/*"],
+      "@pages/*": ["src/pages/*"],
+      "@store/*": ["src/store/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@lib/*": ["src/lib/*"],
+      "@types/*": ["src/types/*"],
     },
     /* Completeness */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */

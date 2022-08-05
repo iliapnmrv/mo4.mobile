@@ -1,107 +1,98 @@
-import React, {type PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, View} from 'react-native';
+import 'react-native-gesture-handler';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
+import Scanner from './pages/Scanner';
+import Home from './pages/Home';
+import {Provider} from 'react-redux';
+import {store} from './store/store';
+import {persistStore} from 'redux-persist';
+import {ApolloProvider} from '@apollo/client';
+import apolloClient from './lib/apollo';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Settings from './pages/Settings';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {PersistGate} from 'redux-persist/integration/react';
+import {Provider as PaperProvider} from 'react-native-paper';
+import SplashScreen from 'react-native-splash-screen';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export type RootStackParamList = {
+  Home: undefined;
+  HomeTabs: undefined;
+  Scanner: undefined;
+  Settings: undefined;
+};
 
-const Section: React.FC<
-  PropsWithChildren<{
-    title: string;
-  }>
-> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
+const HomeTabs = () => {
+  const Tab = createBottomTabNavigator<RootStackParamList>();
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          title: 'Картриджи',
+          tabBarIcon: ({color, size}) => (
+            <Icon name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={Settings}
+        options={{
+          title: 'Настройки',
+          tabBarIcon: ({color, size}) => (
+            <Icon name="settings-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  useEffect(() => {
+    SplashScreen.hide();
+  });
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const RootStack = createStackNavigator<RootStackParamList>();
+
+  const persistor = persistStore(store);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ApolloProvider client={apolloClient}>
+          <PaperProvider>
+            <NavigationContainer>
+              <RootStack.Navigator>
+                <RootStack.Group>
+                  <RootStack.Screen
+                    name="HomeTabs"
+                    component={HomeTabs}
+                    options={{headerShown: false}}
+                  />
+                </RootStack.Group>
+                <RootStack.Group screenOptions={{presentation: 'modal'}}>
+                  <RootStack.Screen
+                    name="Scanner"
+                    options={{
+                      headerShown: false,
+                    }}
+                    component={Scanner}
+                  />
+                </RootStack.Group>
+              </RootStack.Navigator>
+            </NavigationContainer>
+          </PaperProvider>
+        </ApolloProvider>
+      </PersistGate>
+    </Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
