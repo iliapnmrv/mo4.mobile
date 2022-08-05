@@ -24,16 +24,19 @@ import 'moment/locale/ru';
 import {UpdateCartridgeAmountMutation} from '../lib/Mutations';
 import {Snackbar} from 'react-native-paper';
 import {store} from '../store/store';
-import apolloClient from '../lib/apollo';
 moment.locale('ru');
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home', 'MyStack'>;
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'Cartridges',
+  'MyStack'
+>;
 
 type IFindByName = {
   findByName: ICartridge;
 };
 
-const Home = ({navigation}: Props) => {
+const Cartridges = ({navigation}: Props) => {
   const [
     executeFindByName,
     {data: cartridge, loading: findByNameLoading, error: findByNameError},
@@ -192,7 +195,7 @@ const Home = ({navigation}: Props) => {
   );
 };
 
-export default Home;
+export default Cartridges;
 
 const styles = StyleSheet.create({
   container: {

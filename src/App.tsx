@@ -5,7 +5,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createStackNavigator} from '@react-navigation/stack';
 import Scanner from './pages/Scanner';
-import Home from './pages/Home';
 import {Provider} from 'react-redux';
 import {store} from './store/store';
 import {persistStore} from 'redux-persist';
@@ -17,9 +16,15 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {PersistGate} from 'redux-persist/integration/react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import SplashScreen from 'react-native-splash-screen';
+import Cartridges from './pages/Cartridges';
+import Inventory from 'pages/Inventory';
+import Docs from 'pages/Docs';
+import PageHeader from 'components/PageHeader/PageHeader';
 
 export type RootStackParamList = {
-  Home: undefined;
+  Cartridges: undefined;
+  Inventory: undefined;
+  Docs: undefined;
   HomeTabs: undefined;
   Scanner: undefined;
   Settings: undefined;
@@ -31,12 +36,34 @@ const HomeTabs = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Home"
-        component={Home}
+        name="Inventory"
+        component={Inventory}
+        options={{
+          title: 'Инвентаризация',
+          tabBarIcon: ({color, size}) => (
+            <Icon name="md-list-outline" size={size} color={color} />
+          ),
+          header: props => <PageHeader {...props} />,
+        }}
+      />
+      <Tab.Screen
+        name="Docs"
+        component={Docs}
+        options={{
+          title: 'Документооборот',
+          tabBarIcon: ({color, size}) => (
+            <Icon name="md-document-text-outline" size={size} color={color} />
+          ),
+          header: props => <PageHeader {...props} />,
+        }}
+      />
+      <Tab.Screen
+        name="Cartridges"
+        component={Cartridges}
         options={{
           title: 'Картриджи',
           tabBarIcon: ({color, size}) => (
-            <Icon name="home-outline" size={size} color={color} />
+            <Icon name="md-print-outline" size={size} color={color} />
           ),
         }}
       />
