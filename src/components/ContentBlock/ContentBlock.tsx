@@ -19,11 +19,11 @@ export default ContentBlock;
 
 const styles = StyleSheet.create({
   mainItem: {
-    width: '100%',
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     marginVertical: 5,
+    margin: 5,
   },
   header: {
     fontSize: 20,

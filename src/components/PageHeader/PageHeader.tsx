@@ -35,7 +35,7 @@ export default function PageHeader({options}: Props) {
 const styles = StyleSheet.create({
   header: {
     paddingVertical: 20,
-    marginTop: 30,
+    marginTop: 10,
   },
   headerText: {
     width: '100%',

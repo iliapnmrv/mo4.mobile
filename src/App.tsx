@@ -20,51 +20,74 @@ import Cartridges from './pages/Cartridges';
 import Inventory from 'pages/Inventory';
 import Docs from 'pages/Docs';
 import PageHeader from 'components/PageHeader/PageHeader';
+import Home from 'pages/Home';
 
 export type RootStackParamList = {
+  HomeScreens: undefined;
   Cartridges: undefined;
   Inventory: undefined;
   Docs: undefined;
   HomeTabs: undefined;
   Scanner: undefined;
   Settings: undefined;
+  Home: undefined;
 };
 
-const HomeTabs = () => {
+function HomeScreens() {
+  const HomeStack = createNativeStackNavigator();
+
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="Home"
+        component={Home}
+        options={{
+          title: 'Главная',
+          header: props => <PageHeader {...props} />,
+        }}
+      />
+      <HomeStack.Screen
+        name="Inventory"
+        component={Inventory}
+        options={{
+          title: 'Инвентаризация',
+          header: props => <PageHeader {...props} />,
+        }}
+      />
+      <HomeStack.Screen
+        name="Docs"
+        component={Docs}
+        options={{
+          title: 'Документооборот',
+          header: props => <PageHeader {...props} />,
+        }}
+      />
+      <HomeStack.Screen
+        name="Cartridges"
+        component={Cartridges}
+        options={{
+          title: 'Картриджи',
+          header: props => <PageHeader {...props} />,
+        }}
+      />
+    </HomeStack.Navigator>
+  );
+}
+
+const Tabs = () => {
   const Tab = createBottomTabNavigator<RootStackParamList>();
 
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Inventory"
-        component={Inventory}
+        name="HomeScreens"
+        component={HomeScreens}
         options={{
-          title: 'Инвентаризация',
+          title: 'Главная',
           tabBarIcon: ({color, size}) => (
-            <Icon name="md-list-outline" size={size} color={color} />
+            <Icon name="home-outline" size={size} color={color} />
           ),
-          header: props => <PageHeader {...props} />,
-        }}
-      />
-      <Tab.Screen
-        name="Docs"
-        component={Docs}
-        options={{
-          title: 'Документооборот',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="md-document-text-outline" size={size} color={color} />
-          ),
-          header: props => <PageHeader {...props} />,
-        }}
-      />
-      <Tab.Screen
-        name="Cartridges"
-        component={Cartridges}
-        options={{
-          title: 'Картриджи',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="md-print-outline" size={size} color={color} />
-          ),
+          header: props => <></>,
         }}
       />
       <Tab.Screen
@@ -75,6 +98,7 @@ const HomeTabs = () => {
           tabBarIcon: ({color, size}) => (
             <Icon name="settings-outline" size={size} color={color} />
           ),
+          header: props => <PageHeader {...props} />,
         }}
       />
     </Tab.Navigator>
@@ -100,7 +124,7 @@ const App = () => {
                 <RootStack.Group>
                   <RootStack.Screen
                     name="HomeTabs"
-                    component={HomeTabs}
+                    component={Tabs}
                     options={{headerShown: false}}
                   />
                 </RootStack.Group>
