@@ -7,7 +7,11 @@ import {
   Animated,
   StyleProp,
   TextStyle,
+  TouchableOpacity,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import type {ParamListBase} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 type BottomTabNavigationOptions = {
   /**
@@ -18,14 +22,31 @@ type BottomTabNavigationOptions = {
 
 type Props = {
   /**
+   * Options for the back button.
+   */
+  back?: {
+    /**
+     * Title of the previous screen.
+     */
+    title: string;
+  };
+  /**
    * Options for the current screen.
    */
   options: BottomTabNavigationOptions;
 };
 
-export default function PageHeader({options}: Props) {
+export default function PageHeader({options, back}: Props) {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.header}>
+      {back ? (
+        //@ts-ignore
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Icon name="arrow-back" size={30} />
+        </TouchableOpacity>
+      ) : null}
       <Text style={styles.headerText}>{options.title}</Text>
     </View>
   );
@@ -34,8 +55,10 @@ export default function PageHeader({options}: Props) {
 //Styles
 const styles = StyleSheet.create({
   header: {
-    paddingVertical: 20,
+    display: 'flex',
+    padding: 20,
     marginTop: 10,
+    flexDirection: 'row',
   },
   headerText: {
     width: '100%',

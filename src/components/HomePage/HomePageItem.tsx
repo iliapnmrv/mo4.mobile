@@ -2,14 +2,24 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {IHomeItem} from 'pages/Home';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {RootStackParamList} from 'App';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
 
 type Props = {
   item: IHomeItem;
 };
 
 const HomePageItem = ({item}: Props) => {
+  const navigation = useNavigation();
+  console.log(item.path);
+
   return (
-    <TouchableOpacity activeOpacity={0.7} style={styles.itemContainer}>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      style={styles.itemContainer}
+      //@ts-ignore
+      onPress={() => navigation.navigate(item.path)}>
       <View style={styles.homeItem}>
         <Text style={styles.homeItemText}>{item.title}</Text>
         <Icon
