@@ -12,7 +12,7 @@ const QRButton = ({action}: Props) => {
       onPress={() => action()}
       style={styles.button}
       activeOpacity={0.7}>
-      {/* <Icon name="qr-code-outline" size={30} color="#000" /> */}
+      <Icon name="qr-code-outline" size={30} color="#000" />
       <Text style={styles.buttonText}>Сканировать QR код</Text>
     </TouchableOpacity>
   );

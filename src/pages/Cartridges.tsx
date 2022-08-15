@@ -12,7 +12,7 @@ import React, {useEffect, useState} from 'react';
 import {RootStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import QRButton from '../components/Buttons/QRButton';
-import {useAppSelector} from '../hooks/redux';
+import {useAppDispatch, useAppSelector} from '../hooks/redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Input from '../components/Inputs/Input';
 import ContentBlock from '../components/ContentBlock/ContentBlock';
@@ -24,6 +24,7 @@ import 'moment/locale/ru';
 import {UpdateCartridgeAmountMutation} from '../lib/Mutations';
 import {Snackbar} from 'react-native-paper';
 import {store} from '../store/store';
+import {setCartridgeScan} from 'store/reducers/scanReducer';
 moment.locale('ru');
 
 type Props = NativeStackScreenProps<
@@ -53,15 +54,17 @@ const Cartridges = ({navigation}: Props) => {
       : setErrorSnackbarVisible(false);
   }, [findByNameError, updateError]);
 
-  const {scan} = useAppSelector(state => state.scan);
+  const {cartridgeScan} = useAppSelector(state => state.scan);
   const {serverUrl} = useAppSelector(state => state.settings);
+
+  const dispatch = useAppDispatch();
 
   const [amount, setAmount] = useState<string>('');
   const [errorSnackbarVisible, setErrorSnackbarVisible] =
     useState<boolean>(false);
 
   store.subscribe(() => {
-    executeFindByName({variables: {name: store.getState().scan.scan}});
+    executeFindByName({variables: {name: store.getState().scan.cartridgeScan}});
   });
 
   const updateCartridgeAmount = (type: LogTypesEnum) => {
@@ -75,8 +78,6 @@ const Cartridges = ({navigation}: Props) => {
     setAmount('');
   };
 
-  console.log('cartridge?.findByName', cartridge?.findByName);
-
   return (
     <>
       <ScrollView
@@ -84,7 +85,9 @@ const Cartridges = ({navigation}: Props) => {
         refreshControl={
           <RefreshControl
             refreshing={findByNameLoading || updateLoading}
-            onRefresh={() => executeFindByName({variables: {name: scan}})}
+            onRefresh={() =>
+              executeFindByName({variables: {name: cartridgeScan}})
+            }
           />
         }>
         <KeyboardAvoidingView
@@ -94,9 +97,15 @@ const Cartridges = ({navigation}: Props) => {
             ios: 0,
             android: -300,
           })}>
-          <QRButton action={() => navigation.navigate('Scanner')} />
+          <QRButton
+            action={() =>
+              navigation.navigate('Scanner', {
+                setScan: data => dispatch(setCartridgeScan(data)),
+              })
+            }
+          />
           <ContentBlock title="Сканирование">
-            {scan && !!cartridge?.findByName ? (
+            {cartridgeScan && !!cartridge?.findByName ? (
               <View
                 style={{
                   display: 'flex',
@@ -116,8 +125,10 @@ const Cartridges = ({navigation}: Props) => {
                   <Text>Примечания отсутствуют</Text>
                 )}
               </View>
-            ) : scan && !!!cartridge?.findByName ? (
-              <Text style={styles.mainText}>{scan} отсутствует в списке</Text>
+            ) : cartridgeScan && !!!cartridge?.findByName ? (
+              <Text style={styles.mainText}>
+                {cartridgeScan} отсутствует в списке
+              </Text>
             ) : (
               <Text style={styles.mainText}>Отсканируйте QR код</Text>
             )}
@@ -161,7 +172,7 @@ const Cartridges = ({navigation}: Props) => {
               />
             </View>
           </ContentBlock>
-          {scan && !!cartridge?.findByName ? (
+          {cartridgeScan && !!cartridge?.findByName ? (
             <ContentBlock title="Журная действий">
               {cartridge?.findByName.logs?.length ? (
                 <>

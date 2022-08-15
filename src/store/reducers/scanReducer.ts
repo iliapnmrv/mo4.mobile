@@ -2,23 +2,34 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '../store';
 
 interface ScanState {
-  scan: string;
+  inventoryScan: string;
+  cartridgeScan: string;
+  docsScan: string;
 }
 
 const initialState: ScanState = {
-  scan: '',
+  inventoryScan: '',
+  cartridgeScan: '',
+  docsScan: '',
 };
 
 export const scanSlice = createSlice({
   name: 'scan',
   initialState,
   reducers: {
-    setScan: (state: ScanState, action: PayloadAction<string>) => {
-      state.scan = action.payload;
+    setInventoryScan: (state: ScanState, action: PayloadAction<string>) => {
+      state.inventoryScan = action.payload;
+    },
+    setCartridgeScan: (state: ScanState, action: PayloadAction<string>) => {
+      state.cartridgeScan = action.payload;
+    },
+    setDocsScan: (state: ScanState, action: PayloadAction<string>) => {
+      state.docsScan = action.payload;
     },
   },
 });
 
-export const {setScan} = scanSlice.actions;
+export const {setInventoryScan, setCartridgeScan, setDocsScan} =
+  scanSlice.actions;
 
 export default scanSlice.reducer;

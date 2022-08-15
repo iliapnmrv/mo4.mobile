@@ -10,10 +10,8 @@ import React from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import QRButton from 'components/Buttons/QRButton';
 import CustomMarker from 'components/CustomMarker/CustomMarker';
 import {useAppDispatch} from '../hooks/redux';
-import {setScan} from 'store/reducers/scanReducer';
 import {BarCodeReadEvent} from 'react-native-camera';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Scanner', 'MyStack'>;
@@ -22,8 +20,8 @@ interface scanData {
   data: string;
 }
 
-const Scanner = ({navigation}: Props) => {
-  const dispatch = useAppDispatch();
+const Scanner = ({navigation, route}: Props) => {
+  const {setScan} = route.params;
 
   // const {height, width} = useWindowDimensions();
 
@@ -33,7 +31,7 @@ const Scanner = ({navigation}: Props) => {
   // const viewMinY = (height - finderHeight) / 2;
 
   const onSuccess = (e: BarCodeReadEvent) => {
-    dispatch(setScan(e.data));
+    setScan(e.data);
     navigation.goBack();
   };
 
@@ -43,11 +41,7 @@ const Scanner = ({navigation}: Props) => {
         onRead={onSuccess}
         // flashMode={RNCamera.Constants.FlashMode.torch}
         showMarker
-        customMarker={
-          <>
-            <CustomMarker />
-          </>
-        }
+        customMarker={<CustomMarker />}
         containerStyle={{height: '100%', width: '100%'}}
         cameraStyle={{height: '100%', width: '100%'}}
       />

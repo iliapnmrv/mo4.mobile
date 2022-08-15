@@ -28,7 +28,7 @@ export type RootStackParamList = {
   Inventory: undefined;
   Docs: undefined;
   HomeTabs: undefined;
-  Scanner: undefined;
+  Scanner: {setScan: (data: string) => void};
   Settings: undefined;
   Home: undefined;
 };
