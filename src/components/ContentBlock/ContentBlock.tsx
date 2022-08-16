@@ -8,10 +8,10 @@ type Props = {
 
 const ContentBlock = ({children, title}: Props) => {
   return (
-    <View style={styles.mainItem}>
+    <>
       {title ? <Text style={styles.header}>{title}</Text> : <></>}
-      {children}
-    </View>
+      <View style={styles.mainItem}>{children}</View>
+    </>
   );
 };
 
@@ -23,12 +23,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginVertical: 5,
-    margin: 5,
   },
   header: {
-    fontSize: 20,
-    marginBottom: 10,
-    fontWeight: '700',
+    fontSize: 19,
+    marginTop: 10,
+    // marginBottom: 10,
+    fontWeight: '500',
     color: '#000',
   },
 });

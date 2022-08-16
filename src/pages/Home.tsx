@@ -10,6 +10,7 @@ import React from 'react';
 import HomePageItem from 'components/HomePage/HomePageItem';
 import {RootStackParamList} from 'App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import PageContainer from 'components/PageContainer/PageContainer';
 
 export type IHomeItem = {
   id: string;
@@ -38,23 +39,23 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home', 'MyStack'>;
 
 const Home = ({navigation}: Props) => {
   return (
-    <SafeAreaView style={styles.container}>
+    <PageContainer>
+      <Text style={styles.welcomeText}>Добро пожаловать!</Text>
       <FlatList
         data={Screens}
         renderItem={({item}) => <HomePageItem item={item} />}
-        keyExtractor={(item, index) => item.id}
+        keyExtractor={item => item.id}
         numColumns={2}
         horizontal={false}
       />
-    </SafeAreaView>
+    </PageContainer>
   );
 };
 
 export default Home;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginHorizontal: 5,
+  welcomeText: {
+    fontSize: 22,
   },
 });

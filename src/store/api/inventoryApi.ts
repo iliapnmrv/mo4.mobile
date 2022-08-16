@@ -12,4 +12,4 @@ export const inventoryApi = createApi({
   }),
 });
 
-export const {useGetInventory} = inventoryApi;
+export const {useGetInventoryQuery} = inventoryApi;

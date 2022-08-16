@@ -9,7 +9,7 @@ import ContentBlock from 'components/ContentBlock/ContentBlock';
 import QRButton from 'components/Buttons/QRButton';
 import {setInventoryScan} from 'store/reducers/scanReducer';
 import {SQLiteDatabase, openDatabase} from 'react-native-sqlite-storage';
-import {inventoryApi, useGetInventory} from 'store/api/inventoryApi';
+import {inventoryApi, useGetInventoryQuery} from 'store/api/inventoryApi';
 import {
   createInventoryQuery,
   createScannedQuery,

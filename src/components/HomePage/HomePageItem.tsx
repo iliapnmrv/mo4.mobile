@@ -2,8 +2,6 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {IHomeItem} from 'pages/Home';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {RootStackParamList} from 'App';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
 
 type Props = {
@@ -12,7 +10,6 @@ type Props = {
 
 const HomePageItem = ({item}: Props) => {
   const navigation = useNavigation();
-  console.log(item.path);
 
   return (
     <TouchableOpacity
@@ -44,7 +41,7 @@ const styles = StyleSheet.create({
     height: 150,
     backgroundColor: '#fff',
     borderRadius: 6,
-    margin: 5,
+    margin: 6,
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',

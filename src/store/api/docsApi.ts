@@ -10,7 +10,6 @@ export const docsApi = createApi({
       query: id => `docs/${id}`,
     }),
     updateDoc: builder.mutation<IDoc, Partial<IDoc> & Pick<IDoc, 'id'>>({
-      // note: an optional `queryFn` may be used in place of `query`
       query: ({id, ...patch}) => ({
         url: `docs/${id}`,
         method: 'PUT',
@@ -20,4 +19,4 @@ export const docsApi = createApi({
   }),
 });
 
-// export const {useGetDocsItem} = docsApi;
+export const {useLazyGetDocsItemQuery} = docsApi;

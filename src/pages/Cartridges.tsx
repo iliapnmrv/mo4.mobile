@@ -25,6 +25,7 @@ import {UpdateCartridgeAmountMutation} from '../lib/Mutations';
 import {Snackbar} from 'react-native-paper';
 import {store} from '../store/store';
 import {setCartridgeScan} from 'store/reducers/scanReducer';
+import PageContainer from 'components/PageContainer/PageContainer';
 moment.locale('ru');
 
 type Props = NativeStackScreenProps<
@@ -79,7 +80,7 @@ const Cartridges = ({navigation}: Props) => {
   };
 
   return (
-    <>
+    <PageContainer>
       <ScrollView
         keyboardShouldPersistTaps="always"
         refreshControl={
@@ -130,7 +131,9 @@ const Cartridges = ({navigation}: Props) => {
                 {cartridgeScan} отсутствует в списке
               </Text>
             ) : (
-              <Text style={styles.mainText}>Отсканируйте QR код</Text>
+              <Text style={styles.mainText}>
+                Отсканируйте QR код чтобы получить информацию
+              </Text>
             )}
           </ContentBlock>
 
@@ -202,7 +205,7 @@ const Cartridges = ({navigation}: Props) => {
         duration={5000}>
         Ошибка: проверьте подключение к сети {serverUrl}
       </Snackbar>
-    </>
+    </PageContainer>
   );
 };
 
