@@ -29,12 +29,15 @@ const reducers = combineReducers({
 
 const persistConfig = {
   key: 'root',
+  version: 1,
   storage: AsyncStorage,
   blacklist: [inventoryApi.reducerPath, docsApi.reducerPath],
 };
 
+const persistedReducer = persistReducer(persistConfig, reducers);
+
 export const store = configureStore({
-  reducer: persistReducer(persistConfig, reducers),
+  reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
