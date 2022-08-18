@@ -29,7 +29,5 @@ export const scanSlice = createSlice({
   },
 });
 
-export const {setInventoryScan, setCartridgeScan, setDocsScan} =
-  scanSlice.actions;
-
-export default scanSlice.reducer;
+export const scanActions = scanSlice.actions;
+export const scanReducer = scanSlice.reducer;

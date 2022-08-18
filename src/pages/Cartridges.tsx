@@ -12,7 +12,7 @@ import React, {useEffect, useState} from 'react';
 import {RootStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import QRButton from '../components/Buttons/QRButton';
-import {useAppDispatch, useAppSelector} from '../hooks/redux';
+import {useAppSelector} from '../hooks/redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Input from '../components/Inputs/Input';
 import ContentBlock from '../components/ContentBlock/ContentBlock';
@@ -24,8 +24,8 @@ import 'moment/locale/ru';
 import {UpdateCartridgeAmountMutation} from '../lib/Mutations';
 import {Snackbar} from 'react-native-paper';
 import {store} from '../store/store';
-import {setCartridgeScan} from 'store/reducers/scanReducer';
 import PageContainer from 'components/PageContainer/PageContainer';
+import {useActions} from 'hooks/actions';
 moment.locale('ru');
 
 type Props = NativeStackScreenProps<
@@ -58,7 +58,7 @@ const Cartridges = ({navigation}: Props) => {
   const {cartridgeScan} = useAppSelector(state => state.scan);
   const {serverUrl} = useAppSelector(state => state.settings);
 
-  const dispatch = useAppDispatch();
+  const {setCartridgeScan} = useActions();
 
   const [amount, setAmount] = useState<string>('');
   const [errorSnackbarVisible, setErrorSnackbarVisible] =
@@ -101,7 +101,7 @@ const Cartridges = ({navigation}: Props) => {
           <QRButton
             action={() =>
               navigation.navigate('Scanner', {
-                setScan: data => dispatch(setCartridgeScan(data)),
+                setScan: data => setCartridgeScan(data),
               })
             }
           />

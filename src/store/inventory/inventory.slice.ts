@@ -21,6 +21,5 @@ export const inventorySlice = createSlice({
   },
 });
 
-export const {setInventoryDate} = inventorySlice.actions;
-
-export default inventorySlice.reducer;
+export const inventoryActions = inventorySlice.actions;
+export const inventoryReducer = inventorySlice.reducer;

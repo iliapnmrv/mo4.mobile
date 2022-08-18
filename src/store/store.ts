@@ -1,34 +1,49 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
-import {persistReducer} from 'redux-persist';
-import {docsApi} from './api/docsApi';
-import {inventoryApi} from './api/inventoryApi';
-import {docsSlice} from './reducers/docsReducer';
-import {inventorySlice} from './reducers/inventoryReducer';
-import {scanSlice} from './reducers/scanReducer';
-import {settingsSlice} from './reducers/settingsReducer';
+import {docsApi} from './docs/docs.api';
+import {inventoryApi} from './inventory/inventory.api';
+import {docsReducer} from './docs/docs.slice';
+import {inventoryReducer} from './inventory/inventory.slice';
+import {scanReducer} from './slices/scan.slice';
+import {settingsReducer} from './slices/settings.slice';
+import {setupListeners} from '@reduxjs/toolkit/dist/query';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
 
 const reducers = combineReducers({
-  scan: scanSlice.reducer,
-  settings: settingsSlice.reducer,
-  inventory: inventorySlice.reducer,
-  docs: docsSlice.reducer,
   [inventoryApi.reducerPath]: inventoryApi.reducer,
   [docsApi.reducerPath]: docsApi.reducer,
+  scan: scanReducer,
+  settings: settingsReducer,
+  inventory: inventoryReducer,
+  docs: docsReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  blacklist: [inventoryApi.reducerPath, docsApi.reducerPath],
 };
 
 export const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false,
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     }).concat([docsApi.middleware, inventoryApi.middleware]),
 });
+
+setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

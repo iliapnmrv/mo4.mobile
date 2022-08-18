@@ -3,7 +3,7 @@ import {SERVER_URL} from 'constants/constants';
 import {IDoc} from 'types/docs';
 
 export const docsApi = createApi({
-  reducerPath: 'docsApi',
+  reducerPath: 'docs/api',
   baseQuery: fetchBaseQuery({baseUrl: SERVER_URL}),
   endpoints: builder => ({
     getDocsItem: builder.query<IDoc[], string>({

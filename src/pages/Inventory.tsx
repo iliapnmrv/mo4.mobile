@@ -2,14 +2,15 @@ import {Alert, Button, StyleSheet, Switch, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from 'App';
-import {useAppDispatch, useAppSelector} from 'hooks/redux';
-import {setInventoryDate} from 'store/reducers/inventoryReducer';
+import {useAppSelector} from 'hooks/redux';
 import moment from 'moment';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import QRButton from 'components/Buttons/QRButton';
-import {setInventoryScan} from 'store/reducers/scanReducer';
 import {SQLiteDatabase, openDatabase} from 'react-native-sqlite-storage';
-import {inventoryApi, useGetInventoryQuery} from 'store/api/inventoryApi';
+import {
+  inventoryApi,
+  useGetInventoryQuery,
+} from 'store/inventory/inventory.api';
 import {
   createInventoryQuery,
   createScannedQuery,
@@ -22,6 +23,7 @@ import Snackbar from 'react-native-snackbar';
 import {IInventory} from 'types/inventory';
 import {inventorySampleData} from 'constants/constants';
 import ScanResultModal from 'components/Inventory/ScanResultModal';
+import {useActions} from 'hooks/actions';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Inventory', 'MyStack'>;
 let db: SQLiteDatabase;
@@ -32,7 +34,8 @@ const Inventory = ({navigation}: Props) => {
 
   const {inventoryScan} = useAppSelector(state => state.scan);
   const {date} = useAppSelector(state => state.inventory);
-  const dispatch = useAppDispatch();
+
+  const {setInventoryDate, setInventoryScan} = useActions();
 
   const [scanModalVisible, setScanModalVisible] = useState<boolean>(false);
 
@@ -70,13 +73,13 @@ const Inventory = ({navigation}: Props) => {
       text: `Инвентаризация успешно закрыта`,
       duration: Snackbar.LENGTH_LONG,
     });
-    dispatch(setInventoryDate(undefined));
+    setInventoryDate(undefined);
     db.executeSql(dropInventoryQuery);
     db.executeSql(dropScannedQuery);
   };
 
   const openInventory = async () => {
-    dispatch(setInventoryDate(new Date()));
+    setInventoryDate(new Date());
     getInventoryData();
   };
 
@@ -134,7 +137,7 @@ const Inventory = ({navigation}: Props) => {
           <QRButton
             action={() =>
               navigation.navigate('Scanner', {
-                setScan: (data: string) => dispatch(setInventoryScan(data)),
+                setScan: (data: string) => setInventoryScan(data),
               })
             }
           />

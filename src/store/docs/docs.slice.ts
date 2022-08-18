@@ -23,6 +23,5 @@ export const docsSlice = createSlice({
   },
 });
 
-export const {setDocsHistory} = docsSlice.actions;
-
-export default docsSlice.reducer;
+export const docsActions = docsSlice.actions;
+export const docsReducer = docsSlice.reducer;

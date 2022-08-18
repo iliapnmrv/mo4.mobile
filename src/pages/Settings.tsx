@@ -1,10 +1,10 @@
 import {Button, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Input from '../components/Inputs/Input';
-import {useAppDispatch, useAppSelector} from '../hooks/redux';
-import {setServerUrl} from '../store/reducers/settingsReducer';
+import {useAppSelector} from '../hooks/redux';
 import ContentBlock from '../components/ContentBlock/ContentBlock';
 import {Snackbar} from 'react-native-paper';
+import {useActions} from 'hooks/actions';
 
 const Settings = () => {
   const {serverUrl} = useAppSelector(state => state.settings);
@@ -12,11 +12,11 @@ const Settings = () => {
   const [server, setServer] = useState(serverUrl);
   const [initialServerUrl, setInitialServerUrl] = useState(serverUrl);
 
-  const dispatch = useAppDispatch();
+  const {setServerUrl} = useActions();
 
   const saveSettings = () => {
     setSnackbarVisible(true);
-    dispatch(setServerUrl(server));
+    setServerUrl(server);
   };
 
   return (
@@ -33,7 +33,7 @@ const Settings = () => {
         action={{
           label: 'Отменить',
           onPress: () => {
-            dispatch(setServerUrl(initialServerUrl));
+            setServerUrl(initialServerUrl);
             setServer(initialServerUrl);
           },
         }}

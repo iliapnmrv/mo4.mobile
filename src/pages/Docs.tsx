@@ -3,11 +3,11 @@ import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from 'App';
 import QRButton from 'components/Buttons/QRButton';
-import {useAppDispatch, useAppSelector} from 'hooks/redux';
-import {setDocsScan} from 'store/reducers/scanReducer';
-import {useLazyGetDocsItemQuery} from 'store/api/docsApi';
+import {useAppSelector} from 'hooks/redux';
+import {useLazyGetDocsItemQuery} from 'store/docs/docs.api';
 import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
+import {useActions} from 'hooks/actions';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Docs', 'MyStack'>;
 
@@ -16,6 +16,8 @@ const Docs = ({navigation}: Props) => {
 
   const {history} = useAppSelector(state => state.docs);
 
+  const {setDocsScan} = useActions();
+
   const [getDoc, {isLoading, isError, data: docData, error}] =
     useLazyGetDocsItemQuery();
 
@@ -23,14 +25,12 @@ const Docs = ({navigation}: Props) => {
     console.log('docsScan', docsScan);
   }, [docsScan]);
 
-  const dispatch = useAppDispatch();
-
   return (
     <PageContainer>
       <QRButton
         action={() =>
           navigation.navigate('Scanner', {
-            setScan: data => dispatch(setDocsScan(data)),
+            setScan: data => setDocsScan(data),
           })
         }
       />

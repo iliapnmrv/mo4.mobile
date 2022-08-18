@@ -19,6 +19,5 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const {setServerUrl} = settingsSlice.actions;
-
-export default settingsSlice.reducer;
+export const settingsActions = settingsSlice.actions;
+export const settingsReducer = settingsSlice.reducer;
