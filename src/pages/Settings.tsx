@@ -5,6 +5,7 @@ import {useAppSelector} from '../hooks/redux';
 import ContentBlock from '../components/ContentBlock/ContentBlock';
 import {Snackbar} from 'react-native-paper';
 import {useActions} from 'hooks/actions';
+import PageContainer from 'components/PageContainer/PageContainer';
 
 const Settings = () => {
   const {serverUrl} = useAppSelector(state => state.settings);
@@ -20,7 +21,7 @@ const Settings = () => {
   };
 
   return (
-    <>
+    <PageContainer>
       <View>
         <ContentBlock title="Сервер">
           <Input value={server} setValue={setServer} label="Ссылка на сервер" />
@@ -40,7 +41,7 @@ const Settings = () => {
         duration={5000}>
         Настройки сохранены
       </Snackbar>
-    </>
+    </PageContainer>
   );
 };
 

@@ -7,11 +7,11 @@ export const docsApi = createApi({
   baseQuery: fetchBaseQuery({baseUrl: SERVER_URL}),
   endpoints: builder => ({
     getDocsItem: builder.query<IDoc[], string>({
-      query: id => `docs/${id}`,
+      query: id => `total/${id}`,
     }),
     updateDoc: builder.mutation<IDoc, Partial<IDoc> & Pick<IDoc, 'id'>>({
       query: ({id, ...patch}) => ({
-        url: `docs/${id}`,
+        url: `total/${id}`,
         method: 'PUT',
         body: patch,
       }),

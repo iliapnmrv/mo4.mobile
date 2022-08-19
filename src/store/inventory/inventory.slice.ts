@@ -1,7 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {Moment} from 'moment';
 
 interface InventoryState {
-  date: Date | undefined;
+  date: string | undefined;
 }
 
 const initialState: InventoryState = {
@@ -14,7 +15,7 @@ export const inventorySlice = createSlice({
   reducers: {
     setInventoryDate: (
       state: InventoryState,
-      action: PayloadAction<Date | undefined>,
+      action: PayloadAction<string | undefined>,
     ) => {
       state.date = action.payload;
     },

@@ -1,4 +1,14 @@
-import {Alert, Button, StyleSheet, Switch, Text, View} from 'react-native';
+import {
+  Alert,
+  Button,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from 'App';
@@ -6,7 +16,11 @@ import {useAppSelector} from 'hooks/redux';
 import moment from 'moment';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import QRButton from 'components/Buttons/QRButton';
-import {SQLiteDatabase, openDatabase} from 'react-native-sqlite-storage';
+import {
+  SQLiteDatabase,
+  openDatabase,
+  enablePromise,
+} from 'react-native-sqlite-storage';
 import {
   inventoryApi,
   useGetInventoryQuery,
@@ -18,15 +32,26 @@ import {
   dropScannedQuery,
   insertInventoryQuery,
   isScannedItemQuery,
+  addScannedItemQuery,
+  updateInventoryQuery,
+  findByNameQuery,
+  findLastScannedQuery,
 } from 'utils/inventoryQueries';
 import Snackbar from 'react-native-snackbar';
-import {IInventory} from 'types/inventory';
+import {IInventory, IScanned} from 'types/inventory';
 import {inventorySampleData} from 'constants/constants';
-import ScanResultModal from 'components/Inventory/ScanResultModal';
+import ScanResultModal, {
+  ScanModalProps,
+} from 'components/Inventory/ScanResultModal';
 import {useActions} from 'hooks/actions';
+import PageContainer from 'components/PageContainer/PageContainer';
+import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Inventory', 'MyStack'>;
 let db: SQLiteDatabase;
+
+//важная часть для работы бд с промисами
+enablePromise(true);
 
 const Inventory = ({navigation}: Props) => {
   const [getInventory, {isLoading, isError, data: inventoryData, error}] =
@@ -37,14 +62,30 @@ const Inventory = ({navigation}: Props) => {
 
   const {setInventoryDate, setInventoryScan} = useActions();
 
-  const [scanModalVisible, setScanModalVisible] = useState<boolean>(false);
+  const [scanModal, setScanModal] = useState<ScanModalProps>({
+    visible: false,
+    status: 1,
+  });
+  const [scanned, setScanned] = useState<IScanned[]>([]);
+
+  console.log(scanned);
 
   useEffect(() => {
     const openDB = async () => {
       db = await openDatabase({name: 'inventory.db'});
+      getLastScanned();
     };
     openDB();
   }, []);
+
+  const getLastScanned = async () => {
+    try {
+      const [{rows: lastScanned}] = await db.executeSql(findLastScannedQuery);
+      setScanned(lastScanned.raw());
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const switchInventory = (value: boolean) => {
     if (!value) {
@@ -69,44 +110,101 @@ const Inventory = ({navigation}: Props) => {
   };
 
   const closeInventory = async () => {
+    setInventoryDate(undefined);
+    await db.executeSql(dropInventoryQuery);
+    await db.executeSql(dropScannedQuery);
     Snackbar.show({
       text: `Инвентаризация успешно закрыта`,
       duration: Snackbar.LENGTH_LONG,
     });
-    setInventoryDate(undefined);
-    db.executeSql(dropInventoryQuery);
-    db.executeSql(dropScannedQuery);
   };
 
   const openInventory = async () => {
-    setInventoryDate(new Date());
+    const today = new Date().toDateString();
+    setInventoryDate(today);
     getInventoryData();
   };
 
-  const getInventoryData = () => {
-    getInventory('');
-    db.executeSql(createInventoryQuery);
-    db.executeSql(createScannedQuery);
+  const getInventoryData = async () => {
+    try {
+      await getInventory('');
+      await db.executeSql(createInventoryQuery);
+      await db.executeSql(createScannedQuery);
 
-    db.executeSql(insertInventoryQuery(inventorySampleData));
+      if (!inventoryData) {
+        throw new Error('Ошибка при скачивании данных');
+      }
 
-    Snackbar.show({
-      text: `Данные скачаны, ${inventorySampleData?.length} строк`,
-      duration: 5000,
-    });
-  };
+      await db.executeSql(insertInventoryQuery(inventoryData));
 
-  const getAnalysis = async () => {
-    const [{rows}] = await db.executeSql(isScannedItemQuery(1));
-    console.log(rows);
-
-    if (rows.length) {
-      console.log(rows.raw());
+      Snackbar.show({
+        text: `Данные скачаны, ${inventoryData?.length} строк`,
+        duration: 5000,
+      });
+    } catch (e: any) {
+      Snackbar.show({
+        text: e?.message,
+        duration: 5000,
+      });
     }
   };
 
+  const getAnalysis = async () => {
+    const [inventoryNum, name, model, serialNum] = inventoryScan.split('\n');
+
+    //проверка на повторное считывание
+    const [{rows}] = await db.executeSql(isScannedItemQuery(+inventoryNum));
+    console.log('rows', rows);
+
+    if (rows.length) {
+      console.log('rows.raw()[0]', rows.raw()[0]);
+
+      const prevScanned: IScanned = rows.raw()[0];
+      setScanModal({scanned: prevScanned, status: 4, visible: true});
+      return;
+    }
+
+    //проверка на наличие в бд
+    const [{rows: nameRows}] = await db.executeSql(findByNameQuery('312'));
+
+    const resData: Omit<IScanned, 'status'> = {
+      inventoryNum: +inventoryNum,
+      name,
+      model,
+      serialNum,
+    };
+
+    if (!nameRows.length) {
+      setScanModal({
+        scanned: resData,
+        status: 2,
+        visible: true,
+      });
+      await db.executeSql(addScannedItemQuery({...resData, status: 2}));
+      return;
+    }
+
+    if (!nameRows.raw().filter(item => item.kolvo > 0).length) {
+      setScanModal({
+        scanned: resData,
+        status: 3,
+        visible: true,
+      });
+      await db.executeSql(addScannedItemQuery({...resData, status: 3}));
+      return;
+    }
+
+    const [{rows: updatedRows}] = await db.executeSql(
+      updateInventoryQuery(name),
+    );
+
+    console.log('rows', updatedRows);
+
+    const scannedItem = {inventoryNum, name, model, serialNum};
+  };
+
   return (
-    <View>
+    <PageContainer>
       <ContentBlock>
         <View style={styles.inventoryInfoContainer}>
           <Text>
@@ -127,10 +225,36 @@ const Inventory = ({navigation}: Props) => {
         </View>
       </ContentBlock>
 
-      <ScanResultModal
-        visible={scanModalVisible}
-        setVisible={setScanModalVisible}
-      />
+      <ScanResultModal scanModal={scanModal} setScanModal={setScanModal} />
+
+      {scanned.length ? (
+        <ContentBlock
+          transparent
+          // helperText="Нажмите, чтобы получить информацию"
+          title="Предыдущие сканирования">
+          <FlatList
+            horizontal={true}
+            data={scanned}
+            ItemSeparatorComponent={() => <HorizontalListSeparator />}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                // onPress={() => setDocsScan(item)}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                  padding: 10,
+                  marginRight: 5,
+                  maxWidth: Dimensions.get('screen').width - 20,
+                }}>
+                <Text>{item.inventoryNum}</Text>
+                <Text>{item.inventoryNum}</Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(_, index) => index.toString()}
+          />
+        </ContentBlock>
+      ) : null}
 
       {date ? (
         <View>
@@ -153,7 +277,7 @@ const Inventory = ({navigation}: Props) => {
           </Text>
         </ContentBlock>
       )}
-    </View>
+    </PageContainer>
   );
 };
 

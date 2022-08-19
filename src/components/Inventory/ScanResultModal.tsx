@@ -3,36 +3,44 @@ import React, {Dispatch, SetStateAction, useState} from 'react';
 import {IScanned} from 'types/inventory';
 import {scanResultModalColors} from 'constants/constants';
 
-type Props = {
-  item?: IScanned;
+export type ScanModalProps = {
+  scanned?: IScanned | Omit<IScanned, 'status'>;
+  status: 1 | 2 | 3 | 4;
   visible: boolean;
-  setVisible: Dispatch<SetStateAction<boolean>>;
 };
-const ScanResultModal = ({visible, item, setVisible}: Props) => {
+
+type Props = {
+  scanModal: ScanModalProps;
+  setScanModal: Dispatch<SetStateAction<ScanModalProps>>;
+};
+const ScanResultModal = ({scanModal, setScanModal}: Props) => {
   const {backgroundColor, textColor, title, description} =
     scanResultModalColors.filter(
-      color => color.status === (item?.status || 1),
+      color => color.status === scanModal.status,
     )?.[0];
   return (
-    <View style={styles.centeredView}>
-      <Modal animationType="fade" transparent={true} visible={visible}>
-        <View style={styles.centeredView}>
-          <View style={[styles.modalView, {backgroundColor}]}>
-            <Text style={[styles.modalText, {color: textColor}]}>{title}</Text>
-            {item ? (
-              <Text style={[styles.modalText, {color: textColor}]}>
-                {description(item)}
-              </Text>
-            ) : null}
-            <Button
-              title="hide modal"
-              onPress={() => {
-                setVisible(!visible);
-              }}></Button>
-          </View>
+    // <View style={styles.centeredView}>
+    <Modal animationType="fade" transparent={true} visible={scanModal?.visible}>
+      <View style={styles.centeredView}>
+        <View style={[styles.modalView, {backgroundColor}]}>
+          <Text style={[styles.modalText, {color: textColor}]}>{title}</Text>
+          {scanModal?.scanned ? (
+            <Text style={[styles.modalText, {color: textColor}]}>
+              {description(scanModal.scanned)}
+            </Text>
+          ) : null}
+          <Button
+            title="Подтвердить"
+            onPress={() => {
+              setScanModal(prevState => ({
+                ...prevState,
+                visible: !prevState.visible,
+              }));
+            }}></Button>
         </View>
-      </Modal>
-    </View>
+      </View>
+    </Modal>
+    // </View>
   );
 };
 

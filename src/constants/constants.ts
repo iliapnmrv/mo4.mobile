@@ -1,6 +1,6 @@
 import {IInventory, IScanned} from 'types/inventory';
 
-export const SERVER_URL = '';
+export const SERVER_URL = 'http://192.168.26.75:8000/api/';
 
 export const inventorySampleData: IInventory[] = [
   {
@@ -24,7 +24,7 @@ export const inventorySampleData: IInventory[] = [
 export type IColor = {
   status: 1 | 2 | 3 | 4;
   title: string;
-  description: (inventory: IScanned) => string;
+  description: (inventory: IScanned | Omit<IScanned, 'status'>) => string;
   textColor: string;
   backgroundColor: string;
   type: 'success' | 'notInside' | 'over' | 'double';
@@ -62,7 +62,17 @@ export const scanResultModalColors: IColor[] = [
     status: 4,
     title: 'Повторное считывание',
     description: item =>
-      `Повторное считывание позиции ${item.inventoryNum}, предыдущее значение ${item.position}`,
+      `Повторное считывание позиции ${
+        item.inventoryNum
+      }, предыдущее значение: статус ${
+        //@ts-ignore
+        scanResultModalColors.filter(res => res.status === item!.status)[0]
+          .title
+      } ${
+        item.position != 'undefined'
+          ? `строка ${item.position}, место ${item.place}`
+          : ''
+      } `,
     textColor: '#DC143C',
     backgroundColor: '#F08080',
     type: 'double',

@@ -8,13 +8,13 @@ export type IInventory = {
 };
 
 export type IScanned = {
-  id: number;
+  id?: number;
   inventoryNum: number;
   name: string;
   status: 1 | 2 | 3 | 4;
   model: string;
   serialNum: string;
-  position: number;
-  place: string;
-  trace?: string;
+  position?: number | 'undefined';
+  place?: string | 'undefined';
+  trace?: string | 'undefined';
 };

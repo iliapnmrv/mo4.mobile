@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from 'App';
@@ -8,6 +15,7 @@ import {useLazyGetDocsItemQuery} from 'store/docs/docs.api';
 import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {useActions} from 'hooks/actions';
+import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Docs', 'MyStack'>;
 
@@ -16,7 +24,7 @@ const Docs = ({navigation}: Props) => {
 
   const {history} = useAppSelector(state => state.docs);
 
-  const {setDocsScan} = useActions();
+  const {setDocsScan, setDocsHistory} = useActions();
 
   const [getDoc, {isLoading, isError, data: docData, error}] =
     useLazyGetDocsItemQuery();
@@ -30,10 +38,39 @@ const Docs = ({navigation}: Props) => {
       <QRButton
         action={() =>
           navigation.navigate('Scanner', {
-            setScan: data => setDocsScan(data),
+            setScan: data => {
+              setDocsScan(data), setDocsHistory(data);
+            },
           })
         }
       />
+      {history.length ? (
+        <ContentBlock
+          transparent
+          helperText="Нажмите, чтобы получить информацию"
+          title="Предыдущие сканирования">
+          <FlatList
+            horizontal={true}
+            data={history}
+            ItemSeparatorComponent={() => <HorizontalListSeparator />}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => setDocsScan(item)}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                  padding: 10,
+                  marginRight: 5,
+                  maxWidth: Dimensions.get('screen').width - 20,
+                }}>
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(_, index) => index.toString()}
+          />
+        </ContentBlock>
+      ) : null}
       <ContentBlock title="Сканирование">
         <View>
           <Text>
@@ -45,16 +82,6 @@ const Docs = ({navigation}: Props) => {
       {true ? (
         <ContentBlock title="Изменить информацию">
           <View></View>
-        </ContentBlock>
-      ) : null}
-
-      {history ? (
-        <ContentBlock title="Предыдущие сканирования">
-          <View>
-            {/* {history.map((item, index) => (
-              <Text key={index}>{item}</Text>
-            ))} */}
-          </View>
         </ContentBlock>
       ) : null}
     </PageContainer>
