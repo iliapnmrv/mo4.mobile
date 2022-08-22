@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     marginTop: 10,
     fontWeight: '500',
-    color: '#000',
+    color: '#404040',
   },
   helperText: {
     fontSize: 13,

@@ -1,4 +1,4 @@
-import {IScanned, IInventory} from 'types/inventory';
+import {IInventory} from 'types/inventory';
 
 export const createInventoryQuery = `
 CREATE TABLE IF NOT EXISTS inventory(
@@ -37,21 +37,17 @@ export const insertInventoryQuery = (data: IInventory[]) =>
         )
         .join(',\n')}`;
 
-export const updateInventoryQuery = (name: string) =>
-  `UPDATE inventory
+export const updateInventoryQuery = `UPDATE inventory
         SET kolvo = kolvo - 1
-        WHERE name = ${name} AND kolvo > 0 ORDER BY placepriority ASC, kolvo`;
+        WHERE name = ? AND kolvo > 0 ORDER BY placepriority ASC, kolvo`;
 
 // WHERE name = ${name} AND kolvo IN (SELECT kolvo FROM inventory WHERE kolvo > 0 ORDER BY kolvo ASC)`;
 
-export const isScannedItemQuery = (inventoryNum: number) =>
-  `SELECT * FROM scanned WHERE inventoryNum = ${inventoryNum}`;
+export const isScannedItemQuery = `SELECT * FROM scanned WHERE inventoryNum = ?`;
 
-export const findByNameQuery = (name: string) =>
-  `SELECT * FROM inventory WHERE name = ${name}`;
+export const findByNameQuery = 'SELECT * FROM inventory WHERE name = ?';
 
-export const findLastScannedQuery = `SELECT * FROM scanned LIMIT 10`;
+export const findLastScannedQuery = `SELECT * FROM scanned ORDER BY id DESC LIMIT 10`;
 
-export const addScannedItemQuery = (scanned: IScanned) =>
-  `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place, trace)
-        VALUES("${scanned.inventoryNum}", "${scanned.name}", "${scanned.status}", "${scanned.model}", "${scanned.serialNum}", "${scanned.position}", "${scanned.place}", "${scanned.trace}")`;
+export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place, trace)
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;

@@ -69,7 +69,7 @@ export const scanResultModalColors: IColor[] = [
         scanResultModalColors.filter(res => res.status === item!.status)[0]
           .title
       } ${
-        item.position != 'undefined'
+        item.position != null
           ? `строка ${item.position}, место ${item.place}`
           : ''
       } `,

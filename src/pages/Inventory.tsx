@@ -39,7 +39,7 @@ import {
 } from 'utils/inventoryQueries';
 import Snackbar from 'react-native-snackbar';
 import {IInventory, IScanned} from 'types/inventory';
-import {inventorySampleData} from 'constants/constants';
+import {inventorySampleData, scanResultModalColors} from 'constants/constants';
 import ScanResultModal, {
   ScanModalProps,
 } from 'components/Inventory/ScanResultModal';
@@ -68,12 +68,10 @@ const Inventory = ({navigation}: Props) => {
   });
   const [scanned, setScanned] = useState<IScanned[]>([]);
 
-  console.log(scanned);
-
   useEffect(() => {
     const openDB = async () => {
       db = await openDatabase({name: 'inventory.db'});
-      getLastScanned();
+      date ? getLastScanned() : null;
     };
     openDB();
   }, []);
@@ -110,13 +108,18 @@ const Inventory = ({navigation}: Props) => {
   };
 
   const closeInventory = async () => {
-    setInventoryDate(undefined);
-    await db.executeSql(dropInventoryQuery);
-    await db.executeSql(dropScannedQuery);
-    Snackbar.show({
-      text: `Инвентаризация успешно закрыта`,
-      duration: Snackbar.LENGTH_LONG,
-    });
+    try {
+      setInventoryDate(undefined);
+      setInventoryScan('');
+      await db.executeSql(dropInventoryQuery);
+      await db.executeSql(dropScannedQuery);
+      Snackbar.show({
+        text: `Инвентаризация успешно закрыта`,
+        duration: Snackbar.LENGTH_LONG,
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const openInventory = async () => {
@@ -132,7 +135,9 @@ const Inventory = ({navigation}: Props) => {
       await db.executeSql(createScannedQuery);
 
       if (!inventoryData) {
-        throw new Error('Ошибка при скачивании данных');
+        throw new Error(
+          'Ошибка при скачивании данных, убедитесь что вы подключены к серверу',
+        );
       }
 
       await db.executeSql(insertInventoryQuery(inventoryData));
@@ -150,22 +155,21 @@ const Inventory = ({navigation}: Props) => {
   };
 
   const getAnalysis = async () => {
-    const [inventoryNum, name, model, serialNum] = inventoryScan.split('\n');
+    const [inventoryNum, name, model, serialNum] = inventoryScan
+      .split('\n')
+      .map(item => item.trim());
 
     //проверка на повторное считывание
-    const [{rows}] = await db.executeSql(isScannedItemQuery(+inventoryNum));
-    console.log('rows', rows);
+    const [{rows}] = await db.executeSql(isScannedItemQuery, [+inventoryNum]);
 
     if (rows.length) {
-      console.log('rows.raw()[0]', rows.raw()[0]);
-
       const prevScanned: IScanned = rows.raw()[0];
       setScanModal({scanned: prevScanned, status: 4, visible: true});
       return;
     }
 
     //проверка на наличие в бд
-    const [{rows: nameRows}] = await db.executeSql(findByNameQuery('312'));
+    const [{rows: nameRows}] = await db.executeSql(findByNameQuery, [name]);
 
     const resData: Omit<IScanned, 'status'> = {
       inventoryNum: +inventoryNum,
@@ -180,7 +184,13 @@ const Inventory = ({navigation}: Props) => {
         status: 2,
         visible: true,
       });
-      await db.executeSql(addScannedItemQuery({...resData, status: 2}));
+      await db.executeSql(addScannedItemQuery, [
+        +inventoryNum,
+        name,
+        2,
+        model,
+        serialNum,
+      ]);
       return;
     }
 
@@ -190,15 +200,21 @@ const Inventory = ({navigation}: Props) => {
         status: 3,
         visible: true,
       });
-      await db.executeSql(addScannedItemQuery({...resData, status: 3}));
+      await db.executeSql(addScannedItemQuery, [
+        +inventoryNum,
+        name,
+        3,
+        model,
+        serialNum,
+      ]);
       return;
     }
 
-    const [{rows: updatedRows}] = await db.executeSql(
-      updateInventoryQuery(name),
-    );
+    const [{rows: updatedRows}] = await db.executeSql(updateInventoryQuery, [
+      name,
+    ]);
 
-    console.log('rows', updatedRows);
+    console.log('rows2', updatedRows);
 
     const scannedItem = {inventoryNum, name, model, serialNum};
   };
@@ -227,35 +243,6 @@ const Inventory = ({navigation}: Props) => {
 
       <ScanResultModal scanModal={scanModal} setScanModal={setScanModal} />
 
-      {scanned.length ? (
-        <ContentBlock
-          transparent
-          // helperText="Нажмите, чтобы получить информацию"
-          title="Предыдущие сканирования">
-          <FlatList
-            horizontal={true}
-            data={scanned}
-            ItemSeparatorComponent={() => <HorizontalListSeparator />}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                // onPress={() => setDocsScan(item)}
-                activeOpacity={0.7}
-                style={{
-                  backgroundColor: '#fff',
-                  borderRadius: 10,
-                  padding: 10,
-                  marginRight: 5,
-                  maxWidth: Dimensions.get('screen').width - 20,
-                }}>
-                <Text>{item.inventoryNum}</Text>
-                <Text>{item.inventoryNum}</Text>
-              </TouchableOpacity>
-            )}
-            keyExtractor={(_, index) => index.toString()}
-          />
-        </ContentBlock>
-      ) : null}
-
       {date ? (
         <View>
           <QRButton
@@ -265,10 +252,45 @@ const Inventory = ({navigation}: Props) => {
               })
             }
           />
-          <ContentBlock title={'Информация сканирования'}>
+          {scanned.length ? (
+            <ContentBlock
+              transparent
+              helperText="10 последних"
+              title="Предыдущие сканирования">
+              <FlatList
+                horizontal={true}
+                data={scanned}
+                ItemSeparatorComponent={() => <HorizontalListSeparator />}
+                renderItem={({item}) => {
+                  const colorItem = scanResultModalColors.filter(
+                    res => res.status === item.status,
+                  )[0];
+                  return (
+                    <TouchableOpacity
+                      // onPress={() => setDocsScan(item)}
+                      activeOpacity={0.9}
+                      style={{
+                        backgroundColor: colorItem.backgroundColor,
+                        borderRadius: 10,
+                        padding: 10,
+                        marginRight: 5,
+                        maxWidth: Dimensions.get('screen').width - 20,
+                      }}>
+                      <Text>{item.inventoryNum}</Text>
+                      <Text>{item.name}</Text>
+                      {item.position ? <Text>{item.position}</Text> : null}
+                      <Text>{colorItem.title}</Text>
+                    </TouchableOpacity>
+                  );
+                }}
+                keyExtractor={(_, index) => index.toString()}
+              />
+            </ContentBlock>
+          ) : null}
+          <ContentBlock title={'Сканирование'}>
             <Text>{inventoryScan}</Text>
-            <Button title="Получить информацию" onPress={getAnalysis} />
           </ContentBlock>
+          <Button title="Получить информацию" onPress={getAnalysis} />
         </View>
       ) : (
         <ContentBlock>
