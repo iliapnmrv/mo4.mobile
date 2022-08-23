@@ -37,11 +37,15 @@ export const insertInventoryQuery = (data: IInventory[]) =>
         )
         .join(',\n')}`;
 
-export const updateInventoryQuery = `UPDATE inventory
-        SET kolvo = kolvo - 1
-        WHERE name = ? AND kolvo > 0 ORDER BY placepriority ASC, kolvo`;
-
-// WHERE name = ${name} AND kolvo IN (SELECT kolvo FROM inventory WHERE kolvo > 0 ORDER BY kolvo ASC)`;
+export const updateInventoryQuery = `
+    UPDATE inventory SET kolvo = kolvo - 1
+      WHERE name = ? 
+        AND id IN 
+            (SELECT * FROM 
+              (SELECT id FROM inventory 
+                  WHERE name = ? AND kolvo > 0
+                    ORDER BY placepriority ASC, kolvo LIMIT 1) 
+            AS k);`;
 
 export const isScannedItemQuery = `SELECT * FROM scanned WHERE inventoryNum = ?`;
 

@@ -210,11 +210,17 @@ const Inventory = ({navigation}: Props) => {
       return;
     }
 
-    const [{rows: updatedRows}] = await db.executeSql(updateInventoryQuery, [
-      name,
-    ]);
+    const [res] = await db.executeSql(updateInventoryQuery, [name, name]);
 
-    console.log('rows2', updatedRows);
+    // await db.executeSql(addScannedItemQuery, [
+    //   +inventoryNum,
+    //   name,
+    //   1,
+    //   model,
+    //   serialNum,
+    // ]);
+
+    console.log('rows2', res);
 
     const scannedItem = {inventoryNum, name, model, serialNum};
   };
