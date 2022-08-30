@@ -1,8 +1,8 @@
 import {
   Alert,
-  Button,
   Dimensions,
   FlatList,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -36,6 +36,7 @@ import {
   updateInventoryQuery,
   findByNameQuery,
   findLastScannedQuery,
+  findUpdatedRow,
 } from 'utils/inventoryQueries';
 import Snackbar from 'react-native-snackbar';
 import {IInventory, IScanned} from 'types/inventory';
@@ -46,6 +47,7 @@ import ScanResultModal, {
 import {useActions} from 'hooks/actions';
 import PageContainer from 'components/PageContainer/PageContainer';
 import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
+import Button from 'components/Buttons/Button';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Inventory', 'MyStack'>;
 let db: SQLiteDatabase;
@@ -147,6 +149,8 @@ const Inventory = ({navigation}: Props) => {
         duration: 5000,
       });
     } catch (e: any) {
+      console.error(e);
+
       Snackbar.show({
         text: e?.message,
         duration: 5000,
@@ -155,74 +159,88 @@ const Inventory = ({navigation}: Props) => {
   };
 
   const getAnalysis = async () => {
-    const [inventoryNum, name, model, serialNum] = inventoryScan
-      .split('\n')
-      .map(item => item.trim());
+    try {
+      const [inventoryNum, name, model, serialNum] = inventoryScan
+        .split('\n')
+        .map(item => item.trim());
 
-    //проверка на повторное считывание
-    const [{rows}] = await db.executeSql(isScannedItemQuery, [+inventoryNum]);
+      //проверка на повторное считывание
+      const [{rows}] = await db.executeSql(isScannedItemQuery, [+inventoryNum]);
 
-    if (rows.length) {
-      const prevScanned: IScanned = rows.raw()[0];
-      setScanModal({scanned: prevScanned, status: 4, visible: true});
-      return;
-    }
+      if (rows.length) {
+        const prevScanned: IScanned = rows.raw()[0];
+        setScanModal({scanned: prevScanned, status: 4, visible: true});
+        return;
+      }
 
-    //проверка на наличие в бд
-    const [{rows: nameRows}] = await db.executeSql(findByNameQuery, [name]);
+      //проверка на наличие в бд
+      const [{rows: nameRows}] = await db.executeSql(findByNameQuery, [name]);
 
-    const resData: Omit<IScanned, 'status'> = {
-      inventoryNum: +inventoryNum,
-      name,
-      model,
-      serialNum,
-    };
+      const resData: Omit<IScanned, 'status'> = {
+        inventoryNum: +inventoryNum,
+        name,
+        model,
+        serialNum,
+      };
 
-    if (!nameRows.length) {
+      if (!nameRows.length) {
+        setScanModal({
+          scanned: resData,
+          status: 2,
+          visible: true,
+        });
+        await db.executeSql(addScannedItemQuery, [
+          +inventoryNum,
+          name,
+          2,
+          model,
+          serialNum,
+        ]);
+        return;
+      }
+
+      if (!nameRows.raw().filter(item => item.kolvo > 0).length) {
+        setScanModal({
+          scanned: resData,
+          status: 3,
+          visible: true,
+        });
+        await db.executeSql(addScannedItemQuery, [
+          +inventoryNum,
+          name,
+          3,
+          model,
+          serialNum,
+        ]);
+        return;
+      }
+
+      await db.executeSql(updateInventoryQuery, [name, name]);
+
+      const [{rows: updatedRow}] = await db.executeSql(findUpdatedRow);
+
+      const {place, kolvo, vedpos: position} = updatedRow.raw()[0];
+
       setScanModal({
-        scanned: resData,
-        status: 2,
+        scanned: {...resData, place, position, kolvo},
+        status: 1,
         visible: true,
       });
+
       await db.executeSql(addScannedItemQuery, [
         +inventoryNum,
         name,
-        2,
+        1,
         model,
         serialNum,
+        position,
+        place,
       ]);
-      return;
+    } catch (e) {
+      console.error(e);
+    } finally {
+      getLastScanned();
     }
-
-    if (!nameRows.raw().filter(item => item.kolvo > 0).length) {
-      setScanModal({
-        scanned: resData,
-        status: 3,
-        visible: true,
-      });
-      await db.executeSql(addScannedItemQuery, [
-        +inventoryNum,
-        name,
-        3,
-        model,
-        serialNum,
-      ]);
-      return;
-    }
-
-    const [res] = await db.executeSql(updateInventoryQuery, [name, name]);
-
-    // await db.executeSql(addScannedItemQuery, [
-    //   +inventoryNum,
-    //   name,
-    //   1,
-    //   model,
-    //   serialNum,
-    // ]);
-
-    console.log('rows2', res);
-
-    const scannedItem = {inventoryNum, name, model, serialNum};
   };
 
   return (
@@ -284,7 +302,10 @@ const Inventory = ({navigation}: Props) => {
                       }}>
                       <Text>{item.inventoryNum}</Text>
                       <Text>{item.name}</Text>
-                      {item.position ? <Text>{item.position}</Text> : null}
+                      {item.position ? (
+                        <Text>Строка ведомости: {item.position}</Text>
+                      ) : null}
+                      {item.place ? <Text>{item.place}</Text> : null}
                       <Text>{colorItem.title}</Text>
                     </TouchableOpacity>
                   );
@@ -293,10 +314,20 @@ const Inventory = ({navigation}: Props) => {
               />
             </ContentBlock>
           ) : null}
-          <ContentBlock title={'Сканирование'}>
-            <Text>{inventoryScan}</Text>
-          </ContentBlock>
-          <Button title="Получить информацию" onPress={getAnalysis} />
+          {inventoryScan ? (
+            <>
+              <ContentBlock title={'Сканирование'}>
+                <Text>{inventoryScan}</Text>
+              </ContentBlock>
+              <Button
+                type="secondary"
+                text="Получить информацию"
+                action={getAnalysis}
+              />
+            </>
+          ) : (
+            <Text>Отсканируйте QR, чтобы получить информацию</Text>
+          )}
         </View>
       ) : (
         <ContentBlock>

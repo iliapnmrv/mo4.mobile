@@ -4,7 +4,9 @@ import {IInventory} from 'types/inventory';
 
 export const inventoryApi = createApi({
   reducerPath: 'inventory/api',
-  baseQuery: fetchBaseQuery({baseUrl: SERVER_URL}),
+  baseQuery: fetchBaseQuery({
+    baseUrl: SERVER_URL,
+  }),
   endpoints: builder => ({
     getInventory: builder.query<IInventory[], string>({
       query: () => `inventory`,

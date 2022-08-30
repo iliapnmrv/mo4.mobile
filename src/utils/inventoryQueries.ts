@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS inventory(
     name          VARCHAR(200) NOT NULL,
     place         VARCHAR(100) NOT NULL,
     kolvo         INTEGER  NOT NULL,
-    placepriority INTEGER  NOT NULL
+    placepriority INTEGER  NOT NULL,
+    updatedAt    DATETIME
 );`;
 
 export const createScannedQuery = `
@@ -38,20 +39,25 @@ export const insertInventoryQuery = (data: IInventory[]) =>
         .join(',\n')}`;
 
 export const updateInventoryQuery = `
-    UPDATE inventory SET kolvo = kolvo - 1
+    UPDATE inventory SET kolvo = kolvo - 1, updatedAt = CURRENT_TIMESTAMP
       WHERE name = ? 
         AND id IN 
             (SELECT * FROM 
               (SELECT id FROM inventory 
                   WHERE name = ? AND kolvo > 0
                     ORDER BY placepriority ASC, kolvo LIMIT 1) 
-            AS k);`;
+            AS k);
+      OUTPUT INSERTED.PrimaryKeyID
+      RETURNING inventory.*`;
 
 export const isScannedItemQuery = `SELECT * FROM scanned WHERE inventoryNum = ?`;
 
 export const findByNameQuery = 'SELECT * FROM inventory WHERE name = ?';
 
+export const findUpdatedRow =
+  'SELECT * from inventory ORDER BY updatedAt DESC LIMIT 1';
+
 export const findLastScannedQuery = `SELECT * FROM scanned ORDER BY id DESC LIMIT 10`;
 
-export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place, trace)
-  VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
+export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place)
+  VALUES(?, ?, ?, ?, ?, ?, ?)`;

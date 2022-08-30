@@ -20,11 +20,16 @@ import Inventory from 'pages/Inventory';
 import Docs from 'pages/Docs';
 import PageHeader from 'components/PageHeader/PageHeader';
 import Home from 'pages/Home';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 export type RootStackParamList = {
   HomeScreens: undefined;
   Cartridges: undefined;
+  InventoryDrawer: undefined;
   Inventory: undefined;
+  InsideInventory: undefined;
+  OverInventory: undefined;
+  NotInInventory: undefined;
   Docs: undefined;
   HomeTabs: undefined;
   Scanner: {setScan: (data: string) => void};
@@ -46,8 +51,8 @@ function HomeScreens() {
         }}
       />
       <HomeStack.Screen
-        name="Inventory"
-        component={Inventory}
+        name="InventoryDrawer"
+        component={InventoryDrawer}
         options={{
           title: 'Инвентаризация',
           header: props => <PageHeader {...props} />,
@@ -72,6 +77,18 @@ function HomeScreens() {
     </HomeStack.Navigator>
   );
 }
+
+const InventoryDrawer = () => {
+  const Drawer = createDrawerNavigator();
+  return (
+    <Drawer.Navigator screenOptions={{headerShown: true}}>
+      <Drawer.Screen name="Inventory" component={Inventory} />
+      <Drawer.Screen name="InsideInventory" component={Settings} />
+      <Drawer.Screen name="OverInventory" component={Settings} />
+      <Drawer.Screen name="NotInInventory" component={Settings} />
+    </Drawer.Navigator>
+  );
+};
 
 const Tabs = () => {
   const Tab = createBottomTabNavigator<RootStackParamList>();

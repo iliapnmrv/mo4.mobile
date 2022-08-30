@@ -1,14 +1,56 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 
-const List = () => {
-  return (
-    <View>
-      <Text>List</Text>
-    </View>
-  );
+type Props = {
+  name: string;
+  value?: string | number | undefined;
+  isFirst?: boolean;
+  isLast?: boolean;
 };
 
-export default List;
+const ListItem = ({name, value, isFirst = false, isLast = false}: Props) => {
+  return value ? (
+    <View
+      style={[
+        styles.infoItemContainer,
+        isFirst
+          ? {marginTop: 2, borderTopLeftRadius: 5, borderTopRightRadius: 5}
+          : null,
+        isLast
+          ? {
+              borderBottomLeftRadius: 5,
+              borderBottomRightRadius: 5,
+              borderBottomWidth: 1,
+              borderBottomColor: 'lightgray',
+            }
+          : null,
+      ]}>
+      <Text style={styles.nameText}>{name}</Text>
+      <Text style={styles.valueText}>{value}</Text>
+    </View>
+  ) : null;
+};
 
-const styles = StyleSheet.create({});
+export default ListItem;
+
+const styles = StyleSheet.create({
+  infoItemContainer: {
+    backgroundColor: 'white',
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderTopWidth: 1,
+    borderTopColor: 'lightgray',
+    borderRightWidth: 1,
+    borderRightColor: 'lightgray',
+    borderLeftWidth: 1,
+    borderLeftColor: 'lightgray',
+  },
+  nameText: {
+    fontWeight: '500',
+    fontSize: 20,
+    // marginBottom: 3,
+  },
+  valueText: {
+    fontSize: 16,
+  },
+});
