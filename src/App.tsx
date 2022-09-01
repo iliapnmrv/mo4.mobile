@@ -53,6 +53,8 @@ function HomeScreens() {
       <HomeStack.Screen
         name="InventoryDrawer"
         component={InventoryDrawer}
+        // name="Inventory"
+        // component={Inventory}
         options={{
           title: 'Инвентаризация',
           header: props => <PageHeader {...props} />,
