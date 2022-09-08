@@ -3,6 +3,7 @@ import {
   FlatList,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -11,11 +12,13 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from 'App';
 import QRButton from 'components/Buttons/QRButton';
 import {useAppSelector} from 'hooks/redux';
-import {useLazyGetDocsItemQuery} from 'store/docs/docs.api';
+import {useGetOwnersQuery, useGetPersonsQuery, useGetStatusesQuery, useGetStoragesQuery, useGetTypesQuery, useLazyGetDocsItemQuery} from 'store/docs/docs.api';
 import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {useActions} from 'hooks/actions';
 import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
+import { CatalogsNames } from 'types/docs/catalogs';
+import {Picker} from '@react-native-picker/picker';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Docs', 'MyStack'>;
 
@@ -28,6 +31,18 @@ const Docs = ({navigation}: Props) => {
 
   const [getDoc, {isLoading, isError, data: docData, error}] =
     useLazyGetDocsItemQuery();
+  
+  const {data: statuses} = useGetStatusesQuery('');
+  const {data: persons} = useGetPersonsQuery('');
+  const {data: storages} = useGetStoragesQuery('');
+  const {data: owners} = useGetOwnersQuery('');
+  const {data: types} = useGetTypesQuery('');
+
+  console.log(types);
+
+  const [selectedLanguage, setSelectedLanguage] = useState();
+  const [text, onChangeText] = useState("");
+  
 
   useEffect(() => {
     console.log('docsScan', docsScan);
@@ -82,6 +97,57 @@ const Docs = ({navigation}: Props) => {
       {true ? (
         <ContentBlock title="Изменить информацию">
           <View></View>
+
+          <Picker
+            selectedValue={selectedLanguage}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedLanguage(itemValue)
+            }>
+            {types?.map((type, index)=>(
+              <Picker.Item key={index} label={type.type_name} value={type.type_id} />
+            ))}
+          </Picker>
+          <Picker
+            selectedValue={selectedLanguage}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedLanguage(itemValue)
+            }>
+            {owners?.map((owner, index)=>(
+              <Picker.Item key={index} label={owner.owner_name} value={owner.owner_id} />
+            ))}
+          </Picker>
+          <Picker
+            selectedValue={selectedLanguage}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedLanguage(itemValue)
+            }>
+            {storages?.map((storage, index)=>(
+              <Picker.Item key={index} label={storage.storage_name} value={storage.storage_id} />
+            ))}
+          </Picker>
+          <Picker
+            selectedValue={selectedLanguage}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedLanguage(itemValue)
+            }>
+            {persons?.map((person, index)=>(
+              <Picker.Item key={index} label={person.person_name} value={person.person_id} />
+            ))}
+          </Picker>
+          <Picker
+            selectedValue={selectedLanguage}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedLanguage(itemValue)
+            }>
+            {statuses?.map((status, index)=>(
+              <Picker.Item key={index} label={status.status_name} value={status.id} />
+            ))}
+          </Picker>
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeText}
+            value={text}
+          />
         </ContentBlock>
       ) : null}
     </PageContainer>
@@ -90,4 +156,11 @@ const Docs = ({navigation}: Props) => {
 
 export default Docs;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
+});
