@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS scanned(
     serialNum     VARCHAR(100),
     position      INT(63), 
     place         VARCHAR(127),
-    trace         VARCHAR(100)
+    trace         VARCHAR(100),
+    createdAt     DATETIME
 );`;
 
 export const dropInventoryQuery = `DROP TABLE IF EXISTS inventory;`;
@@ -57,8 +58,8 @@ export const findByNameQuery = 'SELECT * FROM inventory WHERE name = ?';
 export const findUpdatedRow =
   'SELECT * from inventory ORDER BY updatedAt DESC LIMIT 1';
 
-export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place)
-  VALUES(?, ?, ?, ?, ?, ?, ?)`;
+export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place, createdAt)
+  VALUES(?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`;
 
 export const findLastScannedQuery = `SELECT * FROM scanned ORDER BY id DESC LIMIT 10`;
 
