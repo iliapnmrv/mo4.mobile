@@ -57,7 +57,9 @@ export const findByNameQuery = 'SELECT * FROM inventory WHERE name = ?';
 export const findUpdatedRow =
   'SELECT * from inventory ORDER BY updatedAt DESC LIMIT 1';
 
-export const findLastScannedQuery = `SELECT * FROM scanned ORDER BY id DESC LIMIT 10`;
-
 export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place)
   VALUES(?, ?, ?, ?, ?, ?, ?)`;
+
+export const findLastScannedQuery = `SELECT * FROM scanned ORDER BY id DESC LIMIT 10`;
+
+export const findScannedQuery = (status: number | undefined) => `SELECT * FROM scanned ${status ? `WHERE status = ${status}` : ''}`;
