@@ -96,7 +96,7 @@ const Docs = ({navigation}: Props) => {
       {/* {docData ? ( */}
       {true ? (
         <>
-          <ContentBlock title="Анализ">
+          <ContentBlock title="Анализ" button={{text: 'Обновить анализ', action: ()=>console.log}}>
           </ContentBlock>
             
           <ContentBlock title="Информация">
