@@ -2,7 +2,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {ReactNode} from 'react';
 
 type IContentBlockButton = {
-  text: string
+  text: string | ReactNode
   action: () => void
   size?: number
 }
