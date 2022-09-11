@@ -22,7 +22,7 @@ import {Picker} from '@react-native-picker/picker';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Docs', 'MyStack'>;
 
-const Docs = ({navigation}: Props) => {
+const DocsEdit = ({navigation}: Props) => {
   const {docsScan} = useAppSelector(state => state.scan);
 
   const {history} = useAppSelector(state => state.docs);
@@ -154,7 +154,7 @@ const Docs = ({navigation}: Props) => {
   );
 };
 
-export default Docs;
+export default DocsEdit;
 
 const styles = StyleSheet.create({
   input: {

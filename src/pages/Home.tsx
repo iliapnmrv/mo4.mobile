@@ -30,7 +30,7 @@ const Screens: IHomeItem[] = [
     id: '2',
     title: 'Документооборот',
     icon: 'md-document-text-outline',
-    path: 'Docs',
+    path: 'DocsStack',
   },
   {id: '3', title: 'Картриджи', icon: 'md-print-outline', path: 'Cartridges'},
 ];

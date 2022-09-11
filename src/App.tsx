@@ -17,9 +17,10 @@ import {Provider as PaperProvider} from 'react-native-paper';
 import SplashScreen from 'react-native-splash-screen';
 import Cartridges from './pages/Cartridges';
 import Inventory from 'pages/Inventory';
-import Docs from 'pages/Docs';
+import Docs from 'pages/docs/Docs';
 import PageHeader from 'components/PageHeader/PageHeader';
 import Home from 'pages/Home';
+import DocsEdit from 'pages/docs/DocsEdit';
 
 export type RootStackParamList = {
   HomeScreens: undefined;
@@ -28,15 +29,17 @@ export type RootStackParamList = {
   InsideInventory: undefined;
   OverInventory: undefined;
   NotInInventory: undefined;
-  Docs: undefined;
   HomeTabs: undefined;
   Scanner: {setScan: (data: string) => void};
   Settings: undefined;
   Home: undefined;
+  DocsEdit: {id: number, title: string};
+  DocsStack: undefined;
+  Docs: undefined;
 };
 
 function HomeScreens() {
-  const HomeStack = createNativeStackNavigator();
+  const HomeStack = createNativeStackNavigator<RootStackParamList>();
 
   return (
     <HomeStack.Navigator initialRouteName="Home">
@@ -57,8 +60,8 @@ function HomeScreens() {
         }}
       />
       <HomeStack.Screen
-        name="Docs"
-        component={Docs}
+        name="DocsStack"
+        component={DocsStack}
         options={{
           title: 'Документооборот',
           header: props => <PageHeader {...props} />,
@@ -74,6 +77,31 @@ function HomeScreens() {
       />
     </HomeStack.Navigator>
   );
+}
+
+const DocsStack = () => {
+  const DocsNav = createNativeStackNavigator<RootStackParamList>();
+  return(
+    <DocsNav.Navigator initialRouteName="Docs">
+      <DocsNav.Screen
+        name="Docs"
+        component={Docs}
+        options={{
+          title: 'Документооборот',
+          // header: props => <PageHeader {...props} />,
+          header: props => <></>,
+        }}
+      />
+      <DocsNav.Screen
+        name="DocsEdit"
+        component={DocsEdit}
+        options={({route})=>({
+          title: route.params.title,
+          header: props => <PageHeader {...props} />,
+        })}
+      />
+    </DocsNav.Navigator>
+  )
 }
 
 const Tabs = () => {
