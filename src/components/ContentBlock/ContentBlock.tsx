@@ -1,11 +1,18 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {ReactNode} from 'react';
+
+type IContentBlockButton = {
+  text: string | ReactNode
+  action: () => void
+  size?: number
+}
 
 type Props = {
   children: ReactNode;
   title?: string;
   helperText?: string;
   transparent?: boolean;
+  button?: IContentBlockButton
 };
 
 const ContentBlock = ({
@@ -13,11 +20,20 @@ const ContentBlock = ({
   title,
   transparent = false,
   helperText,
+  button
 }: Props) => {
   return (
     <>
-      {title ? <Text style={styles.header}>{title}</Text> : <></>}
-      {helperText ? <Text style={styles.helperText}>{helperText}</Text> : <></>}
+      <View style={styles.blockTopContainer}>
+        {title ? <Text style={styles.header}>{title}</Text> : <></>}
+        {helperText ? <Text style={styles.helperText}>{helperText}</Text> : <></>}
+        {button ?
+        <TouchableOpacity activeOpacity={0.8} onPress={button.action}>
+          <Text style={[styles.buttonText, button.size ? {fontSize: button.size} : {}]}>
+            {button?.text}
+          </Text>
+        </TouchableOpacity> : <></>}
+      </View>
       <View
         style={[
           styles.mainItem,
@@ -48,5 +64,16 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: 'gray',
+  },
+  buttonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#808080',
+  },
+  blockTopContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between'
   },
 });

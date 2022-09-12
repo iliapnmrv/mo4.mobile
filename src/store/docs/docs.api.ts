@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {SERVER_URL} from 'constants/constants';
-import { CatalogsNames, CatalogsResponse, IOwner, IPerson, IStatus, IStorage, IType } from 'types/docs/catalogs';
+import { CatalogsNames, IOwner, IPerson, IStatus, IStorage, IType } from 'types/docs/catalogs';
 import {IDoc} from 'types/docs/docs';
 
 export const docsApi = createApi({
@@ -39,8 +39,7 @@ export const {
   useLazyGetDocsItemQuery, 
   useGetOwnersQuery, 
   useGetPersonsQuery,
-  useGetStatusesQuery, 
-  useGetDocsItemQuery, 
+  useGetStatusesQuery,  
   useGetStoragesQuery, 
   useGetTypesQuery
 } = docsApi;

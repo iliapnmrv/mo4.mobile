@@ -1,9 +1,10 @@
 import {
   Dimensions,
   FlatList,
+  RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,8 +18,7 @@ import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {useActions} from 'hooks/actions';
 import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
-import { CatalogsNames } from 'types/docs/catalogs';
-import {Picker} from '@react-native-picker/picker';
+import Input from 'components/Inputs/Input';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Docs', 'MyStack'>;
 
@@ -29,27 +29,59 @@ const Docs = ({navigation}: Props) => {
 
   const {setDocsScan, setDocsHistory} = useActions();
 
-  const [getDoc, {isLoading, isError, data: docData, error}] =
-    useLazyGetDocsItemQuery();
+  const [getDoc, {isLoading, isError, data: docData, error, isFetching}] =
+    useLazyGetDocsItemQuery()    
   
-  const {data: statuses} = useGetStatusesQuery('');
-  const {data: persons} = useGetPersonsQuery('');
-  const {data: storages} = useGetStoragesQuery('');
-  const {data: owners} = useGetOwnersQuery('');
-  const {data: types} = useGetTypesQuery('');
+  const {data: statuses, refetch: refetchStatuses} = useGetStatusesQuery('');
+  const {data: persons, refetch: refetchPersons} = useGetPersonsQuery('');
+  const {data: storages, refetch: refetchStorages} = useGetStoragesQuery('');
+  const {data: owners, refetch: refetchOwners} = useGetOwnersQuery('');
+  const {data: types, refetch: refetchTypes} = useGetTypesQuery('');
 
-  console.log(types);
-
-  const [selectedLanguage, setSelectedLanguage] = useState();
   const [text, onChangeText] = useState("");
+  const [search, setSearch] = useState('')
   
 
   useEffect(() => {
     console.log('docsScan', docsScan);
+      // request here
   }, [docsScan]);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      console.log('search123', search)
+      // request here
+    }, 1500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [search])
+
+  const onPageReloadHandler = () => {
+    getDoc('')
+    refetchStatuses()
+    refetchPersons()
+    refetchStorages()
+    refetchOwners()
+    refetchTypes()
+  }
 
   return (
     <PageContainer>
+      <ScrollView
+        contentContainerStyle={{flex: 1}}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={onPageReloadHandler}
+          />
+        }
+      >
+      <Input
+        setValue={onChangeText}
+        value={text}
+        iconName='search'
+        placeholder='Поиск по номеру QR, названию...'
+      />
       <QRButton
         action={() =>
           navigation.navigate('Scanner', {
@@ -95,61 +127,17 @@ const Docs = ({navigation}: Props) => {
       </ContentBlock>
       {/* {docData ? ( */}
       {true ? (
-        <ContentBlock title="Изменить информацию">
-          <View></View>
-
-          <Picker
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }>
-            {types?.map((type, index)=>(
-              <Picker.Item key={index} label={type.type_name} value={type.type_id} />
-            ))}
-          </Picker>
-          <Picker
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }>
-            {owners?.map((owner, index)=>(
-              <Picker.Item key={index} label={owner.owner_name} value={owner.owner_id} />
-            ))}
-          </Picker>
-          <Picker
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }>
-            {storages?.map((storage, index)=>(
-              <Picker.Item key={index} label={storage.storage_name} value={storage.storage_id} />
-            ))}
-          </Picker>
-          <Picker
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }>
-            {persons?.map((person, index)=>(
-              <Picker.Item key={index} label={person.person_name} value={person.person_id} />
-            ))}
-          </Picker>
-          <Picker
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }>
-            {statuses?.map((status, index)=>(
-              <Picker.Item key={index} label={status.status_name} value={status.id} />
-            ))}
-          </Picker>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeText}
-            value={text}
-          />
-        </ContentBlock>
+        <>
+          <ContentBlock title="Анализ" button={{text: 'Обновить анализ', action: ()=>console.log}}>
+          </ContentBlock>
+            
+          <ContentBlock title="Информация">
+            
+         
+          </ContentBlock>
+        </>
       ) : null}
+      </ScrollView>
     </PageContainer>
   );
 };
