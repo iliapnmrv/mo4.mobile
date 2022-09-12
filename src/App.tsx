@@ -16,25 +16,19 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {Provider as PaperProvider} from 'react-native-paper';
 import SplashScreen from 'react-native-splash-screen';
 import Cartridges from './pages/Cartridges';
-import Inventory from 'pages/Inventory';
+import Inventory from 'pages/inventory/Inventory';
 import Docs from 'pages/docs/Docs';
 import PageHeader from 'components/PageHeader/PageHeader';
 import Home from 'pages/Home';
-<<<<<<< HEAD
-import InventoryStatus from 'pages/InventoryStatus';
-=======
+import InventoryStatus from 'pages/inventory/InventoryScans';
 import DocsEdit from 'pages/docs/DocsEdit';
->>>>>>> bad53ec9a8eca4deeba2ff3e08b06d2461b0d37b
 
 export type RootStackParamList = {
   HomeScreens: undefined;
   Cartridges: undefined;
   Inventory: undefined;
-  InsideInventory: undefined;
-  OverInventory: undefined;
-  NotInInventory: undefined;
-  InventoryStatus: undefined;
-  Docs: undefined;
+  InventoryScans: undefined;
+  InventoryStack: undefined;
   HomeTabs: undefined;
   Scanner: {setScan: (data: string) => void};
   Settings: undefined;
@@ -58,11 +52,10 @@ function HomeScreens() {
         }}
       />
       <HomeStack.Screen
-        name="Inventory"
-        component={Inventory}
+        name="InventoryStack"
+        component={InventoryStack}
         options={{
-          title: 'Инвентаризация',
-          header: props => <PageHeader {...props} />,
+          header: props => <></>,
         }}
       />
       <HomeStack.Screen
@@ -107,6 +100,30 @@ const DocsStack = () => {
         })}
       />
     </DocsNav.Navigator>
+  )
+}
+
+const InventoryStack = () => {
+  const InventoryNav = createNativeStackNavigator<RootStackParamList>();
+  return(
+    <InventoryNav.Navigator initialRouteName="Inventory">
+       <InventoryNav.Screen
+        name="Inventory"
+        component={Inventory}
+        options={{
+          title: 'Инвентаризация',
+          header: props => <PageHeader {...props} />,
+        }}
+      />
+      <InventoryNav.Screen
+        name="InventoryScans"
+        options={{
+          title: 'Сканирования',
+          header: props => <PageHeader {...props} />,
+        }}
+        component={InventoryStatus}
+      />
+    </InventoryNav.Navigator>
   )
 }
 
@@ -171,13 +188,6 @@ const App = () => {
                       headerShown: false,
                     }}
                     component={Scanner}
-                  />
-                  <RootStack.Screen
-                    name="InventoryStatus"
-                    options={{
-                      title: 'Статус',
-                    }}
-                    component={InventoryStatus}
                   />
                 </RootStack.Group>
               </RootStack.Navigator>

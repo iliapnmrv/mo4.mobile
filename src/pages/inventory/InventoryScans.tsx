@@ -41,6 +41,8 @@ const InventoryStatus = () => {
       const [{rows: findScanned}] = await db.executeSql(
         findScannedQuery(status),
       );
+      console.log(findScanned.raw(), status);
+      
       setScanned(findScanned.raw());
     } catch (e) {
       console.log(e);
@@ -49,7 +51,7 @@ const InventoryStatus = () => {
 
   return (
     <PageContainer>
-      <ContentBlock title="Статусы">
+      <ContentBlock title="Фильтр по статусам">
         <FlatList
           horizontal
           scrollEnabled={false}
@@ -64,46 +66,27 @@ const InventoryStatus = () => {
           )}
         />
       </ContentBlock>
-      <ContentBlock title="Таблица">
+      <ContentBlock>
         <View style={{height: '92%'}}>
           {scanned.length ? (
             <ScrollView horizontal>
               <DataTable>
-                <DataTable.Header
-                  style={{borderStyle: 'solid', borderWidth: 1}}>
-                  <View
-                    style={{
-                      width: 30,
-                      borderStyle: 'solid',
-                    }}>
-                    <DataTable.Title>№</DataTable.Title>
-                  </View>
-                  <FlatList
-                    data={tableTitle}
-                    scrollEnabled={false}
-                    horizontal
-                    renderItem={({item}) => (
-                      <View style={styles.table}>
-                        <DataTable.Title>{item}</DataTable.Title>
-                      </View>
-                    )}
-                    keyExtractor={(_, index) => index.toString()}
-                  />
+                <DataTable.Header>
+                  <DataTable.Title>Инвентарный номер</DataTable.Title>
+                  <DataTable.Title>Статус</DataTable.Title>
+                  <DataTable.Title>Имя</DataTable.Title>
+                  <DataTable.Title>Модель</DataTable.Title>
+                  <DataTable.Title>Серийный номер</DataTable.Title>
+                  <DataTable.Title>Место</DataTable.Title>
+                  <DataTable.Title>Trace</DataTable.Title>
                 </DataTable.Header>
                 <FlatList
                   data={scanned}
                   renderItem={({item}) => (
                     <DataTable.Row
-                      style={{borderStyle: 'solid', borderWidth: 1}}>
-                      <View
-                        style={{
-                          borderStyle: 'solid',
-                          width: 30,
-                        }}>
+                      style={{borderStyle: 'solid'}}>
+                      <View>
                         <DataTable.Cell>{item.inventoryNum}</DataTable.Cell>
-                      </View>
-                      <View style={styles.table}>
-                        <DataTable.Cell>{item.name}</DataTable.Cell>
                       </View>
                       <View style={styles.table}>
                         <DataTable.Cell>
@@ -111,15 +94,18 @@ const InventoryStatus = () => {
                             switch (item.status) {
                               case 1:
                                 return <Text>В учете</Text>;
-                              case 2:
-                                return <Text>Сверх учета</Text>;
                               case 3:
+                                return <Text>Сверх учета</Text>;
+                              case 2:
                                 return <Text>Не в учете</Text>;
                               default:
                                 null;
                             }
                           })()}
                         </DataTable.Cell>
+                      </View>
+                      <View style={styles.table}>
+                        <DataTable.Cell>{item.name}</DataTable.Cell>
                       </View>
                       <View style={styles.table}>
                         <DataTable.Cell>{item.model}</DataTable.Cell>
@@ -137,14 +123,7 @@ const InventoryStatus = () => {
                           </View>
                         </>
                       ) : (
-                        <>
-                          <View style={styles.table}>
-                            <DataTable.Cell>{null}</DataTable.Cell>
-                          </View>
-                          <View style={styles.table}>
-                            <DataTable.Cell>{null}</DataTable.Cell>
-                          </View>
-                        </>
+                        null
                       )}
                     </DataTable.Row>
                   )}
@@ -153,11 +132,9 @@ const InventoryStatus = () => {
               </DataTable>
             </ScrollView>
           ) : (
-            <ContentBlock>
               <View style={{alignItems: 'center'}}>
                 <Text>Данные отсутствуют</Text>
               </View>
-            </ContentBlock>
           )}
         </View>
       </ContentBlock>
@@ -173,10 +150,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   table: {
-    borderLeftWidth: 1,
-    borderStyle: 'solid',
-    width: 160,
-    height: 60,
-    alignItems: 'center',
+    // borderLeftWidth: 1,
+    // borderStyle: 'solid',
+    // maxWidth: 200,
+    // height: 60,
+    
+    paddingHorizontal: 10,
+    paddingVertical: 0,
+    display: 'flex',
+    alignItems: 'flex-start',
   },
 });

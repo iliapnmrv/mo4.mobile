@@ -43,7 +43,7 @@ export default function PageHeader({options, back}: Props) {
     <View style={styles.header}>
       {back ? (
         //@ts-ignore
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={30} />
         </TouchableOpacity>
       ) : null}

@@ -24,7 +24,7 @@ const Screens: IHomeItem[] = [
     id: '1',
     title: 'Инвентаризация',
     icon: 'md-list-outline',
-    path: 'Inventory',
+    path: 'InventoryStack',
   },
   {
     id: '2',
