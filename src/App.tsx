@@ -20,6 +20,7 @@ import Inventory from 'pages/Inventory';
 import Docs from 'pages/Docs';
 import PageHeader from 'components/PageHeader/PageHeader';
 import Home from 'pages/Home';
+import InventoryStatus from 'pages/InventoryStatus';
 
 export type RootStackParamList = {
   HomeScreens: undefined;
@@ -28,6 +29,7 @@ export type RootStackParamList = {
   InsideInventory: undefined;
   OverInventory: undefined;
   NotInInventory: undefined;
+  InventoryStatus: undefined;
   Docs: undefined;
   HomeTabs: undefined;
   Scanner: {setScan: (data: string) => void};
@@ -137,6 +139,13 @@ const App = () => {
                       headerShown: false,
                     }}
                     component={Scanner}
+                  />
+                  <RootStack.Screen
+                    name="InventoryStatus"
+                    options={{
+                      title: 'Статус',
+                    }}
+                    component={InventoryStatus}
                   />
                 </RootStack.Group>
               </RootStack.Navigator>

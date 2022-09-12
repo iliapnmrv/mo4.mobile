@@ -245,6 +245,16 @@ const Inventory = ({navigation}: Props) => {
 
   return (
     <PageContainer>
+      {date ? (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('InventoryStatus')}
+          activeOpacity={0.7}>
+          <ContentBlock>
+            <Text>Все статусы</Text>
+          </ContentBlock>
+        </TouchableOpacity>
+      ) : null}
+
       <ContentBlock>
         <View style={styles.inventoryInfoContainer}>
           <Text>
