@@ -19,7 +19,7 @@ let db: SQLiteDatabase;
 enablePromise(true);
 
 const InventoryStatus = () => {
-  const [status, setStatus] = useState<number | undefined>();
+  const [status, setStatus] = useState<number | undefined>(0);
   const [scanned, setScanned] = useState<IScanned[]>([]);
   useEffect(() => {
     const openDB = async () => {
@@ -51,10 +51,28 @@ const InventoryStatus = () => {
           data={btnStatus}
           renderItem={({item}) => (
             <TouchableOpacity
-              style={{marginHorizontal: 12}}
+              style={
+                item.id === status
+                  ? {
+                      backgroundColor: '#808080',
+                      marginHorizontal: 12,
+                      borderRadius: 4,
+                      paddingHorizontal: 2,
+                    }
+                  : {
+                      marginHorizontal: 12,
+                    }
+              }
               key={item.id}
               onPress={() => setStatus(item.id)}>
-              <Text style={styles.btnText}>{item.title}</Text>
+              <Text
+                style={
+                  item.id === status
+                    ? {color: 'white', fontWeight: 'bold', fontSize: 16}
+                    : {fontWeight: 'bold', fontSize: 16}
+                }>
+                {item.title}
+              </Text>
             </TouchableOpacity>
           )}
         />
