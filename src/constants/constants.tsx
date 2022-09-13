@@ -29,18 +29,22 @@ export const btnStatus = [
   {
     id: 0,
     title: 'Все',
+    hover: false,
   },
   {
     id: 1,
     title: 'В учете',
+    hover: false,
   },
   {
     id: 2,
     title: 'Не в учете',
+    hover: false,
   },
   {
     id: 3,
     title: 'Сверх учета',
+    hover: false,
   },
 ];
 

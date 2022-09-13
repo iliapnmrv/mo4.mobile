@@ -1,11 +1,4 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  YellowBox,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, View, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   enablePromise,
@@ -15,7 +8,7 @@ import {
 import {findScannedQuery} from 'utils/inventoryQueries';
 import {IScanned} from 'types/inventory';
 import PageContainer from 'components/PageContainer/PageContainer';
-import {btnStatus, tableTitle} from 'constants/constants';
+import {btnStatus} from 'constants/constants';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
@@ -42,7 +35,7 @@ const InventoryStatus = () => {
         findScannedQuery(status),
       );
       console.log(findScanned.raw(), status);
-      
+
       setScanned(findScanned.raw());
     } catch (e) {
       console.log(e);
@@ -72,69 +65,82 @@ const InventoryStatus = () => {
             <ScrollView horizontal>
               <DataTable>
                 <DataTable.Header>
-                  <DataTable.Title>Инвентарный номер</DataTable.Title>
-                  <DataTable.Title>Статус</DataTable.Title>
-                  <DataTable.Title>Имя</DataTable.Title>
-                  <DataTable.Title>Модель</DataTable.Title>
-                  <DataTable.Title>Серийный номер</DataTable.Title>
-                  <DataTable.Title>Место</DataTable.Title>
-                  <DataTable.Title>Trace</DataTable.Title>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>Инвентарный номер</DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>Статус</DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>Имя</DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>Модель</DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>Серийный номер</DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>Место</DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>Trace</DataTable.Title>
+                  </View>
                 </DataTable.Header>
                 <FlatList
                   data={scanned}
                   renderItem={({item}) => (
-                    <DataTable.Row
-                      style={{borderStyle: 'solid'}}>
-                      <View>
-                        <DataTable.Cell>{item.inventoryNum}</DataTable.Cell>
+                    <View
+                      style={{
+                        borderStyle: 'solid',
+                        flexDirection: 'row',
+                      }}>
+                      <View style={styles.table}>
+                        <Text>{item.inventoryNum}</Text>
                       </View>
                       <View style={styles.table}>
-                        <DataTable.Cell>
-                          {(() => {
-                            switch (item.status) {
-                              case 1:
-                                return <Text>В учете</Text>;
-                              case 3:
-                                return <Text>Сверх учета</Text>;
-                              case 2:
-                                return <Text>Не в учете</Text>;
-                              default:
-                                null;
-                            }
-                          })()}
-                        </DataTable.Cell>
+                        {item.status === 1 && <Text>В учете</Text>}
+                        {item.status === 2 && <Text>Не в учете</Text>}
+                        {item.status === 3 && <Text>Сверх учета</Text>}
                       </View>
                       <View style={styles.table}>
-                        <DataTable.Cell>{item.name}</DataTable.Cell>
+                        <Text>{item.name}</Text>
                       </View>
                       <View style={styles.table}>
-                        <DataTable.Cell>{item.model}</DataTable.Cell>
+                        <Text>{item.model}</Text>
                       </View>
                       <View style={styles.table}>
-                        <DataTable.Cell>{item.serialNum}</DataTable.Cell>
+                        <Text>{item.serialNum}</Text>
                       </View>
                       {item.position != null ? (
                         <>
                           <View style={styles.table}>
-                            <DataTable.Cell>{item!.place}</DataTable.Cell>
+                            <Text>{item!.place}</Text>
                           </View>
                           <View style={styles.table}>
-                            <DataTable.Cell>{item!.trace}</DataTable.Cell>
+                            <Text>{item!.trace}</Text>
                           </View>
                         </>
                       ) : (
-                        null
+                        <>
+                          <View style={styles.table}>
+                            <Text>{null}</Text>
+                          </View>
+                          <View style={styles.table}>
+                            <Text>{null}</Text>
+                          </View>
+                        </>
                       )}
-                    </DataTable.Row>
+                    </View>
                   )}
                   keyExtractor={(_, index) => index.toString()}
                 />
               </DataTable>
             </ScrollView>
           ) : (
-              <View style={{alignItems: 'center'}}>
-                <Text>Данные отсутствуют</Text>
-              </View>
+            <View style={{alignItems: 'center'}}>
+              <Text>Данные отсутствуют</Text>
+            </View>
           )}
         </View>
       </ContentBlock>
@@ -150,14 +156,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   table: {
-    // borderLeftWidth: 1,
-    // borderStyle: 'solid',
-    // maxWidth: 200,
-    // height: 60,
-    
     paddingHorizontal: 10,
     paddingVertical: 0,
     display: 'flex',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    borderBottomColor: '#DCDCDC',
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
+    width: 160,
+    minHeight: 30,
+  },
+  tableHeader: {
+    paddingRight: 35,
+    paddingVertical: 0,
+    display: 'flex',
+    alignItems: 'center',
+    width: 160,
   },
 });
