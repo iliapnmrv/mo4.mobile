@@ -35,7 +35,6 @@ const InventoryStatus = () => {
         findScannedQuery(status),
       );
       console.log(findScanned.raw(), status);
-
       setScanned(findScanned.raw());
     } catch (e) {
       console.log(e);
@@ -49,21 +48,14 @@ const InventoryStatus = () => {
           horizontal
           scrollEnabled={false}
           data={btnStatus}
+          showsHorizontalScrollIndicator={false}
           renderItem={({item}) => (
             <TouchableOpacity
               style={
                 item.id === status
-                  ? {
-                      backgroundColor: '#808080',
-                      marginHorizontal: 12,
-                      borderRadius: 4,
-                      paddingHorizontal: 2,
-                    }
-                  : {
-                      marginHorizontal: 12,
-                    }
+                  ? styles.btnTextActive
+                  : styles.btnTextNotActive
               }
-              key={item.id}
               onPress={() => setStatus(item.id)}>
               <Text
                 style={
@@ -78,7 +70,7 @@ const InventoryStatus = () => {
         />
       </ContentBlock>
       <ContentBlock>
-        <View style={{height: '92%'}}>
+        <View style={{height: '100%'}}>
           {scanned.length ? (
             <ScrollView horizontal>
               <DataTable>
@@ -110,16 +102,17 @@ const InventoryStatus = () => {
                   renderItem={({item}) => (
                     <View
                       style={{
-                        borderStyle: 'solid',
                         flexDirection: 'row',
+                        borderBottomColor: '#DCDCDC',
+                        borderBottomWidth: 1,
                       }}>
                       <View style={styles.table}>
                         <Text>{item.inventoryNum}</Text>
                       </View>
                       <View style={styles.table}>
-                        {item.status === 1 && <Text>В учете</Text>}
-                        {item.status === 2 && <Text>Не в учете</Text>}
-                        {item.status === 3 && <Text>Сверх учета</Text>}
+                        {(item.status === 1 && <Text>В учете</Text>) ||
+                          (item.status === 2 && <Text>Не в учете</Text>) ||
+                          (item.status === 3 && <Text>Сверх учета</Text>)}
                       </View>
                       <View style={styles.table}>
                         <Text>{item.name}</Text>
@@ -139,16 +132,7 @@ const InventoryStatus = () => {
                             <Text>{item!.trace}</Text>
                           </View>
                         </>
-                      ) : (
-                        <>
-                          <View style={styles.table}>
-                            <Text>{null}</Text>
-                          </View>
-                          <View style={styles.table}>
-                            <Text>{null}</Text>
-                          </View>
-                        </>
-                      )}
+                      ) : null}
                     </View>
                   )}
                   keyExtractor={(_, index) => index.toString()}
@@ -169,25 +153,24 @@ const InventoryStatus = () => {
 export default InventoryStatus;
 
 const styles = StyleSheet.create({
-  btnText: {
-    fontWeight: 'bold',
-    fontSize: 16,
+  btnTextActive: {
+    backgroundColor: '#808080',
+    marginHorizontal: 12,
+    borderRadius: 4,
+    paddingHorizontal: 2,
+  },
+  btnTextNotActive: {
+    marginHorizontal: 12,
   },
   table: {
     paddingHorizontal: 10,
-    paddingVertical: 0,
-    display: 'flex',
     alignItems: 'center',
-    borderBottomColor: '#DCDCDC',
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
+    justifyContent: 'center',
     width: 160,
-    minHeight: 30,
+    minHeight: 35,
   },
   tableHeader: {
     paddingRight: 35,
-    paddingVertical: 0,
-    display: 'flex',
     alignItems: 'center',
     width: 160,
   },
