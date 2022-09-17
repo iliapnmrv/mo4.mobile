@@ -2,7 +2,6 @@ import {
   Alert,
   Dimensions,
   FlatList,
-  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -11,7 +10,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from 'App';
+import {InventoryParamList, RootStackParamList} from 'App';
 import {useAppSelector} from 'hooks/redux';
 import moment from 'moment';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
@@ -23,13 +22,12 @@ import {
 } from 'react-native-sqlite-storage';
 import {
   inventoryApi,
-  useGetInventoryQuery,
+  useLazyGetInventoryQuery,
+  useUploadInventoryMutation,
 } from 'store/inventory/inventory.api';
 import {
   createInventoryQuery,
   createScannedQuery,
-  dropInventoryQuery,
-  dropScannedQuery,
   insertInventoryQuery,
   isScannedItemQuery,
   addScannedItemQuery,
@@ -37,10 +35,11 @@ import {
   findByNameQuery,
   findLastScannedQuery,
   findUpdatedRow,
+  findScannedQuery,
 } from 'utils/inventoryQueries';
 import Snackbar from 'react-native-snackbar';
-import {IInventory, IScanned} from 'types/inventory';
-import {inventorySampleData, scanResultModalColors} from 'constants/constants';
+import {IScanned} from 'types/inventory';
+import {scanResultModalColors} from 'constants/constants';
 import ScanResultModal, {
   ScanModalProps,
 } from 'components/Inventory/ScanResultModal';
@@ -48,16 +47,23 @@ import {useActions} from 'hooks/actions';
 import PageContainer from 'components/PageContainer/PageContainer';
 import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
 import Button from 'components/Buttons/Button';
+import {CompositeScreenProps} from '@react-navigation/native';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Inventory', 'MyStack'>;
+type InventoryScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<InventoryParamList, 'Inventory', 'MyStack'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 let db: SQLiteDatabase;
 
 //важная часть для работы бд с промисами
 enablePromise(true);
 
-const Inventory = ({navigation}: Props) => {
+const Inventory = ({navigation}: InventoryScreenProps) => {
   const [getInventory, {isLoading, isError, data: inventoryData, error}] =
-    inventoryApi.useLazyGetInventoryQuery();
+    useLazyGetInventoryQuery();
+
+  const [uploadInventory, {data: uploadResult, error: uploadError}] =
+    useUploadInventoryMutation();
 
   const {inventoryScan} = useAppSelector(state => state.scan);
   const {date} = useAppSelector(state => state.inventory);
@@ -111,10 +117,19 @@ const Inventory = ({navigation}: Props) => {
 
   const closeInventory = async () => {
     try {
-      setInventoryDate(undefined);
-      setInventoryScan('');
-      await db.executeSql(dropInventoryQuery);
-      await db.executeSql(dropScannedQuery);
+      const [{rows: inventoryResult}] = await db.executeSql(
+        findScannedQuery(undefined),
+      );
+      console.log(inventoryResult.raw());
+
+      await uploadInventory(inventoryResult.raw());
+
+      console.log('uploadResult', uploadResult, uploadError);
+
+      // setInventoryDate(undefined);
+      // setInventoryScan('');
+      // await db.executeSql(dropInventoryQuery);
+      // await db.executeSql(dropScannedQuery);
       Snackbar.show({
         text: `Инвентаризация успешно закрыта`,
         duration: Snackbar.LENGTH_LONG,
@@ -245,12 +260,12 @@ const Inventory = ({navigation}: Props) => {
 
   return (
     <PageContainer>
-      <ContentBlock button={{
-        text: "Все сканирования", 
-        action: ()=> navigation.navigate('InventoryScans'),
-        size: 21
-      }}
-      >
+      <ContentBlock
+        button={{
+          text: 'Все сканирования',
+          action: () => navigation.navigate('InventoryScans'),
+          size: 21,
+        }}>
         <View style={styles.inventoryInfoContainer}>
           <Text>
             {date

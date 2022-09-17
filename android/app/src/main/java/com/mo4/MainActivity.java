@@ -3,6 +3,7 @@ package com.mo4;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
+import org.devio.rn.splashscreen.SplashScreen; // here
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 

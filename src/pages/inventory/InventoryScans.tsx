@@ -32,11 +32,10 @@ const InventoryStatus = () => {
 
   const getStatusInventory = async () => {
     try {
-      const [{rows: findScanned}] = await db.executeSql(
+      const [{rows: foundScanned}] = await db.executeSql(
         findScannedQuery(status),
       );
-      console.log(findScanned.raw(), status);
-      setScanned(findScanned.raw());
+      setScanned(foundScanned.raw());
     } catch (e) {
       console.log(e);
     }
@@ -44,7 +43,9 @@ const InventoryStatus = () => {
 
   return (
     <PageContainer>
-      <ContentBlock title="Фильтр по статусам">
+      <ContentBlock
+        title="Фильтр по статусам"
+        helperText={`Количество сканирований: ${scanned.length}`}>
         <FlatList
           horizontal
           scrollEnabled={true}

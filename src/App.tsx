@@ -1,6 +1,9 @@
 import 'react-native-gesture-handler';
 import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  NavigatorScreenParams,
+} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createStackNavigator} from '@react-navigation/stack';
 import Scanner from './pages/Scanner';
@@ -26,20 +29,26 @@ import DocsEdit from 'pages/docs/DocsEdit';
 export type RootStackParamList = {
   HomeScreens: undefined;
   Cartridges: undefined;
-  Inventory: undefined;
-  InventoryScans: undefined;
-  InventoryStack: undefined;
+  InventoryStack: NavigatorScreenParams<InventoryParamList>;
   HomeTabs: undefined;
   Scanner: {setScan: (data: string) => void};
   Settings: undefined;
   Home: undefined;
-  DocsEdit: {id: number, title: string};
-  DocsStack: undefined;
+  DocsStack: NavigatorScreenParams<DocsParamList>;
+};
+
+export type InventoryParamList = {
+  Inventory: undefined;
+  InventoryScans: undefined;
+};
+
+export type DocsParamList = {
   Docs: undefined;
+  DocsEdit: {id: number; title: string};
 };
 
 function HomeScreens() {
-  const HomeStack = createNativeStackNavigator<RootStackParamList>();
+  const HomeStack = createStackNavigator<RootStackParamList>();
 
   return (
     <HomeStack.Navigator initialRouteName="Home">
@@ -79,8 +88,8 @@ function HomeScreens() {
 }
 
 const DocsStack = () => {
-  const DocsNav = createNativeStackNavigator<RootStackParamList>();
-  return(
+  const DocsNav = createStackNavigator<DocsParamList>();
+  return (
     <DocsNav.Navigator initialRouteName="Docs">
       <DocsNav.Screen
         name="Docs"
@@ -94,20 +103,20 @@ const DocsStack = () => {
       <DocsNav.Screen
         name="DocsEdit"
         component={DocsEdit}
-        options={({route})=>({
+        options={({route}) => ({
           title: route.params.title,
           header: props => <PageHeader {...props} />,
         })}
       />
     </DocsNav.Navigator>
-  )
-}
+  );
+};
 
 const InventoryStack = () => {
-  const InventoryNav = createNativeStackNavigator<RootStackParamList>();
-  return(
+  const InventoryNav = createStackNavigator<InventoryParamList>();
+  return (
     <InventoryNav.Navigator initialRouteName="Inventory">
-       <InventoryNav.Screen
+      <InventoryNav.Screen
         name="Inventory"
         component={Inventory}
         options={{
@@ -124,8 +133,8 @@ const InventoryStack = () => {
         component={InventoryStatus}
       />
     </InventoryNav.Navigator>
-  )
-}
+  );
+};
 
 const Tabs = () => {
   const Tab = createBottomTabNavigator<RootStackParamList>();
