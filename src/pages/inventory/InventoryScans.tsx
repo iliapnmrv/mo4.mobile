@@ -12,6 +12,7 @@ import {btnStatus} from 'constants/constants';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
+import {COLORS} from 'constants/colors';
 
 let db: SQLiteDatabase;
 
@@ -46,16 +47,18 @@ const InventoryStatus = () => {
       <ContentBlock title="Фильтр по статусам">
         <FlatList
           horizontal
-          scrollEnabled={false}
+          scrollEnabled={true}
           data={btnStatus}
+          contentContainerStyle={{display: 'flex', alignItems: 'baseline'}}
           showsHorizontalScrollIndicator={false}
           renderItem={({item}) => (
             <TouchableOpacity
-              style={
+              style={[
+                styles.filterButton,
                 item.id === status
                   ? styles.btnTextActive
-                  : styles.btnTextNotActive
-              }
+                  : styles.btnTextNotActive,
+              ]}
               onPress={() => setStatus(item.id)}>
               <Text
                 style={
@@ -154,13 +157,14 @@ export default InventoryStatus;
 
 const styles = StyleSheet.create({
   btnTextActive: {
-    backgroundColor: '#808080',
-    marginHorizontal: 12,
+    backgroundColor: COLORS.lightBlue,
     borderRadius: 4,
-    paddingHorizontal: 2,
   },
-  btnTextNotActive: {
-    marginHorizontal: 12,
+  btnTextNotActive: {},
+  filterButton: {
+    marginHorizontal: 5,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
   },
   table: {
     paddingHorizontal: 10,

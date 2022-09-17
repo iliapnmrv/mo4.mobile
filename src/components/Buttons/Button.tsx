@@ -1,5 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {COLORS} from 'constants/colors';
 
 type Props = {
   text: string;
@@ -30,19 +31,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#80a3ff',
     borderRadius: 3,
   },
-  secondary: {
-    borderColor: '#8870ff',
-    borderWidth: 1,
-    borderRadius: 8,
-    backgroundColor: 'white',
-  },
+
   text: {
     textAlign: 'center',
   },
   primaryText: {
     color: 'white',
   },
+  secondary: {
+    borderColor: COLORS.lightBlue,
+    borderWidth: 1,
+    borderRadius: 8,
+    backgroundColor: 'white',
+  },
   secondaryText: {
-    color: '#8870ff',
+    color: COLORS.lightBlue,
+    fontWeight: '500',
   },
 });
