@@ -8,15 +8,17 @@ import {
 } from 'react-native';
 import React from 'react';
 import HomePageItem from 'components/HomePage/HomePageItem';
-import {RootStackParamList} from 'App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import PageContainer from 'components/PageContainer/PageContainer';
+import {RootStackParamList} from 'navigation/Navigation';
+import {HomeScreensParamList} from 'navigation/Home/Home';
+import {CompositeScreenProps} from '@react-navigation/native';
 
 export type IHomeItem = {
   id: string;
   title: string;
   icon: string;
-  path: keyof RootStackParamList;
+  path: keyof HomeScreensParamList;
 };
 
 const Screens: IHomeItem[] = [
@@ -35,9 +37,12 @@ const Screens: IHomeItem[] = [
   {id: '3', title: 'Картриджи', icon: 'md-print-outline', path: 'Cartridges'},
 ];
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home', 'MyStack'>;
+type HomeScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreensParamList, 'Home', 'MyStack'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 
-const Home = ({navigation}: Props) => {
+const Home = ({navigation}: HomeScreenProps) => {
   return (
     <PageContainer>
       <Text style={styles.welcomeText}>Добро пожаловать!</Text>

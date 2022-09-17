@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {RootStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import QRButton from '../components/Buttons/QRButton';
 import {useAppSelector} from '../hooks/redux';
@@ -26,19 +25,20 @@ import {Snackbar} from 'react-native-paper';
 import {store} from '../store/store';
 import PageContainer from 'components/PageContainer/PageContainer';
 import {useActions} from 'hooks/actions';
+import {CompositeScreenProps} from '@react-navigation/native';
+import {HomeScreensParamList} from 'navigation/Home/Home';
+import {RootStackParamList} from 'navigation/Navigation';
 moment.locale('ru');
 
-type Props = NativeStackScreenProps<
-  RootStackParamList,
-  'Cartridges',
-  'MyStack'
+type CartridgeScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreensParamList, 'Cartridges', 'MyStack'>,
+  NativeStackScreenProps<RootStackParamList>
 >;
-
 type IFindByName = {
   findByName: ICartridge;
 };
 
-const Cartridges = ({navigation}: Props) => {
+const Cartridges = ({navigation}: CartridgeScreenProps) => {
   const [
     executeFindByName,
     {data: cartridge, loading: findByNameLoading, error: findByNameError},

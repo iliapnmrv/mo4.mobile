@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {InventoryParamList, RootStackParamList} from 'App';
 import {useAppSelector} from 'hooks/redux';
 import moment from 'moment';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
@@ -48,6 +47,8 @@ import PageContainer from 'components/PageContainer/PageContainer';
 import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
 import Button from 'components/Buttons/Button';
 import {CompositeScreenProps} from '@react-navigation/native';
+import {RootStackParamList} from 'navigation/Navigation';
+import {InventoryParamList} from 'navigation/Home/Inventory';
 
 type InventoryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<InventoryParamList, 'Inventory', 'MyStack'>,

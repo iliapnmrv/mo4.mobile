@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {DocsParamList, RootStackParamList} from 'App';
 import QRButton from 'components/Buttons/QRButton';
 import {useAppSelector} from 'hooks/redux';
 import {
@@ -27,6 +26,8 @@ import {useActions} from 'hooks/actions';
 import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
 import Input from 'components/Inputs/Input';
 import {CompositeScreenProps} from '@react-navigation/native';
+import {RootStackParamList} from 'navigation/Navigation';
+import {DocsParamList} from 'navigation/Home/Docs';
 
 type DocsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DocsParamList, 'Docs', 'MyStack'>,
