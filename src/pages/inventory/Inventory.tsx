@@ -35,6 +35,8 @@ import {
   findLastScannedQuery,
   findUpdatedRow,
   findScannedQuery,
+  dropScannedQuery,
+  dropInventoryQuery,
 } from 'utils/inventoryQueries';
 import Snackbar from 'react-native-snackbar';
 import {IScanned} from 'types/inventory';
@@ -49,6 +51,7 @@ import Button from 'components/Buttons/Button';
 import {CompositeScreenProps} from '@react-navigation/native';
 import {RootStackParamList} from 'navigation/Navigation';
 import {InventoryParamList} from 'navigation/Home/Inventory';
+import {COLORS} from 'constants/colors';
 
 type InventoryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<InventoryParamList, 'Inventory', 'MyStack'>,
@@ -127,10 +130,10 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
 
       console.log('uploadResult', uploadResult, uploadError);
 
-      // setInventoryDate(undefined);
-      // setInventoryScan('');
-      // await db.executeSql(dropInventoryQuery);
-      // await db.executeSql(dropScannedQuery);
+      setInventoryDate(undefined);
+      setInventoryScan('');
+      await db.executeSql(dropInventoryQuery);
+      await db.executeSql(dropScannedQuery);
       Snackbar.show({
         text: `Инвентаризация успешно закрыта`,
         duration: Snackbar.LENGTH_LONG,
@@ -268,7 +271,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
           size: 21,
         }}>
         <View style={styles.inventoryInfoContainer}>
-          <Text>
+          <Text style={{color: COLORS.black}}>
             {date
               ? `Инвентаризация открыта ${moment(date).format('L')}`
               : 'Инвентаризация не открыта'}
@@ -279,6 +282,8 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
               width: 50,
               height: 20,
             }}
+            trackColor={{false: COLORS.lightgray, true: '#add8e6'}}
+            thumbColor={COLORS.lightBlue}
             ios_backgroundColor="#3e3e3e"
             onValueChange={switchInventory}
             value={Boolean(date)}
@@ -338,7 +343,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
           {inventoryScan ? (
             <>
               <ContentBlock title={'Сканирование'}>
-                <Text>{inventoryScan}</Text>
+                <Text style={{color: COLORS.black}}>{inventoryScan}</Text>
               </ContentBlock>
               <Button
                 type="secondary"
@@ -347,12 +352,14 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
               />
             </>
           ) : (
-            <Text>Отсканируйте QR, чтобы получить информацию</Text>
+            <Text style={{color: COLORS.black}}>
+              Отсканируйте QR, чтобы получить информацию
+            </Text>
           )}
         </View>
       ) : (
         <ContentBlock>
-          <Text style={styles.inventoryText}>
+          <Text style={[styles.inventoryText, {color: COLORS.black}]}>
             Для начала работы откройте инвентаризационную сессию
           </Text>
         </ContentBlock>

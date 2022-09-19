@@ -1,5 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {ReactNode} from 'react';
+import {COLORS} from 'constants/colors';
 
 type IContentBlockButton = {
   text: string | ReactNode;
@@ -26,9 +27,15 @@ const ContentBlock = ({
     <>
       <View style={styles.blockTopContainer}>
         <View>
-          {title ? <Text style={styles.header}>{title}</Text> : <></>}
+          {title ? (
+            <Text style={[styles.header, {color: COLORS.black}]}>{title}</Text>
+          ) : (
+            <></>
+          )}
           {helperText ? (
-            <Text style={styles.helperText}>{helperText}</Text>
+            <Text style={[styles.helperText, {color: COLORS.black}]}>
+              {helperText}
+            </Text>
           ) : (
             <></>
           )}

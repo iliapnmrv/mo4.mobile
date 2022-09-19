@@ -9,12 +9,12 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../App';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import CustomMarker from 'components/CustomMarker/CustomMarker';
 import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
+import {RootStackParamList} from 'navigation/Navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Scanner', 'MyStack'>;
 
@@ -44,7 +44,7 @@ const Scanner = ({navigation, route}: Props) => {
       <StatusBar hidden={true} />
       <QRCodeScanner
         onRead={onSuccess}
-        flashMode={RNCamera.Constants.FlashMode.torch}
+        // flashMode={RNCamera.Constants.FlashMode.torch}
         showMarker
         customMarker={<CustomMarker />}
         containerStyle={{height: '100%', width: '100%'}}

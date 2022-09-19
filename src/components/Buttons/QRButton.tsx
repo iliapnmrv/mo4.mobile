@@ -1,6 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {COLORS} from 'constants/colors';
 
 type Props = {
   action: Function;
@@ -38,6 +39,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '400',
     marginLeft: 10,
-    // color: '#80a3ff',
+    color: COLORS.black,
   },
 });

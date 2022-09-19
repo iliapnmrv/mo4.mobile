@@ -65,7 +65,7 @@ const InventoryStatus = () => {
                 style={
                   item.id === status
                     ? {color: 'white', fontWeight: 'bold', fontSize: 16}
-                    : {fontWeight: 'bold', fontSize: 16}
+                    : {fontWeight: 'bold', fontSize: 16, color: COLORS.black}
                 }>
                 {item.title}
               </Text>
@@ -103,37 +103,48 @@ const InventoryStatus = () => {
                 </DataTable.Header>
                 <FlatList
                   data={scanned}
-                  renderItem={({item}) => (
+                  renderItem={({item, index}) => (
                     <View
                       style={{
                         flexDirection: 'row',
                         borderBottomColor: '#DCDCDC',
                         borderBottomWidth: 1,
                       }}>
-                      <View style={styles.table}>
-                        <Text>{item.inventoryNum}</Text>
+                      <View style={[styles.table, {width: 40}]}>
+                        <Text style={styles.tableText}>{index + 1}</Text>
                       </View>
                       <View style={styles.table}>
-                        {(item.status === 1 && <Text>В учете</Text>) ||
-                          (item.status === 2 && <Text>Не в учете</Text>) ||
-                          (item.status === 3 && <Text>Сверх учета</Text>)}
+                        <Text style={styles.tableText}>
+                          {item.inventoryNum}
+                        </Text>
                       </View>
                       <View style={styles.table}>
-                        <Text>{item.name}</Text>
+                        {(item.status === 1 && (
+                          <Text style={styles.tableText}>В учете</Text>
+                        )) ||
+                          (item.status === 2 && (
+                            <Text style={styles.tableText}>Не в учете</Text>
+                          )) ||
+                          (item.status === 3 && (
+                            <Text style={styles.tableText}>Сверх учета</Text>
+                          ))}
                       </View>
                       <View style={styles.table}>
-                        <Text>{item.model}</Text>
+                        <Text style={styles.tableText}>{item.name}</Text>
                       </View>
                       <View style={styles.table}>
-                        <Text>{item.serialNum}</Text>
+                        <Text style={styles.tableText}>{item.model}</Text>
+                      </View>
+                      <View style={styles.table}>
+                        <Text style={styles.tableText}>{item.serialNum}</Text>
                       </View>
                       {item.position != null ? (
                         <>
                           <View style={styles.table}>
-                            <Text>{item!.place}</Text>
+                            <Text style={styles.tableText}>{item!.place}</Text>
                           </View>
                           <View style={styles.table}>
-                            <Text>{item!.trace}</Text>
+                            <Text style={styles.tableText}>{item!.trace}</Text>
                           </View>
                         </>
                       ) : null}
@@ -168,15 +179,19 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   table: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 160,
+    width: 140,
     minHeight: 35,
+  },
+  tableText: {
+    color: COLORS.black,
   },
   tableHeader: {
     paddingRight: 35,
     alignItems: 'center',
     width: 160,
+    color: COLORS.darkgray,
   },
 });

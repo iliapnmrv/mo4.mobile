@@ -13,6 +13,7 @@ import PageContainer from 'components/PageContainer/PageContainer';
 import {RootStackParamList} from 'navigation/Navigation';
 import {HomeScreensParamList} from 'navigation/Home/Home';
 import {CompositeScreenProps} from '@react-navigation/native';
+import {COLORS} from 'constants/colors';
 
 export type IHomeItem = {
   id: string;
@@ -62,5 +63,6 @@ export default Home;
 const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 22,
+    color: COLORS.black,
   },
 });

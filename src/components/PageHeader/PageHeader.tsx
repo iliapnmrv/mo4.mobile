@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import type {ParamListBase} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
+import {COLORS} from 'constants/colors';
 
 type BottomTabNavigationOptions = {
   /**
@@ -44,7 +45,7 @@ export default function PageHeader({options, back}: Props) {
       {back ? (
         //@ts-ignore
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={30} />
+          <Icon name="arrow-back" color={COLORS.black} size={30} />
         </TouchableOpacity>
       ) : null}
       <Text style={styles.headerText}>{options.title}</Text>

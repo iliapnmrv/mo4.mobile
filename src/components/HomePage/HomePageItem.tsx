@@ -13,7 +13,7 @@ const HomePageItem = ({item}: Props) => {
 
   return (
     <TouchableOpacity
-      activeOpacity={0.7}
+      activeOpacity={0.55}
       style={styles.itemContainer}
       //@ts-ignore
       onPress={() => navigation.navigate(item.path)}>
