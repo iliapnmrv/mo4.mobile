@@ -2,13 +2,14 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useAppSelector} from 'hooks/redux';
 import moment from 'moment';
@@ -124,11 +125,8 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
       const [{rows: inventoryResult}] = await db.executeSql(
         findScannedQuery(undefined),
       );
-      console.log(inventoryResult.raw());
 
       await uploadInventory(inventoryResult.raw());
-
-      console.log('uploadResult', uploadResult, uploadError);
 
       setInventoryDate(undefined);
       setInventoryScan('');
@@ -146,12 +144,12 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
   const openInventory = async () => {
     const today = new Date().toDateString();
     setInventoryDate(today);
-    getInventoryData();
+    await getInventoryData();
   };
 
   const getInventoryData = async () => {
     try {
-      await getInventory('');
+      await getInventory();
       await db.executeSql(createInventoryQuery);
       await db.executeSql(createScannedQuery);
 
@@ -264,106 +262,118 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
 
   return (
     <PageContainer>
-      <ContentBlock
-        button={{
-          text: 'Все сканирования',
-          action: () => navigation.navigate('InventoryScans'),
-          size: 21,
-        }}>
-        <View style={styles.inventoryInfoContainer}>
-          <Text style={{color: COLORS.black}}>
-            {date
-              ? `Инвентаризация открыта ${moment(date).format('L')}`
-              : 'Инвентаризация не открыта'}
-          </Text>
-          <Switch
-            style={{
-              transform: [{scaleX: 1.2}, {scaleY: 1.2}],
-              width: 50,
-              height: 20,
-            }}
-            trackColor={{false: COLORS.lightgray, true: '#add8e6'}}
-            thumbColor={COLORS.lightBlue}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={switchInventory}
-            value={Boolean(date)}
-          />
-        </View>
-      </ContentBlock>
-
-      <ScanResultModal scanModal={scanModal} setScanModal={setScanModal} />
-
-      {date ? (
-        <View>
-          <QRButton
-            action={() =>
-              navigation.navigate('Scanner', {
-                setScan: (data: string) => setInventoryScan(data),
-              })
-            }
-          />
-          {scanned.length ? (
-            <ContentBlock
-              transparent
-              helperText="10 последних"
-              title="Предыдущие сканирования">
-              <FlatList
-                horizontal={true}
-                data={scanned}
-                ItemSeparatorComponent={() => <HorizontalListSeparator />}
-                renderItem={({item}) => {
-                  const colorItem = scanResultModalColors.filter(
-                    res => res.status === item.status,
-                  )[0];
-                  return (
-                    <TouchableOpacity
-                      // onPress={() => setDocsScan(item)}
-                      activeOpacity={0.9}
-                      style={{
-                        backgroundColor: colorItem.backgroundColor,
-                        borderRadius: 10,
-                        padding: 10,
-                        marginRight: 5,
-                        maxWidth: Dimensions.get('screen').width - 20,
-                      }}>
-                      <Text>{item.inventoryNum}</Text>
-                      <Text>{item.name}</Text>
-                      {item.position ? (
-                        <Text>Строка ведомости: {item.position}</Text>
-                      ) : null}
-                      {item.place ? <Text>{item.place}</Text> : null}
-                      <Text>{colorItem.title}</Text>
-                    </TouchableOpacity>
-                  );
-                }}
-                keyExtractor={(_, index) => index.toString()}
-              />
-            </ContentBlock>
-          ) : null}
-          {inventoryScan ? (
-            <>
-              <ContentBlock title={'Сканирование'}>
-                <Text style={{color: COLORS.black}}>{inventoryScan}</Text>
-              </ContentBlock>
-              <Button
-                type="secondary"
-                text="Получить информацию"
-                action={getAnalysis}
-              />
-            </>
-          ) : (
+      <ScrollView>
+        <ContentBlock
+          button={{
+            text: 'Все сканирования',
+            action: () => navigation.navigate('InventoryScans'),
+            size: 21,
+          }}>
+          <TouchableOpacity
+            style={styles.inventoryInfoContainer}
+            onPress={() => switchInventory(!Boolean(date))}
+            activeOpacity={0.6}>
             <Text style={{color: COLORS.black}}>
-              Отсканируйте QR, чтобы получить информацию
+              {date
+                ? `Инвентаризация открыта ${moment(date).format('L')}`
+                : 'Инвентаризация не открыта'}
             </Text>
-          )}
-        </View>
-      ) : (
-        <ContentBlock>
-          <Text style={[styles.inventoryText, {color: COLORS.black}]}>
-            Для начала работы откройте инвентаризационную сессию
-          </Text>
+            <Switch
+              style={{
+                transform: [{scaleX: 1.2}, {scaleY: 1.2}],
+                width: 50,
+                height: 20,
+              }}
+              trackColor={{false: COLORS.lightgray, true: '#add8e6'}}
+              thumbColor={COLORS.lightBlue}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={switchInventory}
+              value={Boolean(date)}
+            />
+          </TouchableOpacity>
         </ContentBlock>
-      )}
+
+        <ScanResultModal scanModal={scanModal} setScanModal={setScanModal} />
+
+        {date ? (
+          <View>
+            <QRButton
+              action={() => {
+                navigation.navigate('Scanner', {
+                  setScan: (data: string) => setInventoryScan(data),
+                });
+              }}
+            />
+            {scanned.length ? (
+              <ContentBlock
+                transparent
+                helperText="10 последних"
+                title="Предыдущие сканирования"
+                button={{
+                  text: 'Все',
+                  action: () => navigation.navigate('InventoryScans'),
+                  size: 18,
+                }}>
+                <FlatList
+                  horizontal={true}
+                  data={scanned}
+                  ItemSeparatorComponent={() => <HorizontalListSeparator />}
+                  renderItem={({item}) => {
+                    const colorItem = scanResultModalColors.filter(
+                      res => res.status === item.status,
+                    )[0];
+                    return (
+                      <TouchableOpacity
+                        // onPress={() => setDocsScan(item)}
+                        activeOpacity={0.9}
+                        style={{
+                          backgroundColor: colorItem.backgroundColor,
+                          borderRadius: 10,
+                          padding: 10,
+                          marginRight: 5,
+                          maxWidth: Dimensions.get('screen').width - 20,
+                        }}>
+                        <Text>{item.inventoryNum}</Text>
+                        <Text>
+                          {item.name !== 'Не в учете' ? item.name : item.model}
+                        </Text>
+                        {item.position ? (
+                          <Text>Строка ведомости: {item.position}</Text>
+                        ) : null}
+                        {item.place ? <Text>{item.place}</Text> : null}
+                        <Text>{colorItem.title}</Text>
+                      </TouchableOpacity>
+                    );
+                  }}
+                  keyExtractor={(_, index) => index.toString()}
+                />
+              </ContentBlock>
+            ) : null}
+            {inventoryScan ? (
+              <>
+                <ContentBlock title={'Сканирование'}>
+                  <Text style={{color: COLORS.black}}>{inventoryScan}</Text>
+                </ContentBlock>
+                <Button
+                  type="secondary"
+                  text="Получить информацию"
+                  action={getAnalysis}
+                />
+              </>
+            ) : (
+              <Text style={{color: COLORS.black}}>
+                Отсканируйте QR, чтобы получить информацию
+              </Text>
+            )}
+          </View>
+        ) : (
+          <ContentBlock>
+            <Text style={[styles.inventoryText, {color: COLORS.black}]}>
+              Для начала работы откройте инвентаризационную сессию
+            </Text>
+          </ContentBlock>
+        )}
+      </ScrollView>
     </PageContainer>
   );
 };

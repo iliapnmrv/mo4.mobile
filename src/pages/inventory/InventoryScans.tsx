@@ -74,31 +74,49 @@ const InventoryStatus = () => {
         />
       </ContentBlock>
       <ContentBlock>
-        <View style={{height: '100%'}}>
+        <View style={{height: '90%'}}>
           {scanned.length ? (
             <ScrollView horizontal>
               <DataTable>
                 <DataTable.Header>
                   <View style={styles.tableHeader}>
-                    <DataTable.Title>Инвентарный номер</DataTable.Title>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>
+                        Инвентарный номер
+                      </Text>
+                    </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
-                    <DataTable.Title>Статус</DataTable.Title>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Статус</Text>
+                    </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
-                    <DataTable.Title>Имя</DataTable.Title>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Имя</Text>
+                    </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
-                    <DataTable.Title>Модель</DataTable.Title>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Модель</Text>
+                    </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
-                    <DataTable.Title>Серийный номер</DataTable.Title>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Серийный номер</Text>
+                    </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
-                    <DataTable.Title>Место</DataTable.Title>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Место</Text>
+                    </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
-                    <DataTable.Title>Trace</DataTable.Title>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>
+                        Строка в ведомости
+                      </Text>
+                    </DataTable.Title>
                   </View>
                 </DataTable.Header>
                 <FlatList
@@ -138,10 +156,15 @@ const InventoryStatus = () => {
                       <View style={styles.table}>
                         <Text style={styles.tableText}>{item.serialNum}</Text>
                       </View>
-                      {item.position != null ? (
+                      {item.position ? (
                         <>
                           <View style={styles.table}>
                             <Text style={styles.tableText}>{item!.place}</Text>
+                          </View>
+                          <View style={styles.table}>
+                            <Text style={styles.tableText}>
+                              {item!.position}
+                            </Text>
                           </View>
                           <View style={styles.table}>
                             <Text style={styles.tableText}>{item!.trace}</Text>
@@ -192,6 +215,10 @@ const styles = StyleSheet.create({
     paddingRight: 35,
     alignItems: 'center',
     width: 160,
+  },
+  tableHeaderText: {
     color: COLORS.darkgray,
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

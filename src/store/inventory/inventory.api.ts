@@ -1,14 +1,12 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {SERVER_URL} from 'constants/constants';
+import {baseQuery} from 'store/fetchBaseQuery';
 import {IInventory, IScanned} from 'types/inventory';
 
 export const inventoryApi = createApi({
   reducerPath: 'inventory/api',
-  baseQuery: fetchBaseQuery({
-    baseUrl: SERVER_URL,
-  }),
+  baseQuery,
   endpoints: builder => ({
-    getInventory: builder.query<IInventory[], string>({
+    getInventory: builder.query<IInventory[], void>({
       query: () => `inventory`,
     }),
     uploadInventory: builder.mutation<boolean, IScanned[]>({

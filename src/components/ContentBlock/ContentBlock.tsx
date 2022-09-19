@@ -58,7 +58,9 @@ const ContentBlock = ({
       <View
         style={[
           styles.mainItem,
-          transparent ? {backgroundColor: undefined, margin: -15} : null,
+          transparent
+            ? {backgroundColor: undefined, marginHorizontal: -10}
+            : null,
         ]}>
         {children}
       </View>

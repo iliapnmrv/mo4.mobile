@@ -1,10 +1,10 @@
 import ListItem from 'components/List/List';
 import List from 'components/List/List';
 import React, {ReactNode} from 'react';
-import {Text, View} from 'react-native';
+import {ScrollView, Text, View} from 'react-native';
 import {IInventory, IScanned} from 'types/inventory';
 
-export const SERVER_URL = 'http://192.168.26.75:8000/api/';
+// export const SERVER_URL = '192.168.26.75:8000/api/';
 
 export const inventorySampleData: IInventory[] = [
   {
@@ -63,7 +63,7 @@ export type IColor = {
   getContent: (
     inventory: (IScanned | Omit<IScanned, 'status'>) & {
       kolvo?: number;
-      vedpos?: number;
+      position?: number;
     },
   ) => ReactNode;
   textColor: string;
@@ -80,12 +80,12 @@ export const scanResultModalColors: IColor[] = [
         <ListItem isFirst name="Статус" value="В учете" />
         <ListItem name="Инвентарный номер" value={item.inventoryNum} />
         <ListItem name="Место" value={item.place} />
-        <ListItem name="Строка" value={item.vedpos} />
+        <ListItem name="Строка" value={item.position} />
         <ListItem isLast name="Осталось" value={item.kolvo} />
       </View>
     ),
     textColor: '#228B22',
-    backgroundColor: '#98FB98',
+    backgroundColor: '#90ee90',
     type: 'success',
   },
   {

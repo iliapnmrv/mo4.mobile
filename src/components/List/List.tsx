@@ -10,7 +10,7 @@ type Props = {
 };
 
 const ListItem = ({name, value, isFirst = false, isLast = false}: Props) => {
-  return value ? (
+  return value != null ? (
     <View
       style={[
         styles.infoItemContainer,
