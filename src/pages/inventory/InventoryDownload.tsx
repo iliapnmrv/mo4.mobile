@@ -71,7 +71,7 @@ const InventoryDownload = () => {
         />
       </ContentBlock> */}
       <ContentBlock helperText={`Количество элементов: ${inventory.length}`}>
-        <View style={{height: '90%'}}>
+        <View style={{height: '99%'}}>
           {inventory.length ? (
             <ScrollView horizontal>
               <DataTable>

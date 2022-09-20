@@ -66,11 +66,9 @@ let db: SQLiteDatabase;
 enablePromise(true);
 
 const Inventory = ({navigation}: InventoryScreenProps) => {
-  const [getInventory, {isLoading, isError, data, error}] =
-    useLazyGetInventoryQuery();
+  const [getInventory] = useLazyGetInventoryQuery();
 
-  const [uploadInventory, {data: uploadResult, error: uploadError}] =
-    useUploadInventoryMutation();
+  const [uploadInventory] = useUploadInventoryMutation();
 
   const {inventoryScan} = useAppSelector(state => state.scan);
   const {date} = useAppSelector(state => state.inventory);
@@ -176,14 +174,16 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     try {
       const inventoryData = await getInventory().unwrap();
 
-      await db.executeSql(createInventoryQuery);
-      await db.executeSql(createScannedQuery);
+      console.log('inventoryData', inventoryData);
 
       if (!inventoryData) {
         throw new Error(
           `Ошибка при скачивании данных, убедитесь что вы подключены к серверу ${serverUrl}`,
         );
       }
+
+      await db.executeSql(createInventoryQuery);
+      await db.executeSql(createScannedQuery);
 
       await db.executeSql(insertInventoryQuery(inventoryData));
 
@@ -193,9 +193,10 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
       });
     } catch (e: any) {
       console.error(e);
+      setInventoryDate(undefined);
 
       Snackbar.show({
-        text: e?.message,
+        text: 'Ошибка при скачивании',
         duration: 5000,
       });
     }
