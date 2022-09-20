@@ -144,15 +144,16 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     useHideInventoryAnimation();
 
     try {
-      // const [{rows: inventoryResult}] = await db.executeSql(
-      //   findScannedQuery(undefined),
-      // );
+      const [{rows: inventoryResult}] = await db.executeSql(
+        findScannedQuery(undefined),
+      );
 
-      // await uploadInventory(inventoryResult.raw());
+      await uploadInventory(inventoryResult.raw());
+
       setInventoryDate(undefined);
       setInventoryScan('');
       await db.executeSql(dropInventoryQuery);
-      // await db.executeSql(dropScannedQuery);
+      await db.executeSql(dropScannedQuery);
       Snackbar.show({
         text: `Инвентаризация успешно закрыта`,
         duration: Snackbar.LENGTH_LONG,
