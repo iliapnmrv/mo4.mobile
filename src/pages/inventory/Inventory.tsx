@@ -66,7 +66,7 @@ let db: SQLiteDatabase;
 enablePromise(true);
 
 const Inventory = ({navigation}: InventoryScreenProps) => {
-  const [getInventory, {isLoading, isError, data: inventoryData, error}] =
+  const [getInventory, {isLoading, isError, data, error}] =
     useLazyGetInventoryQuery();
 
   const [uploadInventory, {data: uploadResult, error: uploadError}] =
@@ -74,6 +74,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
 
   const {inventoryScan} = useAppSelector(state => state.scan);
   const {date} = useAppSelector(state => state.inventory);
+  const {serverUrl} = useAppSelector(state => state.settings);
 
   const {setInventoryDate, setInventoryScan} = useActions();
 
@@ -173,13 +174,14 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     useShowInventoryAnimation();
 
     try {
-      await getInventory();
+      const inventoryData = await getInventory().unwrap();
+
       await db.executeSql(createInventoryQuery);
       await db.executeSql(createScannedQuery);
 
       if (!inventoryData) {
         throw new Error(
-          'Ошибка при скачивании данных, убедитесь что вы подключены к серверу',
+          `Ошибка при скачивании данных, убедитесь что вы подключены к серверу ${serverUrl}`,
         );
       }
 
@@ -314,7 +316,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
           <View style={{flexGrow: 1}}>
             <ContentBlock
               button={{
-                text: 'Все сканирования',
+                text: date ? 'Все сканирования' : '',
                 action: () => navigation.navigate('InventoryScans'),
                 size: 21,
               }}>

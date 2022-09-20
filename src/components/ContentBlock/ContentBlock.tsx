@@ -41,7 +41,7 @@ const ContentBlock = ({
           )}
         </View>
 
-        {button ? (
+        {button && button.text ? (
           <TouchableOpacity activeOpacity={0.8} onPress={button.action}>
             <Text
               style={[

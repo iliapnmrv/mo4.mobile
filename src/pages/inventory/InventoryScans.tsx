@@ -179,7 +179,12 @@ const InventoryStatus = () => {
             </ScrollView>
           ) : (
             <View style={{alignItems: 'center'}}>
-              <Text style={{textAlign: 'center', fontSize: 18}}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: 18,
+                  color: COLORS.darkgray,
+                }}>
                 Данные отсутствуют
               </Text>
             </View>

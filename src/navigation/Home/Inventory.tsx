@@ -34,7 +34,7 @@ const InventoryStack = () => {
       <InventoryNav.Screen
         name="InventoryDownload"
         options={{
-          title: 'Инвентаризационная ведомость',
+          title: 'Ведомость',
           header: props => <PageHeader {...props} />,
         }}
         component={InventoryDownload}
