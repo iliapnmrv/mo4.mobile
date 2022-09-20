@@ -5,8 +5,8 @@ import {
   openDatabase,
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
-import {findScannedQuery} from 'utils/inventoryQueries';
-import {IScanned} from 'types/inventory';
+import {findInventoryQuery, findScannedQuery} from 'utils/inventoryQueries';
+import {IInventory, IScanned} from 'types/inventory';
 import PageContainer from 'components/PageContainer/PageContainer';
 import {btnStatus} from 'constants/constants';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
@@ -19,23 +19,22 @@ let db: SQLiteDatabase;
 //важная часть для работы бд с промисами
 enablePromise(true);
 
-const InventoryStatus = () => {
+const InventoryDownload = () => {
   const [status, setStatus] = useState<number | undefined>(0);
-  const [scanned, setScanned] = useState<IScanned[]>([]);
+  const [inventory, setInventory] = useState<IInventory[]>([]);
   useEffect(() => {
     const openDB = async () => {
       db = await openDatabase({name: 'inventory.db'});
-      getInventoryScans();
+      getInventory();
     };
     openDB();
   }, [status]);
 
-  const getInventoryScans = async () => {
+  const getInventory = async () => {
     try {
-      const [{rows: foundScanned}] = await db.executeSql(
-        findScannedQuery(status),
-      );
-      setScanned(foundScanned.raw());
+      const [{rows: foundInventory}] = await db.executeSql(findInventoryQuery);
+
+      setInventory(foundInventory.raw());
     } catch (e) {
       console.log(e);
     }
@@ -43,9 +42,7 @@ const InventoryStatus = () => {
 
   return (
     <PageContainer>
-      <ContentBlock
-        title="Фильтр по статусам"
-        helperText={`Количество сканирований: ${scanned.length}`}>
+      {/* <ContentBlock>
         <FlatList
           horizontal
           scrollEnabled={true}
@@ -72,45 +69,13 @@ const InventoryStatus = () => {
             </TouchableOpacity>
           )}
         />
-      </ContentBlock>
-      <ContentBlock>
+      </ContentBlock> */}
+      <ContentBlock helperText={`Количество элементов: ${inventory.length}`}>
         <View style={{height: '90%'}}>
-          {scanned.length ? (
+          {inventory.length ? (
             <ScrollView horizontal>
               <DataTable>
                 <DataTable.Header>
-                  <View style={styles.tableHeader}>
-                    <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>
-                        Инвентарный номер
-                      </Text>
-                    </DataTable.Title>
-                  </View>
-                  <View style={styles.tableHeader}>
-                    <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Статус</Text>
-                    </DataTable.Title>
-                  </View>
-                  <View style={styles.tableHeader}>
-                    <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Имя</Text>
-                    </DataTable.Title>
-                  </View>
-                  <View style={styles.tableHeader}>
-                    <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Модель</Text>
-                    </DataTable.Title>
-                  </View>
-                  <View style={styles.tableHeader}>
-                    <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Серийный номер</Text>
-                    </DataTable.Title>
-                  </View>
-                  <View style={styles.tableHeader}>
-                    <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Место</Text>
-                    </DataTable.Title>
-                  </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
                       <Text style={styles.tableHeaderText}>
@@ -118,9 +83,24 @@ const InventoryStatus = () => {
                       </Text>
                     </DataTable.Title>
                   </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Наименование</Text>
+                    </DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Местоположение</Text>
+                    </DataTable.Title>
+                  </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>
+                      <Text style={styles.tableHeaderText}>Количество</Text>
+                    </DataTable.Title>
+                  </View>
                 </DataTable.Header>
                 <FlatList
-                  data={scanned}
+                  data={inventory}
                   renderItem={({item, index}) => (
                     <View
                       style={{
@@ -128,49 +108,18 @@ const InventoryStatus = () => {
                         borderBottomColor: '#DCDCDC',
                         borderBottomWidth: 1,
                       }}>
-                      <View style={[styles.table, {width: 40}]}>
-                        <Text style={styles.tableText}>{index + 1}</Text>
-                      </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>
-                          {item.inventoryNum}
-                        </Text>
-                      </View>
-                      <View style={styles.table}>
-                        {(item.status === 1 && (
-                          <Text style={styles.tableText}>В учете</Text>
-                        )) ||
-                          (item.status === 2 && (
-                            <Text style={styles.tableText}>Не в учете</Text>
-                          )) ||
-                          (item.status === 3 && (
-                            <Text style={styles.tableText}>Сверх учета</Text>
-                          ))}
+                        <Text style={styles.tableText}>{item.vedpos}</Text>
                       </View>
                       <View style={styles.table}>
                         <Text style={styles.tableText}>{item.name}</Text>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.model}</Text>
+                        <Text style={styles.tableText}>{item.place}</Text>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.serialNum}</Text>
+                        <Text style={styles.tableText}>{item.kolvo}</Text>
                       </View>
-                      {item.position ? (
-                        <>
-                          <View style={styles.table}>
-                            <Text style={styles.tableText}>{item!.place}</Text>
-                          </View>
-                          <View style={styles.table}>
-                            <Text style={styles.tableText}>
-                              {item!.position}
-                            </Text>
-                          </View>
-                          <View style={styles.table}>
-                            <Text style={styles.tableText}>{item!.trace}</Text>
-                          </View>
-                        </>
-                      ) : null}
                     </View>
                   )}
                   keyExtractor={(_, index) => index.toString()}
@@ -180,7 +129,7 @@ const InventoryStatus = () => {
           ) : (
             <View style={{alignItems: 'center'}}>
               <Text style={{textAlign: 'center', fontSize: 18}}>
-                Данные отсутствуют
+                Данные отсутствуют, откройте инвентаризацию снова
               </Text>
             </View>
           )}
@@ -190,7 +139,7 @@ const InventoryStatus = () => {
   );
 };
 
-export default InventoryStatus;
+export default InventoryDownload;
 
 const styles = StyleSheet.create({
   btnTextActive: {

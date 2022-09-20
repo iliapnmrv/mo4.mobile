@@ -1,5 +1,6 @@
 import {
   Alert,
+  Animated,
   Dimensions,
   FlatList,
   ScrollView,
@@ -53,6 +54,7 @@ import {CompositeScreenProps} from '@react-navigation/native';
 import {RootStackParamList} from 'navigation/Navigation';
 import {InventoryParamList} from 'navigation/Home/Inventory';
 import {COLORS} from 'constants/colors';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type InventoryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<InventoryParamList, 'Inventory', 'MyStack'>,
@@ -81,6 +83,8 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
   });
   const [scanned, setScanned] = useState<IScanned[]>([]);
 
+  const widthAnimation = useRef(new Animated.Value(date ? 55 : 0)).current;
+
   useEffect(() => {
     const openDB = async () => {
       db = await openDatabase({name: 'inventory.db'});
@@ -88,6 +92,22 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     };
     openDB();
   }, []);
+
+  const useShowInventoryAnimation = () => {
+    Animated.timing(widthAnimation, {
+      toValue: 55,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const useHideInventoryAnimation = () => {
+    Animated.timing(widthAnimation, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start();
+  };
 
   const getLastScanned = async () => {
     try {
@@ -121,17 +141,18 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
   };
 
   const closeInventory = async () => {
+    useHideInventoryAnimation();
+
     try {
-      const [{rows: inventoryResult}] = await db.executeSql(
-        findScannedQuery(undefined),
-      );
+      // const [{rows: inventoryResult}] = await db.executeSql(
+      //   findScannedQuery(undefined),
+      // );
 
-      await uploadInventory(inventoryResult.raw());
-
+      // await uploadInventory(inventoryResult.raw());
       setInventoryDate(undefined);
       setInventoryScan('');
       await db.executeSql(dropInventoryQuery);
-      await db.executeSql(dropScannedQuery);
+      // await db.executeSql(dropScannedQuery);
       Snackbar.show({
         text: `Инвентаризация успешно закрыта`,
         duration: Snackbar.LENGTH_LONG,
@@ -148,6 +169,8 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
   };
 
   const getInventoryData = async () => {
+    useShowInventoryAnimation();
+
     try {
       await getInventory();
       await db.executeSql(createInventoryQuery);
@@ -263,35 +286,60 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
   return (
     <PageContainer>
       <ScrollView>
-        <ContentBlock
-          button={{
-            text: 'Все сканирования',
-            action: () => navigation.navigate('InventoryScans'),
-            size: 21,
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            width: '100%',
           }}>
-          <TouchableOpacity
-            style={styles.inventoryInfoContainer}
-            onPress={() => switchInventory(!Boolean(date))}
-            activeOpacity={0.6}>
-            <Text style={{color: COLORS.black}}>
-              {date
-                ? `Инвентаризация открыта ${moment(date).format('L')}`
-                : 'Инвентаризация не открыта'}
-            </Text>
-            <Switch
+          <Animated.View style={{width: widthAnimation}}>
+            <TouchableOpacity
               style={{
-                transform: [{scaleX: 1.2}, {scaleY: 1.2}],
-                width: 50,
-                height: 20,
+                padding: 10,
+                height: 60,
+                justifyContent: 'center',
+                backgroundColor: COLORS.white,
+                margin: 5,
+                borderRadius: 8,
               }}
-              trackColor={{false: COLORS.lightgray, true: '#add8e6'}}
-              thumbColor={COLORS.lightBlue}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={switchInventory}
-              value={Boolean(date)}
-            />
-          </TouchableOpacity>
-        </ContentBlock>
+              activeOpacity={0.7}
+              onPress={() => {
+                navigation.navigate('InventoryDownload');
+              }}>
+              <Icon name="download-outline" size={25} color={COLORS.black} />
+            </TouchableOpacity>
+          </Animated.View>
+          <View style={{flexGrow: 1}}>
+            <ContentBlock
+              button={{
+                text: 'Все сканирования',
+                action: () => navigation.navigate('InventoryScans'),
+                size: 21,
+              }}>
+              <TouchableOpacity
+                style={styles.inventoryInfoContainer}
+                onPress={() => switchInventory(!Boolean(date))}
+                activeOpacity={0.6}>
+                <Text style={{color: COLORS.black}}>
+                  {date ? `Открыта ${moment(date).format('L')}` : 'Не открыта'}
+                </Text>
+                <Switch
+                  style={{
+                    transform: [{scaleX: 1.2}, {scaleY: 1.2}],
+                    width: 50,
+                    height: 20,
+                  }}
+                  trackColor={{false: COLORS.lightgray, true: '#add8e6'}}
+                  thumbColor={COLORS.lightBlue}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={switchInventory}
+                  value={Boolean(date)}
+                />
+              </TouchableOpacity>
+            </ContentBlock>
+          </View>
+        </View>
 
         <ScanResultModal scanModal={scanModal} setScanModal={setScanModal} />
 

@@ -63,4 +63,7 @@ export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, sta
 
 export const findLastScannedQuery = `SELECT * FROM scanned ORDER BY id DESC LIMIT 10`;
 
-export const findScannedQuery = (status: number | undefined) => `SELECT * FROM scanned ${status ? `WHERE status = ${status}` : ''}`;
+export const findScannedQuery = (status: number | undefined) =>
+  `SELECT * FROM scanned ${status ? `WHERE status = ${status}` : ''}`;
+
+export const findInventoryQuery = `SELECT * FROM inventory`;
