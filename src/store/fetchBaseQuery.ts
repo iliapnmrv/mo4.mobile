@@ -7,7 +7,7 @@ import {
 import {RootState, store} from './store';
 
 // export const baseQuery = fetchBaseQuery({
-//   baseUrl: store.getState().settings.serverUrl,
+//   baseUrl: 'http://192.168.26.75:8000/api/',
 // });
 
 export const baseQuery: BaseQueryFn<
@@ -21,6 +21,12 @@ export const baseQuery: BaseQueryFn<
   );
 
   const baseUrl = store.getState().settings.serverUrl;
-  const rawBaseQuery = fetchBaseQuery({baseUrl});
+  const rawBaseQuery = fetchBaseQuery({
+    baseUrl,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Accept: 'application/json',
+    },
+  });
   return rawBaseQuery(args, WebApi, extraOptions);
 };

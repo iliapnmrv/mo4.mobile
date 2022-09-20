@@ -192,13 +192,17 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
         duration: 5000,
       });
     } catch (e: any) {
+      Snackbar.show({
+        text: `${JSON.stringify(e)}`,
+        duration: 5000,
+      });
       console.error(e);
       setInventoryDate(undefined);
 
-      Snackbar.show({
-        text: 'Ошибка при скачивании',
-        duration: 5000,
-      });
+      // Snackbar.show({
+      //   text: `Ошибка при скачивании ${serverUrl}`,
+      //   duration: 5000,
+      // });
     }
   };
 

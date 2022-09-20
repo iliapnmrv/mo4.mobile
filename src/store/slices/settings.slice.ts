@@ -6,7 +6,7 @@ interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  serverUrl: 'http://192.168.1.205:8002',
+  serverUrl: 'http://192.168.26.75:8000/api/',
 };
 
 export const settingsSlice = createSlice({
