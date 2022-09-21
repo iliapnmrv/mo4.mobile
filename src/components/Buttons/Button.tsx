@@ -28,10 +28,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   primary: {
-    backgroundColor: '#80a3ff',
+    backgroundColor: COLORS.lightBlue,
     borderRadius: 3,
   },
-
   text: {
     textAlign: 'center',
   },

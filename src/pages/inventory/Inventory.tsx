@@ -380,7 +380,6 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
                     )[0];
                     return (
                       <TouchableOpacity
-                        // onPress={() => setDocsScan(item)}
                         activeOpacity={0.9}
                         style={{
                           backgroundColor: colorItem.backgroundColor,
@@ -389,15 +388,23 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
                           marginRight: 5,
                           maxWidth: Dimensions.get('screen').width - 20,
                         }}>
-                        <Text>{item.inventoryNum}</Text>
-                        <Text>
+                        <Text style={styles.prevScanText}>
+                          {item.inventoryNum}
+                        </Text>
+                        <Text style={styles.prevScanText}>
                           {item.name !== 'Не в учете' ? item.name : item.model}
                         </Text>
                         {item.position ? (
-                          <Text>Строка ведомости: {item.position}</Text>
+                          <Text style={styles.prevScanText}>
+                            Строка ведомости: {item.position}
+                          </Text>
                         ) : null}
-                        {item.place ? <Text>{item.place}</Text> : null}
-                        <Text>{colorItem.title}</Text>
+                        {item.place ? (
+                          <Text style={styles.prevScanText}>{item.place}</Text>
+                        ) : null}
+                        <Text style={styles.prevScanText}>
+                          {colorItem.title}
+                        </Text>
                       </TouchableOpacity>
                     );
                   }}
@@ -445,5 +452,10 @@ const styles = StyleSheet.create({
   },
   inventoryText: {
     fontSize: 18,
+  },
+  prevScanText: {
+    // fontSize: 18,
+    fontWeight: '500',
+    color: COLORS.white,
   },
 });

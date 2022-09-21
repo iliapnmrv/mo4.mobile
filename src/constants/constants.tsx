@@ -3,6 +3,7 @@ import List from 'components/List/List';
 import React, {ReactNode} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import {IInventory, IScanned} from 'types/inventory';
+import {COLORS} from './colors';
 
 // export const SERVER_URL = '192.168.26.75:8000/api/';
 
@@ -84,8 +85,8 @@ export const scanResultModalColors: IColor[] = [
         <ListItem isLast name="Осталось" value={item.kolvo} />
       </View>
     ),
-    textColor: '#228B22',
-    backgroundColor: '#90ee90',
+    textColor: '#006100',
+    backgroundColor: '#00f000',
     type: 'success',
   },
   {
@@ -122,7 +123,9 @@ export const scanResultModalColors: IColor[] = [
     getContent: item => (
       <View style={{flex: 1, width: '100%'}}>
         <ListItem isFirst isLast name="Статус" value="Повторное сканирование" />
-        <Text>Предыдущее значение</Text>
+        <Text style={{color: COLORS.white, fontWeight: '500', marginTop: 5}}>
+          Предыдущее значение
+        </Text>
         <ListItem
           isFirst
           isLast={item.position == null}
@@ -141,8 +144,8 @@ export const scanResultModalColors: IColor[] = [
         ) : null}
       </View>
     ),
-    textColor: '#DC143C',
-    backgroundColor: '#F08080',
+    textColor: '#ab0000',
+    backgroundColor: '#ff3333',
     type: 'double',
   },
 ];

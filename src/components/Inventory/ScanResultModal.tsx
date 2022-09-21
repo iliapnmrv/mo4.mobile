@@ -30,6 +30,8 @@ const ScanResultModal = ({scanModal, setScanModal}: Props) => {
     )?.[0];
 
   let body;
+
+  //@ts-ignore
   scanModal?.scanned ? (body = getContent(scanModal?.scanned)) : null;
   return (
     <Modal animationType="fade" transparent={true} visible={scanModal?.visible}>
@@ -96,5 +98,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderBottomColor: 'white',
     borderBottomWidth: 1,
+    fontWeight: '500',
   },
 });

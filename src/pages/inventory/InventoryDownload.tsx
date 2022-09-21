@@ -5,13 +5,11 @@ import {
   openDatabase,
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
-import {findInventoryQuery, findScannedQuery} from 'utils/inventoryQueries';
-import {IInventory, IScanned} from 'types/inventory';
+import {findInventoryQuery} from 'utils/inventoryQueries';
+import {IInventory} from 'types/inventory';
 import PageContainer from 'components/PageContainer/PageContainer';
-import {btnStatus} from 'constants/constants';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native';
 import {COLORS} from 'constants/colors';
 
 let db: SQLiteDatabase;
@@ -20,7 +18,6 @@ let db: SQLiteDatabase;
 enablePromise(true);
 
 const InventoryDownload = () => {
-  const [status, setStatus] = useState<number | undefined>(0);
   const [inventory, setInventory] = useState<IInventory[]>([]);
   useEffect(() => {
     const openDB = async () => {
@@ -28,7 +25,7 @@ const InventoryDownload = () => {
       getInventory();
     };
     openDB();
-  }, [status]);
+  }, []);
 
   const getInventory = async () => {
     try {
