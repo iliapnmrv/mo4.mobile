@@ -1,11 +1,19 @@
-import {FlatList, StyleSheet, Text, View, ScrollView} from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   enablePromise,
   openDatabase,
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
-import {findInventoryQuery} from 'utils/inventoryQueries';
+import {dropInventoryQuery, findInventoryQuery} from 'utils/inventoryQueries';
 import {IInventory} from 'types/inventory';
 import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
@@ -32,6 +40,14 @@ const InventoryDownload = () => {
       const [{rows: foundInventory}] = await db.executeSql(findInventoryQuery);
 
       setInventory(foundInventory.raw());
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const dropInventory = async () => {
+    try {
+      await db.executeSql(dropInventoryQuery);
     } catch (e) {
       console.log(e);
     }
@@ -67,6 +83,25 @@ const InventoryDownload = () => {
           )}
         />
       </ContentBlock> */}
+
+      <TouchableOpacity
+        style={{alignItems: 'flex-end'}}
+        onPress={dropInventory}>
+        <Text
+          style={{
+            backgroundColor: COLORS.lightBlue,
+            borderRadius: 4,
+            color: 'white',
+            marginHorizontal: 5,
+            paddingHorizontal: 6,
+            paddingVertical: 4,
+            fontWeight: 'bold',
+            fontSize: 14,
+          }}>
+          Выгрузить инвентаризацию
+        </Text>
+      </TouchableOpacity>
+
       <ContentBlock helperText={`Количество элементов: ${inventory.length}`}>
         <View style={{height: '99%'}}>
           {inventory.length ? (
