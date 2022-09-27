@@ -13,12 +13,17 @@ import {
   openDatabase,
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
-import {dropInventoryQuery, findInventoryQuery} from 'utils/inventoryQueries';
+import {
+  dropInventoryQuery,
+  findInventoryQuery,
+  findScannedQuery,
+} from 'utils/inventoryQueries';
 import {IInventory} from 'types/inventory';
 import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
 import {COLORS} from 'constants/colors';
+import {useUploadInventoryMutation} from 'store/inventory/inventory.api';
 
 let db: SQLiteDatabase;
 
@@ -45,63 +50,8 @@ const InventoryDownload = () => {
     }
   };
 
-  const dropInventory = async () => {
-    try {
-      await db.executeSql(dropInventoryQuery);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   return (
     <PageContainer>
-      {/* <ContentBlock>
-        <FlatList
-          horizontal
-          scrollEnabled={true}
-          data={btnStatus}
-          contentContainerStyle={{display: 'flex', alignItems: 'baseline'}}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({item}) => (
-            <TouchableOpacity
-              style={[
-                styles.filterButton,
-                item.id === status
-                  ? styles.btnTextActive
-                  : styles.btnTextNotActive,
-              ]}
-              onPress={() => setStatus(item.id)}>
-              <Text
-                style={
-                  item.id === status
-                    ? {color: 'white', fontWeight: 'bold', fontSize: 16}
-                    : {fontWeight: 'bold', fontSize: 16, color: COLORS.black}
-                }>
-                {item.title}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-      </ContentBlock> */}
-
-      <TouchableOpacity
-        style={{alignItems: 'flex-end'}}
-        onPress={dropInventory}>
-        <Text
-          style={{
-            backgroundColor: COLORS.lightBlue,
-            borderRadius: 4,
-            color: 'white',
-            marginHorizontal: 5,
-            paddingHorizontal: 6,
-            paddingVertical: 4,
-            fontWeight: 'bold',
-            fontSize: 14,
-          }}>
-          Выгрузить инвентаризацию
-        </Text>
-      </TouchableOpacity>
-
       <ContentBlock helperText={`Количество элементов: ${inventory.length}`}>
         <View style={{height: '99%'}}>
           {inventory.length ? (

@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
   blockTopContainer: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'flex-end',
+    marginBottom: 3,
     justifyContent: 'space-between',
   },
 });

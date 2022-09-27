@@ -13,6 +13,7 @@ import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {COLORS} from 'constants/colors';
+import {useUploadInventoryMutation} from 'store/inventory/inventory.api';
 
 let db: SQLiteDatabase;
 
@@ -22,6 +23,9 @@ enablePromise(true);
 const InventoryStatus = () => {
   const [status, setStatus] = useState<number | undefined>(0);
   const [scanned, setScanned] = useState<IScanned[]>([]);
+
+  const [uploadInventory] = useUploadInventoryMutation();
+
   useEffect(() => {
     const openDB = async () => {
       db = await openDatabase({name: 'inventory.db'});
@@ -41,11 +45,43 @@ const InventoryStatus = () => {
     }
   };
 
+  const uploadInventoryHandler = async () => {
+    try {
+      const [{rows: inventoryResult}] = await db.executeSql(
+        findScannedQuery(undefined),
+      );
+
+      await uploadInventory(inventoryResult.raw());
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <PageContainer>
       <ContentBlock
         title="Фильтр по статусам"
-        helperText={`Количество сканирований: ${scanned.length}`}>
+        helperText={`Количество сканирований: ${scanned.length}`}
+        button={{
+          text: (
+            <TouchableOpacity style={{alignItems: 'flex-end'}}>
+              <Text
+                style={{
+                  backgroundColor: COLORS.lightBlue,
+                  borderRadius: 4,
+                  color: 'white',
+                  marginHorizontal: 5,
+                  paddingHorizontal: 14,
+                  paddingVertical: 4,
+                  fontWeight: 'bold',
+                  fontSize: 14,
+                }}>
+                Выгрузить
+              </Text>
+            </TouchableOpacity>
+          ),
+          action: uploadInventoryHandler,
+        }}>
         <FlatList
           horizontal
           scrollEnabled={true}
