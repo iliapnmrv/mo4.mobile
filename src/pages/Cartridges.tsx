@@ -56,7 +56,7 @@ const Cartridges = ({navigation}: CartridgeScreenProps) => {
   }, [findByNameError, updateError]);
 
   const {cartridgeScan} = useAppSelector(state => state.scan);
-  const {serverUrl} = useAppSelector(state => state.settings);
+  const {cartridgeServerUrl} = useAppSelector(state => state.settings);
 
   const {setCartridgeScan} = useActions();
 
@@ -203,7 +203,7 @@ const Cartridges = ({navigation}: CartridgeScreenProps) => {
         visible={errorSnackbarVisible}
         onDismiss={() => setErrorSnackbarVisible(false)}
         duration={5000}>
-        Ошибка: проверьте подключение к сети {serverUrl}
+        Ошибка: проверьте подключение к сети {cartridgeServerUrl}
       </Snackbar>
     </PageContainer>
   );

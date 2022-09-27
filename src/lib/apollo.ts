@@ -8,7 +8,10 @@ store.subscribe(() => {
 });
 
 const customFetch = (url: string, options: any) => {
-  return fetch(`${store.getState().settings.serverUrl}/graphql/api`, options);
+  return fetch(
+    `${store.getState().settings.cartridgeServerUrl}graphql/api`,
+    options,
+  );
 };
 
 const link = new HttpLink({

@@ -8,36 +8,42 @@ import {useActions} from 'hooks/actions';
 import PageContainer from 'components/PageContainer/PageContainer';
 
 const Settings = () => {
-  const {serverUrl} = useAppSelector(state => state.settings);
-  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
-  const [server, setServer] = useState(serverUrl);
-  const [initialServerUrl, setInitialServerUrl] = useState(serverUrl);
+  const {serverUrl, cartridgeServerUrl} = useAppSelector(
+    state => state.settings,
+  );
 
-  const {setServerUrl} = useActions();
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  const [inventoryServer, setInventoryServer] = useState(serverUrl);
+  const [cartridgeServer, setCartridgeServer] = useState(cartridgeServerUrl);
+
+  const {setServerUrl, setCartridgeServerUrl} = useActions();
 
   const saveSettings = () => {
     setSnackbarVisible(true);
-    setServerUrl(server);
+    setServerUrl(inventoryServer);
+    setCartridgeServerUrl(cartridgeServer);
   };
 
   return (
     <PageContainer>
       <View>
         <ContentBlock title="Сервер">
-          <Input value={server} setValue={setServer} label="Ссылка на сервер" />
+          <Input
+            value={inventoryServer}
+            setValue={setInventoryServer}
+            label="Инвентаризация/документооборот"
+          />
+          <Input
+            value={cartridgeServer}
+            setValue={setCartridgeServer}
+            label="Картриджи"
+          />
           <Button title="Сохранить" onPress={saveSettings} />
         </ContentBlock>
       </View>
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        action={{
-          label: 'Отменить',
-          onPress: () => {
-            setServerUrl(initialServerUrl);
-            setServer(initialServerUrl);
-          },
-        }}
         duration={5000}>
         Настройки сохранены
       </Snackbar>
