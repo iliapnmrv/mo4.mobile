@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: '#808080',
+    textDecorationLine: 'underline',
   },
   blockTopContainer: {
     display: 'flex',
