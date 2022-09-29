@@ -14,6 +14,7 @@ import {DataTable} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {COLORS} from 'constants/colors';
 import {useUploadInventoryMutation} from 'store/inventory/inventory.api';
+import Snackbar from 'react-native-snackbar';
 
 let db: SQLiteDatabase;
 
@@ -51,8 +52,18 @@ const InventoryStatus = () => {
         findScannedQuery(undefined),
       );
 
-      await uploadInventory(inventoryResult.raw());
+      const result = await uploadInventory(inventoryResult.raw());
+
+      Snackbar.show({
+        //@ts-ignore
+        text: result.data,
+        duration: Snackbar.LENGTH_LONG,
+      });
     } catch (e) {
+      Snackbar.show({
+        text: JSON.stringify(e),
+        duration: Snackbar.LENGTH_LONG,
+      });
       console.log(e);
     }
   };
@@ -64,7 +75,7 @@ const InventoryStatus = () => {
         helperText={`Количество сканирований: ${scanned.length}`}
         button={{
           text: (
-            <TouchableOpacity style={{alignItems: 'flex-end'}}>
+            <View>
               <Text
                 style={{
                   backgroundColor: COLORS.lightBlue,
@@ -78,7 +89,7 @@ const InventoryStatus = () => {
                 }}>
                 Выгрузить
               </Text>
-            </TouchableOpacity>
+            </View>
           ),
           action: uploadInventoryHandler,
         }}>
