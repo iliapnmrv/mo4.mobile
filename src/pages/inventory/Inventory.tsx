@@ -143,12 +143,6 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     useHideInventoryAnimation();
 
     try {
-      const [{rows: inventoryResult}] = await db.executeSql(
-        findScannedQuery(undefined),
-      );
-
-      await uploadInventory(inventoryResult.raw());
-
       setInventoryDate(undefined);
       setInventoryScan('');
       await db.executeSql(dropInventoryQuery);
