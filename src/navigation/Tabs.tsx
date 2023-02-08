@@ -2,8 +2,8 @@ import React, {useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Settings from '../pages/Settings';
 import Icon from 'react-native-vector-icons/Ionicons';
-import PageHeader from 'components/PageHeader/PageHeader';
 import HomeScreens from './Home/Home';
+import PageHeader from 'components/PageHeader/PageHeader';
 
 export type BottomTabsParamList = {
   HomeScreens: undefined;
@@ -14,7 +14,10 @@ const Tabs = () => {
   const Tab = createBottomTabNavigator<BottomTabsParamList>();
 
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarHideOnKeyboard: true,
+      }}>
       <Tab.Screen
         name="HomeScreens"
         component={HomeScreens}

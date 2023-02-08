@@ -22,12 +22,12 @@ import moment from 'moment';
 import 'moment/locale/ru';
 import {UpdateCartridgeAmountMutation} from '../lib/Mutations';
 import {Snackbar} from 'react-native-paper';
-import {store} from '../store/store';
 import PageContainer from 'components/PageContainer/PageContainer';
 import {useActions} from 'hooks/actions';
 import {CompositeScreenProps} from '@react-navigation/native';
 import {HomeScreensParamList} from 'navigation/Home/Home';
 import {RootStackParamList} from 'navigation/Navigation';
+import {store} from 'redux/store';
 moment.locale('ru');
 
 type CartridgeScreenProps = CompositeScreenProps<

@@ -113,8 +113,8 @@ export const scanResultModalColors: IColor[] = [
         <ListItem name="Наименование" value={item.name} />
       </View>
     ),
-    textColor: '#FFFF00',
-    backgroundColor: '#FFFF66',
+    textColor: '#B28800',
+    backgroundColor: '#FFC300',
     type: 'over',
   },
   {

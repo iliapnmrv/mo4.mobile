@@ -1,9 +1,9 @@
 import {useDispatch} from 'react-redux';
 import {bindActionCreators} from '@reduxjs/toolkit';
-import {inventoryActions} from 'store/inventory/inventory.slice';
-import {docsActions} from 'store/docs/docs.slice';
-import {scanActions} from 'store/slices/scan.slice';
-import {settingsActions} from 'store/slices/settings.slice';
+import {inventoryActions} from 'redux/inventory/inventory.slice';
+import {docsActions} from 'redux/docs/docs.slice';
+import {scanActions} from 'redux/slices/scan.slice';
+import {settingsActions} from 'redux/slices/settings.slice';
 
 const actions = {
   ...inventoryActions,

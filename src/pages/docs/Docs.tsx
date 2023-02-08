@@ -19,7 +19,7 @@ import {
   useGetStoragesQuery,
   useGetTypesQuery,
   useLazyGetDocsItemQuery,
-} from 'store/docs/docs.api';
+} from 'redux/docs/docs.api';
 import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {useActions} from 'hooks/actions';

@@ -1,5 +1,5 @@
 import {ApolloClient, HttpLink, InMemoryCache} from '@apollo/client';
-import {store} from '../store/store';
+import {store} from 'redux/store';
 
 let serverUrl: string = '';
 

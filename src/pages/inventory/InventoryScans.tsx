@@ -13,7 +13,7 @@ import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native';
 import {COLORS} from 'constants/colors';
-import {useUploadInventoryMutation} from 'store/inventory/inventory.api';
+import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
 import Snackbar from 'react-native-snackbar';
 
 let db: SQLiteDatabase;

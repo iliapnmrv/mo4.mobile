@@ -2,13 +2,16 @@ import 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
 import React, {useEffect} from 'react';
 import {Provider} from 'react-redux';
-import {store} from './store/store';
 import {persistStore} from 'redux-persist';
 import {ApolloProvider} from '@apollo/client';
 import apolloClient from './lib/apollo';
 import {PersistGate} from 'redux-persist/integration/react';
 import {Provider as PaperProvider} from 'react-native-paper';
-import Navigation from 'navigation/Navigation';
+import Navigation from './navigation/Navigation';
+import {store} from 'redux/store';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs(['ViewPropTypes will be removed from React Native']);
 
 const App = () => {
   useEffect(() => {

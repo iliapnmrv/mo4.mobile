@@ -25,7 +25,7 @@ import {
   inventoryApi,
   useLazyGetInventoryQuery,
   useUploadInventoryMutation,
-} from 'store/inventory/inventory.api';
+} from 'redux/inventory/inventory.api';
 import {
   createInventoryQuery,
   createScannedQuery,

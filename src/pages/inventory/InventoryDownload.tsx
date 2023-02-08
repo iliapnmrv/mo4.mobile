@@ -23,7 +23,7 @@ import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
 import {COLORS} from 'constants/colors';
-import {useUploadInventoryMutation} from 'store/inventory/inventory.api';
+import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
 
 let db: SQLiteDatabase;
 

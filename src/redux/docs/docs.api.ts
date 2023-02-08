@@ -1,5 +1,5 @@
 import {createApi} from '@reduxjs/toolkit/query/react';
-import {baseQuery} from 'store/fetchBaseQuery';
+import {baseQuery} from 'redux/fetchBaseQuery';
 import {IOwner, IPerson, IStatus, IStorage, IType} from 'types/docs/catalogs';
 import {IDoc} from 'types/docs/docs';
 
@@ -10,6 +10,9 @@ export const docsApi = createApi({
     getDocsItem: builder.query<IDoc[], string>({
       query: id => `total/${id}`,
     }),
+    searchDocs: builder.query<IDoc[], string>({
+      query: id => `total/${id}`,
+    }),
     updateDoc: builder.mutation<IDoc, Partial<IDoc> & Pick<IDoc, 'id'>>({
       query: ({id, ...patch}) => ({
         url: `total/${id}`,
@@ -17,19 +20,19 @@ export const docsApi = createApi({
         body: patch,
       }),
     }),
-    getStorages: builder.query<IStorage[], ''>({
+    getStorages: builder.query<IStorage[], void>({
       query: () => `catalogs/storages`,
     }),
-    getPersons: builder.query<IPerson[], ''>({
+    getPersons: builder.query<IPerson[], void>({
       query: () => `catalogs/persons`,
     }),
-    getStatuses: builder.query<IStatus[], ''>({
+    getStatuses: builder.query<IStatus[], void>({
       query: () => `catalogs/statuses`,
     }),
-    getTypes: builder.query<IType[], ''>({
+    getTypes: builder.query<IType[], void>({
       query: () => `catalogs/types`,
     }),
-    getOwners: builder.query<IOwner[], ''>({
+    getOwners: builder.query<IOwner[], void>({
       query: () => `catalogs/owners`,
     }),
   }),

@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {baseQuery} from 'store/fetchBaseQuery';
+import {baseQuery} from 'redux/fetchBaseQuery';
 import {IInventory, IScanned} from 'types/inventory';
 
 export const inventoryApi = createApi({
