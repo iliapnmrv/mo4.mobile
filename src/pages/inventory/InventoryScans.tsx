@@ -15,6 +15,7 @@ import {TouchableOpacity} from 'react-native';
 import {COLORS} from 'constants/colors';
 import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
 import Snackbar from 'react-native-snackbar';
+import AppText from 'components/Text/AppText';
 
 let db: SQLiteDatabase;
 
@@ -76,7 +77,7 @@ const InventoryStatus = () => {
         button={{
           text: (
             <View>
-              <Text
+              <AppText
                 style={{
                   backgroundColor: COLORS.lightBlue,
                   borderRadius: 4,
@@ -88,7 +89,7 @@ const InventoryStatus = () => {
                   fontSize: 14,
                 }}>
                 Выгрузить
-              </Text>
+              </AppText>
             </View>
           ),
           action: uploadInventoryHandler,
@@ -108,14 +109,14 @@ const InventoryStatus = () => {
                   : styles.btnTextNotActive,
               ]}
               onPress={() => setStatus(item.id)}>
-              <Text
+              <AppText
                 style={
                   item.id === status
                     ? {color: 'white', fontWeight: 'bold', fontSize: 16}
                     : {fontWeight: 'bold', fontSize: 16, color: COLORS.black}
                 }>
                 {item.title}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           )}
         />
@@ -128,41 +129,43 @@ const InventoryStatus = () => {
                 <DataTable.Header>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>
+                      <AppText style={styles.tableHeaderText}>
                         Инвентарный номер
-                      </Text>
+                      </AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Статус</Text>
+                      <AppText style={styles.tableHeaderText}>Статус</AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Имя</Text>
+                      <AppText style={styles.tableHeaderText}>Имя</AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Модель</Text>
+                      <AppText style={styles.tableHeaderText}>Модель</AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Серийный номер</Text>
+                      <AppText style={styles.tableHeaderText}>
+                        Серийный номер
+                      </AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Место</Text>
+                      <AppText style={styles.tableHeaderText}>Место</AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>
+                      <AppText style={styles.tableHeaderText}>
                         Строка в ведомости
-                      </Text>
+                      </AppText>
                     </DataTable.Title>
                   </View>
                 </DataTable.Header>
@@ -176,45 +179,55 @@ const InventoryStatus = () => {
                         borderBottomWidth: 1,
                       }}>
                       <View style={[styles.table, {width: 40}]}>
-                        <Text style={styles.tableText}>{index + 1}</Text>
+                        <AppText style={styles.tableText}>{index + 1}</AppText>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>
+                        <AppText style={styles.tableText}>
                           {item.inventoryNum}
-                        </Text>
+                        </AppText>
                       </View>
                       <View style={styles.table}>
                         {(item.status === 1 && (
-                          <Text style={styles.tableText}>В учете</Text>
+                          <AppText style={styles.tableText}>В учете</AppText>
                         )) ||
                           (item.status === 2 && (
-                            <Text style={styles.tableText}>Не в учете</Text>
+                            <AppText style={styles.tableText}>
+                              Не в учете
+                            </AppText>
                           )) ||
                           (item.status === 3 && (
-                            <Text style={styles.tableText}>Сверх учета</Text>
+                            <AppText style={styles.tableText}>
+                              Сверх учета
+                            </AppText>
                           ))}
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.name}</Text>
+                        <AppText style={styles.tableText}>{item.name}</AppText>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.model}</Text>
+                        <AppText style={styles.tableText}>{item.model}</AppText>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.serialNum}</Text>
+                        <AppText style={styles.tableText}>
+                          {item.serialNum}
+                        </AppText>
                       </View>
                       {item.position ? (
                         <>
                           <View style={styles.table}>
-                            <Text style={styles.tableText}>{item!.place}</Text>
+                            <AppText style={styles.tableText}>
+                              {item!.place}
+                            </AppText>
                           </View>
                           <View style={styles.table}>
-                            <Text style={styles.tableText}>
+                            <AppText style={styles.tableText}>
                               {item!.position}
-                            </Text>
+                            </AppText>
                           </View>
                           <View style={styles.table}>
-                            <Text style={styles.tableText}>{item!.trace}</Text>
+                            <AppText style={styles.tableText}>
+                              {item!.trace}
+                            </AppText>
                           </View>
                         </>
                       ) : null}
@@ -226,14 +239,14 @@ const InventoryStatus = () => {
             </ScrollView>
           ) : (
             <View style={{alignItems: 'center'}}>
-              <Text
+              <AppText
                 style={{
                   textAlign: 'center',
                   fontSize: 18,
                   color: COLORS.darkgray,
                 }}>
                 Данные отсутствуют
-              </Text>
+              </AppText>
             </View>
           )}
         </View>

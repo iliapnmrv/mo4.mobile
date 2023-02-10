@@ -8,6 +8,7 @@ import {
 import React, {Dispatch, ReactNode, SetStateAction} from 'react';
 import {COLORS} from 'constants/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AppText from 'components/Text/AppText';
 
 type Props = {
   setValue: Dispatch<SetStateAction<string>>;
@@ -28,7 +29,7 @@ const Input = ({
 }: Props) => {
   return (
     <>
-      <Text style={styles.labelText}>{label}</Text>
+      <AppText style={styles.labelText}>{label}</AppText>
       <View style={iconName ? styles.iconContainer : {}}>
         {iconName ? (
           <Icon style={styles.icon} name={iconName} size={20} color="#000" />

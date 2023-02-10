@@ -24,6 +24,7 @@ import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {DataTable} from 'react-native-paper';
 import {COLORS} from 'constants/colors';
 import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
+import AppText from 'components/Text/AppText';
 
 let db: SQLiteDatabase;
 
@@ -60,24 +61,30 @@ const InventoryDownload = () => {
                 <DataTable.Header>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>
+                      <AppText style={styles.tableHeaderText}>
                         Строка в ведомости
-                      </Text>
+                      </AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Наименование</Text>
+                      <AppText style={styles.tableHeaderText}>
+                        Наименование
+                      </AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Местоположение</Text>
+                      <AppText style={styles.tableHeaderText}>
+                        Местоположение
+                      </AppText>
                     </DataTable.Title>
                   </View>
                   <View style={styles.tableHeader}>
                     <DataTable.Title>
-                      <Text style={styles.tableHeaderText}>Количество</Text>
+                      <AppText style={styles.tableHeaderText}>
+                        Количество
+                      </AppText>
                     </DataTable.Title>
                   </View>
                 </DataTable.Header>
@@ -91,16 +98,18 @@ const InventoryDownload = () => {
                         borderBottomWidth: 1,
                       }}>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.vedpos}</Text>
+                        <AppText style={styles.tableText}>
+                          {item.vedpos}
+                        </AppText>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.name}</Text>
+                        <AppText style={styles.tableText}>{item.name}</AppText>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.place}</Text>
+                        <AppText style={styles.tableText}>{item.place}</AppText>
                       </View>
                       <View style={styles.table}>
-                        <Text style={styles.tableText}>{item.kolvo}</Text>
+                        <AppText style={styles.tableText}>{item.kolvo}</AppText>
                       </View>
                     </View>
                   )}
@@ -110,14 +119,14 @@ const InventoryDownload = () => {
             </ScrollView>
           ) : (
             <View style={{alignItems: 'center'}}>
-              <Text
+              <AppText
                 style={{
                   textAlign: 'center',
                   fontSize: 18,
                   color: COLORS.darkgray,
                 }}>
                 Данные отсутствуют, откройте инвентаризацию снова
-              </Text>
+              </AppText>
             </View>
           )}
         </View>

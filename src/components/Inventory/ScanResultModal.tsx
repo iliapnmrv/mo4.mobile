@@ -10,6 +10,7 @@ import React, {Dispatch, SetStateAction, useState} from 'react';
 import {IScanned} from 'types/inventory';
 import {scanResultModalColors} from 'constants/constants';
 import Button from 'components/Buttons/Button';
+import AppText from 'components/Text/AppText';
 
 export type ScanModalProps = {
   scanned?: (IScanned | Omit<IScanned, 'status'>) & {
@@ -37,20 +38,21 @@ const ScanResultModal = ({scanModal, setScanModal}: Props) => {
     <Modal animationType="fade" transparent={true} visible={scanModal?.visible}>
       <View style={styles.centeredView}>
         <View style={[styles.modalView, {backgroundColor}]}>
-          <Text style={[styles.modalTextHeader, {color: textColor}]}>
+          <AppText style={[styles.modalTextHeader, {color: textColor}]}>
             {title}
-          </Text>
+          </AppText>
           {scanModal?.scanned ? (
             <ScrollView style={[styles.modalContent]}>{body}</ScrollView>
           ) : null}
           <Button
             text="Подтвердить"
-            action={() => {
+            onPress={() => {
               setScanModal(prevState => ({
                 ...prevState,
                 visible: !prevState.visible,
               }));
-            }}></Button>
+            }}
+          />
         </View>
       </View>
     </Modal>

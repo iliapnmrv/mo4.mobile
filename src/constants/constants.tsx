@@ -4,6 +4,7 @@ import React, {ReactNode} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import {IInventory, IScanned} from 'types/inventory';
 import {COLORS} from './colors';
+import AppText from 'components/Text/AppText';
 
 // export const SERVER_URL = '192.168.26.75:8000/api/';
 
@@ -123,9 +124,9 @@ export const scanResultModalColors: IColor[] = [
     getContent: item => (
       <View style={{flex: 1, width: '100%'}}>
         <ListItem isFirst isLast name="Статус" value="Повторное сканирование" />
-        <Text style={{color: COLORS.white, fontWeight: '500', marginTop: 5}}>
+        <AppText style={{color: COLORS.white, fontWeight: '500', marginTop: 5}}>
           Предыдущее значение
-        </Text>
+        </AppText>
         <ListItem
           isFirst
           isLast={item.position == null}

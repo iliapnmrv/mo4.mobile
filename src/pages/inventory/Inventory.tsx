@@ -56,6 +56,7 @@ import {InventoryParamList} from 'navigation/Home/Inventory';
 import {COLORS} from 'constants/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {parseQrCode} from 'utils/utils';
+import AppText from 'components/Text/AppText';
 
 type InventoryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<InventoryParamList, 'Inventory', 'MyStack'>,
@@ -326,9 +327,9 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
                 style={styles.inventoryInfoContainer}
                 onPress={() => switchInventory(!Boolean(date))}
                 activeOpacity={0.6}>
-                <Text style={{color: COLORS.black}}>
+                <AppText style={{color: COLORS.black}}>
                   {date ? `Открыта ${moment(date).format('L')}` : 'Не открыта'}
-                </Text>
+                </AppText>
                 <Switch
                   style={{
                     transform: [{scaleX: 1.2}, {scaleY: 1.2}],
@@ -385,23 +386,25 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
                           marginRight: 5,
                           maxWidth: Dimensions.get('screen').width - 20,
                         }}>
-                        <Text style={styles.prevScanText}>
+                        <AppText style={styles.prevScanText}>
                           {item.inventoryNum}
-                        </Text>
-                        <Text style={styles.prevScanText}>
+                        </AppText>
+                        <AppText style={styles.prevScanText}>
                           {item.name !== 'Не в учете' ? item.name : item.model}
-                        </Text>
+                        </AppText>
                         {item.position ? (
-                          <Text style={styles.prevScanText}>
+                          <AppText style={styles.prevScanText}>
                             Строка ведомости: {item.position}
-                          </Text>
+                          </AppText>
                         ) : null}
                         {item.place ? (
-                          <Text style={styles.prevScanText}>{item.place}</Text>
+                          <AppText style={styles.prevScanText}>
+                            {item.place}
+                          </AppText>
                         ) : null}
-                        <Text style={styles.prevScanText}>
+                        <AppText style={styles.prevScanText}>
                           {colorItem.title}
-                        </Text>
+                        </AppText>
                       </TouchableOpacity>
                     );
                   }}
@@ -412,9 +415,9 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
           </View>
         ) : (
           <ContentBlock>
-            <Text style={[styles.inventoryText, {color: COLORS.black}]}>
+            <AppText style={[styles.inventoryText, {color: COLORS.black}]}>
               Для начала работы откройте инвентаризационную сессию
-            </Text>
+            </AppText>
           </ContentBlock>
         )}
       </ScrollView>

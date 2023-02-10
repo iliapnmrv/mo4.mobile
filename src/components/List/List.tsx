@@ -1,6 +1,7 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {COLORS} from 'constants/colors';
+import AppText from 'components/Text/AppText';
 
 type Props = {
   name: string;
@@ -26,8 +27,8 @@ const ListItem = ({name, value, isFirst = false, isLast = false}: Props) => {
             }
           : null,
       ]}>
-      <Text style={styles.nameText}>{name}</Text>
-      <Text style={styles.valueText}>{value}</Text>
+      <AppText style={styles.nameText}>{name}</AppText>
+      <AppText style={styles.valueText}>{value}</AppText>
     </View>
   ) : null;
 };

@@ -1,6 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {COLORS} from 'constants/colors';
+import AppText from 'components/Text/AppText';
 
 type Props = {
   text: string;
@@ -14,7 +15,7 @@ const Button = ({text, onPress, type = 'primary'}: Props) => {
       activeOpacity={0.8}
       style={[styles.button, styles[type]]}
       onPress={onPress}>
-      <Text style={[styles.text, styles[`${type}Text`]]}>{text}</Text>
+      <AppText style={[styles.text, styles[`${type}Text`]]}>{text}</AppText>
     </TouchableOpacity>
   );
 };

@@ -2,6 +2,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {COLORS} from 'constants/colors';
+import AppText from 'components/Text/AppText';
 
 type Props = {
   action: Function;
@@ -14,7 +15,7 @@ const QRButton = ({action}: Props) => {
       style={styles.button}
       activeOpacity={0.7}>
       <Icon name="qr-code-outline" size={30} color="#000" />
-      <Text style={styles.buttonText}>Сканировать QR код</Text>
+      <AppText style={styles.buttonText}>Сканировать QR код</AppText>
     </TouchableOpacity>
   );
 };

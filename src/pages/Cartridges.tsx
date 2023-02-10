@@ -28,6 +28,7 @@ import {CompositeScreenProps} from '@react-navigation/native';
 import {HomeScreensParamList} from 'navigation/Home/Home';
 import {RootStackParamList} from 'navigation/Navigation';
 import {store} from 'redux/store';
+import AppText from 'components/Text/AppText';
 moment.locale('ru');
 
 type CartridgeScreenProps = CompositeScreenProps<
@@ -112,28 +113,28 @@ const Cartridges = ({navigation}: CartridgeScreenProps) => {
                   display: 'flex',
                   flexDirection: 'column',
                 }}>
-                <Text style={styles.mainText}>
+                <AppText style={styles.mainText}>
                   Наименование: {cartridge.findByName.name}
-                </Text>
-                <Text style={styles.mainText}>
+                </AppText>
+                <AppText style={styles.mainText}>
                   Количество: {cartridge.findByName.amount}
-                </Text>
+                </AppText>
                 {cartridge.findByName.info ? (
-                  <Text style={styles.mainText}>
+                  <AppText style={styles.mainText}>
                     Примечания: {cartridge.findByName.info}
-                  </Text>
+                  </AppText>
                 ) : (
-                  <Text>Примечания отсутствуют</Text>
+                  <AppText>Примечания отсутствуют</AppText>
                 )}
               </View>
             ) : cartridgeScan && !!!cartridge?.findByName ? (
-              <Text style={styles.mainText}>
+              <AppText style={styles.mainText}>
                 {cartridgeScan} отсутствует в списке
-              </Text>
+              </AppText>
             ) : (
-              <Text style={styles.mainText}>
+              <AppText style={styles.mainText}>
                 Отсканируйте QR код чтобы получить информацию
-              </Text>
+              </AppText>
             )}
           </ContentBlock>
 
@@ -149,9 +150,9 @@ const Cartridges = ({navigation}: CartridgeScreenProps) => {
                   onPress={() => updateCartridgeAmount(LogTypesEnum.sub)}
                   activeOpacity={0.7}>
                   <Icon name="remove" size={30} color="#fff" />
-                  <Text style={[styles.mainText, {color: 'white'}]}>
+                  <AppText style={[styles.mainText, {color: 'white'}]}>
                     Выдача
-                  </Text>
+                  </AppText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => updateCartridgeAmount(LogTypesEnum.add)}
@@ -162,7 +163,7 @@ const Cartridges = ({navigation}: CartridgeScreenProps) => {
                     !cartridge?.findByName?.id ? styles.disabled : null,
                   ]}>
                   <Icon name="add-sharp" size={30} color="#000" />
-                  <Text style={styles.mainText}>Поступление</Text>
+                  <AppText style={styles.mainText}>Поступление</AppText>
                 </TouchableOpacity>
               </View>
 
@@ -179,19 +180,21 @@ const Cartridges = ({navigation}: CartridgeScreenProps) => {
             <ContentBlock title="Журная действий">
               {cartridge?.findByName.logs?.length ? (
                 <>
-                  <Text style={styles.secondaryText}>
+                  <AppText style={styles.secondaryText}>
                     Количество Описание Дата
-                  </Text>
+                  </AppText>
                   {cartridge?.findByName.logs?.map((log, index) => (
-                    <Text style={styles.secondaryText} key={index}>
+                    <AppText style={styles.secondaryText} key={index}>
                       {log.type === 'add' ? '+' : '-'}
                       {log.amount} {log.description}{' '}
                       {moment(log.created_at).format('L')}
-                    </Text>
+                    </AppText>
                   ))}
                 </>
               ) : (
-                <Text style={styles.secondaryText}>Действия отсутствуют</Text>
+                <AppText style={styles.secondaryText}>
+                  Действия отсутствуют
+                </AppText>
               )}
             </ContentBlock>
           ) : (
