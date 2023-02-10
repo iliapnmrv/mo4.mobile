@@ -20,8 +20,10 @@ import Input from 'components/Inputs/Input';
 import {CompositeScreenProps} from '@react-navigation/native';
 import {RootStackParamList} from 'navigation/Navigation';
 import {DocsParamList} from 'navigation/Home/Docs';
-import {parseQrCode} from 'utils/utils';
+import {QRzeros, parseQrCode} from 'utils/utils';
 import {useLazyGetItemQuery} from 'redux/docs/docs.api';
+import {COLORS} from 'constants/colors';
+import AppText from 'components/Text/AppText';
 
 type DocsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DocsParamList, 'Docs', 'MyStack'>,
@@ -48,8 +50,7 @@ const Docs = ({navigation}: DocsScreenProps) => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    console.log('docsScan', docsScan);
-    // request here
+    onItemScan();
   }, [docsScan]);
 
   useEffect(() => {
@@ -60,6 +61,15 @@ const Docs = ({navigation}: DocsScreenProps) => {
 
     return () => clearTimeout(delayDebounceFn);
   }, [search]);
+
+  const onItemScan = async () => {
+    try {
+      const [inventoryNum] = parseQrCode(docsScan);
+      await getItem(+inventoryNum.substring(inventoryNum.length - 5)).unwrap();
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   // const onPageReloadHandler = () => {
   //   getDoc('');
@@ -73,7 +83,7 @@ const Docs = ({navigation}: DocsScreenProps) => {
   return (
     <PageContainer>
       <ScrollView
-        contentContainerStyle={{flex: 1}}
+        // contentContainerStyle={{flex: 1}}
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={() => {}} />
         }>
@@ -101,7 +111,7 @@ const Docs = ({navigation}: DocsScreenProps) => {
           }
         />
         <ContentBlock
-          // transparent
+          transparent
           helperText={
             history.length
               ? 'Нажмите, чтобы получить информацию'
@@ -121,34 +131,35 @@ const Docs = ({navigation}: DocsScreenProps) => {
                     backgroundColor: '#fff',
                     borderRadius: 10,
                     padding: 10,
-                    marginRight: 5,
                     maxWidth: Dimensions.get('screen').width - 20,
                   }}>
-                  <Text>{qr}</Text>
-                  <Text>{name}</Text>
-                  <Text>{(serial_number = '')}</Text>
+                  <AppText>{QRzeros(qr)}</AppText>
+                  <AppText>{name}</AppText>
+                  <AppText>{serial_number}</AppText>
                 </TouchableOpacity>
               )}
               keyExtractor={(_, index) => index.toString()}
             />
           ) : null}
         </ContentBlock>
-        <ContentBlock title="Сканирование">
-          <View>
-            <Text>
-              {docsScan
-                ? docsScan
-                : 'Отсканируйте код чтобы получить информацию'}
-            </Text>
-          </View>
-        </ContentBlock>
-        {/* {itemData ? ( */}
-        {true ? (
+        {itemData ? (
           <>
-            <ContentBlock title="Анализ">
+            <ContentBlock title={itemData?.name}>
               <View>
-                <Text>В наличии {itemData?.analysis.listed}</Text>
-                <Text>Числится {itemData?.analysis.in_stock}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                  <AppText style={{fontSize: 15}}>В наличии:</AppText>
+                  <AppText
+                    style={{fontSize: 17, fontWeight: '500', marginLeft: 10}}>
+                    {itemData?.analysis.listed}
+                  </AppText>
+                </View>
+                <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                  <AppText style={{fontSize: 15}}>Числится:</AppText>
+                  <AppText
+                    style={{fontSize: 17, fontWeight: '500', marginLeft: 17}}>
+                    {itemData?.analysis.in_stock}
+                  </AppText>
+                </View>
               </View>
             </ContentBlock>
 
@@ -159,16 +170,18 @@ const Docs = ({navigation}: DocsScreenProps) => {
                 action: () =>
                   navigation.navigate('DocsEdit', {id: 1, title: '123'}),
               }}>
-              <Text>Наименование {itemData?.name}</Text>
-              <Text>Модель {itemData?.model}</Text>
-              <Text>Серийный номер {itemData?.serial_number}</Text>
-              <Text>Пользователь {itemData?.user?.name}</Text>
-              <Text>Местоположение {itemData?.place?.name}</Text>
-              <Text>Cтатус {itemData?.status?.name}</Text>
-              <Text>Номенкулатура {itemData?.device?.name}</Text>
-              <Text>МОЛ {itemData?.person?.name}</Text>
+              <AppText>Наименование </AppText>
+              <AppText>Модель {itemData?.model}</AppText>
+              <AppText>Серийный номер {itemData?.serial_number}</AppText>
+              <AppText>Пользователь {itemData?.user?.name}</AppText>
+              <AppText>Местоположение {itemData?.place?.name}</AppText>
+              <AppText>Cтатус {itemData?.status?.name}</AppText>
+              <AppText>Номенкулатура {itemData?.device?.name}</AppText>
+              <AppText>МОЛ {itemData?.person?.name}</AppText>
               {itemData?.logs?.map(log => (
-                <View key={log.id}>{log.description}</View>
+                <View key={log.id}>
+                  <AppText>{log.description}</AppText>
+                </View>
               ))}
             </ContentBlock>
           </>

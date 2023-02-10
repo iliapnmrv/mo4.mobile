@@ -14,6 +14,7 @@ import {RootStackParamList} from 'navigation/Navigation';
 import {HomeScreensParamList} from 'navigation/Home/Home';
 import {CompositeScreenProps} from '@react-navigation/native';
 import {COLORS} from 'constants/colors';
+import AppText from 'components/Text/AppText';
 
 export type IHomeItem = {
   id: string;
@@ -46,7 +47,7 @@ type HomeScreenProps = CompositeScreenProps<
 const Home = ({navigation}: HomeScreenProps) => {
   return (
     <PageContainer>
-      <Text style={styles.welcomeText}>Добро пожаловать!</Text>
+      <AppText style={styles.welcomeText}>Портал МО-4</AppText>
       <FlatList
         data={Screens}
         renderItem={({item}) => <HomePageItem item={item} />}
@@ -62,7 +63,10 @@ export default Home;
 
 const styles = StyleSheet.create({
   welcomeText: {
-    fontSize: 22,
+    fontSize: 25,
     color: COLORS.black,
+    fontWeight: '600',
+    marginVertical: 20,
+    marginLeft: 20,
   },
 });

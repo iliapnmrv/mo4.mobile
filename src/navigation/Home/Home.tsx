@@ -24,6 +24,7 @@ const HomeScreens = () => {
         component={Home}
         options={{
           title: 'Главная',
+          headerShown: false,
           header: props => <PageHeader {...props} />,
         }}
       />

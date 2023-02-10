@@ -1,6 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {ReactNode} from 'react';
 import {COLORS} from 'constants/colors';
+import AppText from 'components/Text/AppText';
 
 type IContentBlockButton = {
   text: string | ReactNode;
@@ -28,14 +29,16 @@ const ContentBlock = ({
       <View style={styles.blockTopContainer}>
         <View>
           {title ? (
-            <Text style={[styles.header, {color: COLORS.black}]}>{title}</Text>
+            <AppText style={[styles.header, {color: COLORS.black}]}>
+              {title}
+            </AppText>
           ) : (
             <></>
           )}
           {helperText ? (
-            <Text style={[styles.helperText, {color: COLORS.black}]}>
+            <AppText style={[styles.helperText, {color: COLORS.black}]}>
               {helperText}
-            </Text>
+            </AppText>
           ) : (
             <></>
           )}
@@ -43,13 +46,13 @@ const ContentBlock = ({
 
         {button && button.text ? (
           <TouchableOpacity activeOpacity={0.7} onPress={button.action}>
-            <Text
+            <AppText
               style={[
                 styles.buttonText,
                 button.size ? {fontSize: button.size} : {},
               ]}>
               {button?.text}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         ) : (
           <></>
@@ -59,7 +62,7 @@ const ContentBlock = ({
         style={[
           styles.mainItem,
           transparent
-            ? {backgroundColor: undefined, marginHorizontal: -10}
+            ? {backgroundColor: undefined, marginHorizontal: 0, padding: 0}
             : null,
         ]}>
         {children}

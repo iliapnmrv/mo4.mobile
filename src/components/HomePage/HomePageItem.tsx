@@ -4,6 +4,7 @@ import {IHomeItem} from 'pages/Home';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {COLORS} from 'constants/colors';
+import AppText from 'components/Text/AppText';
 
 type Props = {
   item: IHomeItem;
@@ -19,7 +20,7 @@ const HomePageItem = ({item}: Props) => {
       //@ts-ignore
       onPress={() => navigation.navigate(item.path)}>
       <View style={styles.homeItem}>
-        <Text style={styles.homeItemText}>{item.title}</Text>
+        <AppText style={styles.homeItemText}>{item.title}</AppText>
         <Icon
           style={{marginTop: 5}}
           name={item.icon}
