@@ -20,6 +20,7 @@ export default AppText;
 
 const styles = StyleSheet.create({
   text: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Rubik',
+    fontWeight: '400',
   },
 });
