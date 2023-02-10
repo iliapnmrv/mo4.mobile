@@ -27,7 +27,7 @@ export type IAnalysis = {
 export const docsApi = createApi({
   reducerPath: 'docs/api',
   baseQuery,
-  tagTypes: ['AllCatalogs', 'Item', 'Catalog'],
+  tagTypes: ['AllCatalogs', 'Item', 'Catalog', 'Suggestions'],
   endpoints: builder => ({
     getCatalogs: builder.query<IAllCatalogsResponse, void>({
       query: () => `catalog`,
@@ -54,6 +54,14 @@ export const docsApi = createApi({
         params,
       }),
       providesTags: ['Item'],
+    }),
+    getSearchSuggestions: builder.query<IItem[], {q: string}>({
+      query: ({q}) => ({
+        url: `item/suggestions`,
+        method: 'GET',
+        params: {field: 'qr', q},
+      }),
+      providesTags: ['Suggestions'],
     }),
     updateDoc: builder.mutation<IItem, Partial<IItem> & Pick<IItem, 'id'>>({
       query: ({id, ...patch}) => ({
@@ -86,4 +94,5 @@ export const {
   useUpdateDocMutation,
   useUploadFilesMutation,
   useLazyGetItemQuery,
+  useLazyGetSearchSuggestionsQuery,
 } = docsApi;

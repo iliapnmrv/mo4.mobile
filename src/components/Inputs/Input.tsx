@@ -29,7 +29,7 @@ const Input = ({
 }: Props) => {
   return (
     <>
-      <AppText style={styles.labelText}>{label}</AppText>
+      {label ? <AppText style={styles.labelText}>{label}</AppText> : null}
       <View style={iconName ? styles.iconContainer : {}}>
         {iconName ? (
           <Icon style={styles.icon} name={iconName} size={20} color="#000" />
@@ -40,7 +40,7 @@ const Input = ({
           placeholder={placeholder}
           keyboardType={keyboardType}
           style={styles.inputStyle}
-          placeholderTextColor="#dbdbdb"
+          placeholderTextColor={COLORS.gray}
           selectionColor="#757575"
         />
       </View>
@@ -69,9 +69,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    marginBottom: 10,
-    borderLeftColor: COLORS.primary,
-    borderLeftWidth: 2,
+    borderRadius: 8,
+    // marginBottom: 10,
+
+    // borderColor: COLORS.primary + '33',
+    // borderWidth: 1,
+    // borderLeftColor: COLORS.primary,
+    // borderLeftWidth: 2,
   },
   icon: {
     paddingLeft: 15,

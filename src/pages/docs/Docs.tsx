@@ -21,9 +21,13 @@ import {CompositeScreenProps} from '@react-navigation/native';
 import {RootStackParamList} from 'navigation/Navigation';
 import {DocsParamList} from 'navigation/Home/Docs';
 import {QRzeros, parseQrCode} from 'utils/utils';
-import {useLazyGetItemQuery} from 'redux/docs/docs.api';
+import {
+  useLazyGetItemQuery,
+  useLazyGetSearchSuggestionsQuery,
+} from 'redux/docs/docs.api';
 import {COLORS} from 'constants/colors';
 import AppText from 'components/Text/AppText';
+import Button from 'components/Buttons/Button';
 
 type DocsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DocsParamList, 'Docs', 'MyStack'>,
@@ -40,13 +44,19 @@ const Docs = ({navigation}: DocsScreenProps) => {
   const [getItem, {isLoading, isError, data: itemData, error, isFetching}] =
     useLazyGetItemQuery();
 
+  const [searchSuggestions, {data: suggestions}] =
+    useLazyGetSearchSuggestionsQuery();
+
+  console.log(suggestions);
+
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+
   // const {data: statuses, refetch: refetchStatuses} = useGetStatusesQuery('');
   // const {data: persons, refetch: refetchPersons} = useGetPersonsQuery('');
   // const {data: storages, refetch: refetchStorages} = useGetStoragesQuery('');
   // const {data: owners, refetch: refetchOwners} = useGetOwnersQuery('');
   // const {data: types, refetch: refetchTypes} = useGetTypesQuery('');
 
-  const [text, onChangeText] = useState('');
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -54,12 +64,12 @@ const Docs = ({navigation}: DocsScreenProps) => {
   }, [docsScan]);
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      console.log('search123', search);
-      // request here
-    }, 1500);
-
-    return () => clearTimeout(delayDebounceFn);
+    if (search) {
+      setShowSuggestions(true);
+      searchSuggestions({q: search});
+    } else {
+      setShowSuggestions(false);
+    }
   }, [search]);
 
   const onItemScan = async () => {
@@ -83,17 +93,52 @@ const Docs = ({navigation}: DocsScreenProps) => {
   return (
     <PageContainer>
       <ScrollView
-        // contentContainerStyle={{flex: 1}}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={() => {}} />
         }>
         <Input
-          setValue={onChangeText}
-          value={text}
+          setValue={setSearch}
+          value={search}
           iconName="search"
-          placeholder="Поиск по номеру QR, названию..."
+          placeholder="Поиск по номеру QR..."
         />
+        {showSuggestions ? (
+          <View
+            style={{
+              width: '100%',
+            }}>
+            {suggestions?.map(({name, qr, serial_number, model, id}) => (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                key={id}
+                style={{
+                  padding: 10,
+                  borderBottomWidth: 1,
+                  borderBottomColor: COLORS.primary,
+                  backgroundColor: 'white',
+                }}
+                onPress={() => {
+                  setDocsHistory({
+                    name,
+                    qr,
+                    serial_number,
+                    model,
+                    data: QRzeros(qr),
+                  });
+                  setDocsScan(QRzeros(qr));
+                  setShowSuggestions(false);
+                }}>
+                <AppText style={{fontSize: 16}}>
+                  {QRzeros(qr)} - {name}
+                </AppText>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : null}
+
         <QRButton
+          style={{marginTop: 10}}
           action={() =>
             navigation.navigate('Scanner', {
               setScan: data => {
@@ -104,6 +149,7 @@ const Docs = ({navigation}: DocsScreenProps) => {
                     name,
                     qr: +inventoryNum.substring(inventoryNum.length - 5),
                     serial_number,
+                    model,
                     data,
                   });
               },
@@ -123,19 +169,28 @@ const Docs = ({navigation}: DocsScreenProps) => {
               horizontal={true}
               data={history}
               ItemSeparatorComponent={() => <HorizontalListSeparator />}
-              renderItem={({item: {name, qr, serial_number, data}}) => (
+              renderItem={({
+                item: {name, qr, serial_number, data, model},
+                index,
+              }) => (
                 <TouchableOpacity
                   onPress={() => setDocsScan(data)}
                   activeOpacity={0.7}
                   style={{
+                    borderColor:
+                      index === 0 ? COLORS.primary + '99' : COLORS.white,
+                    borderWidth: 1,
                     backgroundColor: '#fff',
                     borderRadius: 10,
                     padding: 10,
-                    maxWidth: Dimensions.get('screen').width - 20,
+                    maxWidth: Dimensions.get('screen').width - 40,
                   }}>
-                  <AppText>{QRzeros(qr)}</AppText>
-                  <AppText>{name}</AppText>
-                  <AppText>{serial_number}</AppText>
+                  <AppText style={{fontSize: 16, fontWeight: '700'}}>
+                    {QRzeros(qr)}
+                  </AppText>
+                  <AppText style={{fontSize: 15}}>{name}</AppText>
+                  <AppText style={{fontSize: 15}}>{model}</AppText>
+                  <AppText style={{fontSize: 15}}>{serial_number}</AppText>
                 </TouchableOpacity>
               )}
               keyExtractor={(_, index) => index.toString()}
@@ -161,15 +216,15 @@ const Docs = ({navigation}: DocsScreenProps) => {
                   </AppText>
                 </View>
               </View>
-            </ContentBlock>
-
-            <ContentBlock
-              title="Информация"
-              button={{
-                text: 'Изменить',
-                action: () =>
-                  navigation.navigate('DocsEdit', {id: 1, title: '123'}),
-              }}>
+              <Button
+                onPress={() =>
+                  navigation.navigate('DocsEdit', {
+                    id: itemData.qr,
+                    title: `Редактирование ${QRzeros(itemData.qr)}`,
+                  })
+                }
+                text="Изменить"
+              />
               <AppText>Наименование </AppText>
               <AppText>Модель {itemData?.model}</AppText>
               <AppText>Серийный номер {itemData?.serial_number}</AppText>
