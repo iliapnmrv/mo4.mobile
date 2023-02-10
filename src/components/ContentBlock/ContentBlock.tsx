@@ -42,7 +42,7 @@ const ContentBlock = ({
         </View>
 
         {button && button.text ? (
-          <TouchableOpacity activeOpacity={0.8} onPress={button.action}>
+          <TouchableOpacity activeOpacity={0.7} onPress={button.action}>
             <Text
               style={[
                 styles.buttonText,
@@ -89,10 +89,11 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
   buttonText: {
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#808080',
+    color: COLORS.primary,
     textDecorationLine: 'underline',
+    marginRight: 10,
   },
   blockTopContainer: {
     display: 'flex',

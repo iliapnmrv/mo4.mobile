@@ -18,8 +18,8 @@ const DocsStack = () => {
         component={Docs}
         options={{
           title: 'Документооборот',
-          // header: props => <PageHeader {...props} />,
-          header: props => <></>,
+          header: props => <PageHeader {...props} />,
+          // header: props => <></>,
         }}
       />
       <DocsNav.Screen

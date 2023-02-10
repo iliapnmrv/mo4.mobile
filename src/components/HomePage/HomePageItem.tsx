@@ -3,6 +3,7 @@ import React from 'react';
 import {IHomeItem} from 'pages/Home';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
+import {COLORS} from 'constants/colors';
 
 type Props = {
   item: IHomeItem;
@@ -13,7 +14,7 @@ const HomePageItem = ({item}: Props) => {
 
   return (
     <TouchableOpacity
-      activeOpacity={0.55}
+      activeOpacity={0.7}
       style={styles.itemContainer}
       //@ts-ignore
       onPress={() => navigation.navigate(item.path)}>
@@ -23,7 +24,7 @@ const HomePageItem = ({item}: Props) => {
           style={{marginTop: 5}}
           name={item.icon}
           size={50}
-          color={'#6495ED'}
+          color={COLORS.primary}
         />
       </View>
     </TouchableOpacity>

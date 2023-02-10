@@ -55,6 +55,7 @@ import {RootStackParamList} from 'navigation/Navigation';
 import {InventoryParamList} from 'navigation/Home/Inventory';
 import {COLORS} from 'constants/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {parseQrCode} from 'utils/utils';
 
 type InventoryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<InventoryParamList, 'Inventory', 'MyStack'>,
@@ -200,11 +201,13 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     }
   };
 
+  useEffect(() => {
+    getAnalysis();
+  }, [inventoryScan]);
+
   const getAnalysis = async () => {
     try {
-      const [inventoryNum, name, model, serialNum] = inventoryScan
-        .split('\n')
-        .map(item => item.trim());
+      const [inventoryNum, name, model, serialNum] = parseQrCode(inventoryScan);
 
       //проверка на повторное считывание
       const [{rows}] = await db.executeSql(isScannedItemQuery, [+inventoryNum]);
@@ -406,22 +409,6 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
                 />
               </ContentBlock>
             ) : null}
-            {inventoryScan ? (
-              <>
-                <ContentBlock title={'Сканирование'}>
-                  <Text style={{color: COLORS.black}}>{inventoryScan}</Text>
-                </ContentBlock>
-                <Button
-                  type="secondary"
-                  text="Получить информацию"
-                  action={getAnalysis}
-                />
-              </>
-            ) : (
-              <Text style={{color: COLORS.black}}>
-                Отсканируйте QR, чтобы получить информацию
-              </Text>
-            )}
           </View>
         ) : (
           <ContentBlock>

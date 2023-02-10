@@ -4,6 +4,7 @@ import Settings from '../pages/Settings';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreens from './Home/Home';
 import PageHeader from 'components/PageHeader/PageHeader';
+import {COLORS} from 'constants/colors';
 
 export type BottomTabsParamList = {
   HomeScreens: undefined;
@@ -17,6 +18,8 @@ const Tabs = () => {
     <Tab.Navigator
       screenOptions={{
         tabBarHideOnKeyboard: true,
+        tabBarActiveTintColor: COLORS.primary,
+        // tabBarActiveTintColor: COLORS.primary,
       }}>
       <Tab.Screen
         name="HomeScreens"

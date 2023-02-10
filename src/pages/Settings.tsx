@@ -1,4 +1,4 @@
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Input from '../components/Inputs/Input';
 import {useAppSelector} from '../hooks/redux';
@@ -6,6 +6,8 @@ import ContentBlock from '../components/ContentBlock/ContentBlock';
 import {Snackbar} from 'react-native-paper';
 import {useActions} from 'hooks/actions';
 import PageContainer from 'components/PageContainer/PageContainer';
+import {COLORS} from 'constants/colors';
+import Button from 'components/Buttons/Button';
 
 const Settings = () => {
   const {serverUrl, cartridgeServerUrl} = useAppSelector(
@@ -29,16 +31,22 @@ const Settings = () => {
       <View>
         <ContentBlock title="Сервер">
           <Input
+            iconName="md-document-text-outline"
             value={inventoryServer}
             setValue={setInventoryServer}
             label="Инвентаризация/документооборот"
           />
           <Input
+            iconName="md-print-outline"
             value={cartridgeServer}
             setValue={setCartridgeServer}
             label="Картриджи"
           />
-          <Button title="Сохранить" onPress={saveSettings} />
+          <Button
+            // color={COLORS.primary}
+            text="Сохранить"
+            onPress={saveSettings}
+          />
         </ContentBlock>
       </View>
       <Snackbar

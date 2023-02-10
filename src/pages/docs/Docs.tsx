@@ -12,14 +12,6 @@ import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import QRButton from 'components/Buttons/QRButton';
 import {useAppSelector} from 'hooks/redux';
-import {
-  useGetOwnersQuery,
-  useGetPersonsQuery,
-  useGetStatusesQuery,
-  useGetStoragesQuery,
-  useGetTypesQuery,
-  useLazyGetDocsItemQuery,
-} from 'redux/docs/docs.api';
 import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
 import {useActions} from 'hooks/actions';
@@ -28,6 +20,8 @@ import Input from 'components/Inputs/Input';
 import {CompositeScreenProps} from '@react-navigation/native';
 import {RootStackParamList} from 'navigation/Navigation';
 import {DocsParamList} from 'navigation/Home/Docs';
+import {parseQrCode} from 'utils/utils';
+import {useLazyGetItemQuery} from 'redux/docs/docs.api';
 
 type DocsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DocsParamList, 'Docs', 'MyStack'>,
@@ -41,14 +35,14 @@ const Docs = ({navigation}: DocsScreenProps) => {
 
   const {setDocsScan, setDocsHistory} = useActions();
 
-  const [getDoc, {isLoading, isError, data: docData, error, isFetching}] =
-    useLazyGetDocsItemQuery();
+  const [getItem, {isLoading, isError, data: itemData, error, isFetching}] =
+    useLazyGetItemQuery();
 
-  const {data: statuses, refetch: refetchStatuses} = useGetStatusesQuery('');
-  const {data: persons, refetch: refetchPersons} = useGetPersonsQuery('');
-  const {data: storages, refetch: refetchStorages} = useGetStoragesQuery('');
-  const {data: owners, refetch: refetchOwners} = useGetOwnersQuery('');
-  const {data: types, refetch: refetchTypes} = useGetTypesQuery('');
+  // const {data: statuses, refetch: refetchStatuses} = useGetStatusesQuery('');
+  // const {data: persons, refetch: refetchPersons} = useGetPersonsQuery('');
+  // const {data: storages, refetch: refetchStorages} = useGetStoragesQuery('');
+  // const {data: owners, refetch: refetchOwners} = useGetOwnersQuery('');
+  // const {data: types, refetch: refetchTypes} = useGetTypesQuery('');
 
   const [text, onChangeText] = useState('');
   const [search, setSearch] = useState('');
@@ -67,24 +61,21 @@ const Docs = ({navigation}: DocsScreenProps) => {
     return () => clearTimeout(delayDebounceFn);
   }, [search]);
 
-  const onPageReloadHandler = () => {
-    getDoc('');
-    refetchStatuses();
-    refetchPersons();
-    refetchStorages();
-    refetchOwners();
-    refetchTypes();
-  };
+  // const onPageReloadHandler = () => {
+  //   getDoc('');
+  //   refetchStatuses();
+  //   refetchPersons();
+  //   refetchStorages();
+  //   refetchOwners();
+  //   refetchTypes();
+  // };
 
   return (
     <PageContainer>
       <ScrollView
         contentContainerStyle={{flex: 1}}
         refreshControl={
-          <RefreshControl
-            refreshing={isFetching}
-            onRefresh={onPageReloadHandler}
-          />
+          <RefreshControl refreshing={false} onRefresh={() => {}} />
         }>
         <Input
           setValue={onChangeText}
@@ -96,23 +87,35 @@ const Docs = ({navigation}: DocsScreenProps) => {
           action={() =>
             navigation.navigate('Scanner', {
               setScan: data => {
-                setDocsScan(data), setDocsHistory(data);
+                const [inventoryNum, name, model, serial_number] =
+                  parseQrCode(data);
+                setDocsScan(data),
+                  setDocsHistory({
+                    name,
+                    qr: +inventoryNum.substring(inventoryNum.length - 5),
+                    serial_number,
+                    data,
+                  });
               },
             })
           }
         />
-        {history.length ? (
-          <ContentBlock
-            transparent
-            helperText="Нажмите, чтобы получить информацию"
-            title="Предыдущие сканирования">
+        <ContentBlock
+          // transparent
+          helperText={
+            history.length
+              ? 'Нажмите, чтобы получить информацию'
+              : 'Здесь появятся ваши последние сканирования'
+          }
+          title="Предыдущие сканирования">
+          {history.length ? (
             <FlatList
               horizontal={true}
               data={history}
               ItemSeparatorComponent={() => <HorizontalListSeparator />}
-              renderItem={({item}) => (
+              renderItem={({item: {name, qr, serial_number, data}}) => (
                 <TouchableOpacity
-                  onPress={() => setDocsScan(item)}
+                  onPress={() => setDocsScan(data)}
                   activeOpacity={0.7}
                   style={{
                     backgroundColor: '#fff',
@@ -121,13 +124,15 @@ const Docs = ({navigation}: DocsScreenProps) => {
                     marginRight: 5,
                     maxWidth: Dimensions.get('screen').width - 20,
                   }}>
-                  <Text>{item}</Text>
+                  <Text>{qr}</Text>
+                  <Text>{name}</Text>
+                  <Text>{(serial_number = '')}</Text>
                 </TouchableOpacity>
               )}
               keyExtractor={(_, index) => index.toString()}
             />
-          </ContentBlock>
-        ) : null}
+          ) : null}
+        </ContentBlock>
         <ContentBlock title="Сканирование">
           <View>
             <Text>
@@ -137,20 +142,34 @@ const Docs = ({navigation}: DocsScreenProps) => {
             </Text>
           </View>
         </ContentBlock>
-        {/* {docData ? ( */}
+        {/* {itemData ? ( */}
         {true ? (
           <>
-            <ContentBlock
-              title="Анализ"
-              button={{
-                text: 'Обновить анализ',
-                action: () => console.log,
-              }}>
-              <View></View>
+            <ContentBlock title="Анализ">
+              <View>
+                <Text>В наличии {itemData?.analysis.listed}</Text>
+                <Text>Числится {itemData?.analysis.in_stock}</Text>
+              </View>
             </ContentBlock>
 
-            <ContentBlock title="Информация">
-              <View></View>
+            <ContentBlock
+              title="Информация"
+              button={{
+                text: 'Изменить',
+                action: () =>
+                  navigation.navigate('DocsEdit', {id: 1, title: '123'}),
+              }}>
+              <Text>Наименование {itemData?.name}</Text>
+              <Text>Модель {itemData?.model}</Text>
+              <Text>Серийный номер {itemData?.serial_number}</Text>
+              <Text>Пользователь {itemData?.user?.name}</Text>
+              <Text>Местоположение {itemData?.place?.name}</Text>
+              <Text>Cтатус {itemData?.status?.name}</Text>
+              <Text>Номенкулатура {itemData?.device?.name}</Text>
+              <Text>МОЛ {itemData?.person?.name}</Text>
+              {itemData?.logs?.map(log => (
+                <View key={log.id}>{log.description}</View>
+              ))}
             </ContentBlock>
           </>
         ) : null}

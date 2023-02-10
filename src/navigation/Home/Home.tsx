@@ -38,8 +38,9 @@ const HomeScreens = () => {
         name="DocsStack"
         component={DocsStack}
         options={{
-          title: 'Документооборот',
-          header: props => <PageHeader {...props} />,
+          headerShown: false,
+          // title: 'Документооборот',
+          // header: props => <PageHeader {...props} />,
         }}
       />
       <HomeStack.Screen

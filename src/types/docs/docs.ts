@@ -1,36 +1,47 @@
-export type IDoc = {
+import {ICatalog} from './catalogs';
+
+export type IItem = {
   id: number;
-  inventorynumber: number;
+  qr: number;
   name: string;
+  month: number;
+  year: number;
+  serial_number: string;
   model: string;
-  sernum: string;
-  sredstvo: number;
-  person: number;
-  owner: number;
-  type: number;
-  status: number;
+  description: string | null;
+  additional_information: string | null;
+  instruction_id: number | null;
+  status?: ICatalog;
+  user?: ICatalog;
+  person?: ICatalog;
+  place?: ICatalog;
+  device?: ICatalog;
+  type?: ICatalog;
+  status_id?: number;
+  user_id?: number;
+  person_id?: number;
+  place_id?: number;
+  device_id?: number;
+  type_id?: number;
+  updatedAt?: Date;
+  createdAt?: Date;
+  logs?: ILog[];
+  files?: IFile[];
+  instruction?: IFile;
 };
 
-export type IDocType = {
+export type ILog = {
   id: number;
-  type_id: number;
-  type_name: string;
+  description: string;
+  item_id: number;
+  created_at: Date;
+  author: string;
 };
 
-export type IDocPerson = {
+export type IFile = {
+  created_at: Date;
   id: number;
-  person_id: number;
-  person_name: string;
-};
-
-export type IDocStatus = {
-  id: number;
-  status_id: number;
-  status_name: string;
-};
-
-export type IDocOwner = {
-  id: number;
-  owner_id: number;
-  owner_name: string;
+  item_id: number;
+  name: string;
+  path: string;
 };

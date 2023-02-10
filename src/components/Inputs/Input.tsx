@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 import React, {Dispatch, ReactNode, SetStateAction} from 'react';
-import { COLORS } from 'constants/colors';
+import {COLORS} from 'constants/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
   placeholder?: string;
   keyboardType?: KeyboardTypeOptions;
   label?: string;
-  iconName?: string
+  iconName?: string;
 };
 
 const Input = ({
@@ -24,13 +24,15 @@ const Input = ({
   placeholder,
   label,
   keyboardType = 'default',
-  iconName
+  iconName,
 }: Props) => {
   return (
     <>
       <Text style={styles.labelText}>{label}</Text>
       <View style={iconName ? styles.iconContainer : {}}>
-        {iconName ? <Icon style={styles.icon} name={iconName} size={20} color="#000"/> : null}
+        {iconName ? (
+          <Icon style={styles.icon} name={iconName} size={20} color="#000" />
+        ) : null}
         <TextInput
           onChangeText={setValue}
           value={value}
@@ -67,8 +69,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     marginBottom: 10,
-    borderLeftColor: 'black',
-    borderLeftWidth: 2
+    borderLeftColor: COLORS.primary,
+    borderLeftWidth: 2,
   },
   icon: {
     paddingLeft: 15,
