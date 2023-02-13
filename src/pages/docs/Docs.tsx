@@ -28,6 +28,8 @@ import {
 import {COLORS} from 'constants/colors';
 import AppText from 'components/Text/AppText';
 import Button from 'components/Buttons/Button';
+import {DataTable} from 'react-native-paper';
+import moment from 'moment';
 
 type DocsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DocsParamList, 'Docs', 'MyStack'>,
@@ -216,6 +218,15 @@ const Docs = ({navigation}: DocsScreenProps) => {
                   </AppText>
                 </View>
               </View>
+
+              <AppText>Наименование </AppText>
+              <AppText>Модель {itemData?.model}</AppText>
+              <AppText>Серийный номер {itemData?.serial_number}</AppText>
+              <AppText>Пользователь {itemData?.user?.name}</AppText>
+              <AppText>Местоположение {itemData?.place?.name}</AppText>
+              <AppText>Cтатус {itemData?.status?.name}</AppText>
+              <AppText>Номенкулатура {itemData?.device?.name}</AppText>
+              <AppText>МОЛ {itemData?.person?.name}</AppText>
               <Button
                 onPress={() =>
                   navigation.navigate('DocsEdit', {
@@ -225,19 +236,64 @@ const Docs = ({navigation}: DocsScreenProps) => {
                 }
                 text="Изменить"
               />
-              <AppText>Наименование </AppText>
-              <AppText>Модель {itemData?.model}</AppText>
-              <AppText>Серийный номер {itemData?.serial_number}</AppText>
-              <AppText>Пользователь {itemData?.user?.name}</AppText>
-              <AppText>Местоположение {itemData?.place?.name}</AppText>
-              <AppText>Cтатус {itemData?.status?.name}</AppText>
-              <AppText>Номенкулатура {itemData?.device?.name}</AppText>
-              <AppText>МОЛ {itemData?.person?.name}</AppText>
-              {itemData?.logs?.map(log => (
-                <View key={log.id}>
-                  <AppText>{log.description}</AppText>
-                </View>
-              ))}
+              <ScrollView horizontal>
+                <DataTable>
+                  <DataTable.Header>
+                    <View style={[styles.tableHeader, {width: 280}]}>
+                      <DataTable.Title>
+                        <AppText style={[styles.tableHeaderText]}>
+                          Описание
+                        </AppText>
+                      </DataTable.Title>
+                    </View>
+                    <View style={[styles.tableHeader, {width: 100}]}>
+                      <DataTable.Title>
+                        <AppText style={styles.tableHeaderText}>Дата</AppText>
+                      </DataTable.Title>
+                    </View>
+                    <View style={[styles.tableHeader, {width: 120}]}>
+                      <DataTable.Title>
+                        <AppText style={styles.tableHeaderText}>
+                          Пользователь
+                        </AppText>
+                      </DataTable.Title>
+                    </View>
+                  </DataTable.Header>
+                  <FlatList
+                    data={itemData.logs}
+                    renderItem={({item, index}) => (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          borderBottomColor: '#DCDCDC',
+                          borderBottomWidth: 1,
+                        }}>
+                        <View style={[styles.table, {width: 40}]}>
+                          <AppText style={styles.tableText}>
+                            {index + 1}
+                          </AppText>
+                        </View>
+                        <View style={[styles.table, {width: 250}]}>
+                          <AppText style={styles.tableText}>
+                            {item.description.trim()}
+                          </AppText>
+                        </View>
+                        <View style={[styles.table, {width: 100}]}>
+                          <AppText style={styles.tableText}>
+                            {moment(item.created_at).format('L')}
+                          </AppText>
+                        </View>
+                        <View style={[styles.table, {width: 100}]}>
+                          <AppText style={styles.tableText}>
+                            {item.author}
+                          </AppText>
+                        </View>
+                      </View>
+                    )}
+                    keyExtractor={(_, index) => index.toString()}
+                  />
+                </DataTable>
+              </ScrollView>
             </ContentBlock>
           </>
         ) : null}
@@ -254,5 +310,24 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+  },
+  table: {
+    paddingHorizontal: 8,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    minHeight: 35,
+  },
+  tableText: {
+    color: COLORS.black,
+    paddingVertical: 10,
+  },
+  tableHeader: {
+    paddingRight: 35,
+    alignItems: 'center',
+  },
+  tableHeaderText: {
+    color: COLORS.darkgray,
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

@@ -19,6 +19,7 @@ const Tabs = () => {
       screenOptions={{
         tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: COLORS.primary,
+        tabBarStyle: {height: 50},
         // tabBarActiveTintColor: COLORS.primary,
       }}>
       <Tab.Screen
@@ -26,8 +27,12 @@ const Tabs = () => {
         component={HomeScreens}
         options={{
           title: 'Главная',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="home-outline" size={size} color={color} />
+          tabBarIcon: ({color, size, focused}) => (
+            <Icon
+              name={focused ? 'home' : 'home-outline'}
+              size={size}
+              color={color}
+            />
           ),
           header: props => <></>,
         }}
@@ -37,8 +42,12 @@ const Tabs = () => {
         component={Settings}
         options={{
           title: 'Настройки',
-          tabBarIcon: ({color, size}) => (
-            <Icon name="settings-outline" size={size} color={color} />
+          tabBarIcon: ({color, size, focused}) => (
+            <Icon
+              name={focused ? 'settings' : 'settings-outline'}
+              size={size}
+              color={color}
+            />
           ),
           header: props => <PageHeader {...props} />,
         }}
