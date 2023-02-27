@@ -162,7 +162,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
       console.log(123, e);
 
       ToastAndroid.show(
-        `Произошла ошибка при загрузке ${(e as any)?.message}`,
+        `Произошла ошибка при загрузке ${JSON.stringify(e)}`,
         ToastAndroid.LONG,
       );
     }
@@ -253,6 +253,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                 render={({field: {onChange, value}, formState: {errors}}) => (
                   <View style={styles.select}>
                     <Picker
+                      style={{color: COLORS.black}}
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
@@ -296,6 +297,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                 render={({field: {onChange, value}, formState: {errors}}) => (
                   <View style={styles.select}>
                     <Picker
+                      style={{color: COLORS.black}}
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
@@ -338,6 +340,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                 render={({field: {onChange, value}, formState: {errors}}) => (
                   <View style={styles.select}>
                     <Picker
+                      style={{color: COLORS.black}}
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
@@ -381,6 +384,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                 render={({field: {onChange, value}, formState: {errors}}) => (
                   <View style={styles.select}>
                     <Picker
+                      style={{color: COLORS.black}}
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
@@ -424,6 +428,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                 render={({field: {onChange, value}, formState: {errors}}) => (
                   <View style={styles.select}>
                     <Picker
+                      style={{color: COLORS.black}}
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>

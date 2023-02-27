@@ -7,7 +7,7 @@ interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  serverUrl: 'http://192.168.26.75:8000/api/',
+  serverUrl: 'http://192.168.26.75:8006/api/',
   cartridgeServerUrl: 'http://192.168.26.75:8002/',
 };
 

@@ -2,6 +2,7 @@ import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import React from 'react';
 import {FC} from 'react';
 import {ReactNode} from 'react';
+import {COLORS} from 'constants/colors';
 
 type Props = {
   style?: StyleProp<TextStyle>;
@@ -22,5 +23,6 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Rubik',
     fontWeight: '400',
+    color: COLORS.black,
   },
 });

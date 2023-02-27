@@ -22,7 +22,7 @@ export const baseQuery: BaseQueryFn<
       'Content-Type': 'multipart/form-data',
       Accept: 'application/json',
     },
-    timeout: 4000,
+    timeout: 10000,
   });
   return rawBaseQuery(args, WebApi, extraOptions);
 };

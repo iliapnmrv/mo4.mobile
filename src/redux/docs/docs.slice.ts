@@ -33,7 +33,7 @@ export const docsSlice = createSlice({
   reducers: {
     setDocsHistory: (state: DocsState, action: PayloadAction<HistoryItem>) => {
       state.history =
-        action.payload.qr !== state.history[0].qr
+        action.payload.qr !== state.history?.[0]?.qr
           ? [action.payload, ...state.history].splice(0, 10)
           : state.history;
     },
