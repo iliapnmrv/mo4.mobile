@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TextInputProps,
   View,
 } from 'react-native';
 import React, {Dispatch, ReactNode, SetStateAction} from 'react';
@@ -17,6 +18,7 @@ type Props = {
   keyboardType?: KeyboardTypeOptions;
   label?: string;
   iconName?: string;
+  [key: string]: any;
 };
 
 const Input = ({
@@ -26,15 +28,17 @@ const Input = ({
   label,
   keyboardType = 'default',
   iconName,
+  ...rest
 }: Props) => {
   return (
     <>
       {label ? <AppText style={styles.labelText}>{label}</AppText> : null}
-      <View style={iconName ? styles.iconContainer : {}}>
+      <View style={[styles.container, iconName ? styles.iconContainer : null]}>
         {iconName ? (
           <Icon style={styles.icon} name={iconName} size={20} color="#000" />
         ) : null}
         <TextInput
+          {...rest}
           onChangeText={setValue}
           value={value}
           placeholder={placeholder}
@@ -57,9 +61,18 @@ const styles = StyleSheet.create({
     // borderBottomWidth: 1,
     borderColor: '#808080',
     borderRadius: 5,
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
     backgroundColor: '#fff',
     // backgroundColor: COLORS.lightgray,
+    verticalAlign: 'top',
+    textAlignVertical: 'top',
+    maxHeight: 110,
+    flex: 1,
+    flexGrow: 1,
+    paddingHorizontal: 10,
+  },
+  container: {
+    // paddingHorizontal: 10,
   },
   labelText: {
     color: '#808080',
@@ -70,8 +83,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 8,
-    // marginBottom: 10,
-
     // borderColor: COLORS.primary + '33',
     // borderWidth: 1,
     // borderLeftColor: COLORS.primary,

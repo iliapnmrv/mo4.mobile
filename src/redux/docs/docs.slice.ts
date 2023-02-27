@@ -8,12 +8,23 @@ export type HistoryItem = Pick<
   data: string;
 };
 
+export type PrevValues = {
+  status_id: number;
+  user_id: number;
+  person_id: number;
+  device_id: number;
+  place_id: number;
+  type_id: number;
+};
+
 interface DocsState {
   history: HistoryItem[];
+  prevValues: Partial<PrevValues>;
 }
 
 const initialState: DocsState = {
   history: [],
+  prevValues: {},
 };
 
 export const docsSlice = createSlice({
@@ -25,6 +36,12 @@ export const docsSlice = createSlice({
         action.payload.qr !== state.history[0].qr
           ? [action.payload, ...state.history].splice(0, 10)
           : state.history;
+    },
+    setPrevValues: (
+      state: DocsState,
+      action: PayloadAction<Partial<PrevValues>>,
+    ) => {
+      state.prevValues = {...state.prevValues, ...action.payload};
     },
   },
 });

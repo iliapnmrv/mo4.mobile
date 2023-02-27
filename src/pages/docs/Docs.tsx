@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import QRButton from 'components/Buttons/QRButton';
 import {useAppSelector} from 'hooks/redux';
@@ -29,7 +29,9 @@ import {COLORS} from 'constants/colors';
 import AppText from 'components/Text/AppText';
 import Button from 'components/Buttons/Button';
 import {DataTable} from 'react-native-paper';
+import Snackbar from 'react-native-snackbar';
 import moment from 'moment';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type DocsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DocsParamList, 'Docs', 'MyStack'>,
@@ -43,27 +45,41 @@ const Docs = ({navigation}: DocsScreenProps) => {
 
   const {setDocsScan, setDocsHistory} = useActions();
 
-  const [getItem, {isLoading, isError, data: itemData, error, isFetching}] =
-    useLazyGetItemQuery();
+  const historyRef = useRef<FlatList>(null);
+
+  const [
+    getItem,
+    {isLoading, isError, data: itemData, error: getItemError, isFetching},
+  ] = useLazyGetItemQuery();
 
   const [searchSuggestions, {data: suggestions}] =
     useLazyGetSearchSuggestionsQuery();
 
-  console.log(suggestions);
-
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-
-  // const {data: statuses, refetch: refetchStatuses} = useGetStatusesQuery('');
-  // const {data: persons, refetch: refetchPersons} = useGetPersonsQuery('');
-  // const {data: storages, refetch: refetchStorages} = useGetStoragesQuery('');
-  // const {data: owners, refetch: refetchOwners} = useGetOwnersQuery('');
-  // const {data: types, refetch: refetchTypes} = useGetTypesQuery('');
 
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     onItemScan();
   }, [docsScan]);
+
+  useEffect(() => {
+    if (
+      getItemError &&
+      //@ts-ignore
+      (getItemError.name === 'AbortError' ||
+        //@ts-ignore
+        getItemError.status === 'FETCH_ERROR')
+    ) {
+      console.log('getItemError', getItemError);
+      Snackbar.show({
+        text: 'Ошибка при получении данных, проверьте подключение к интернету и VPN серверу',
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: COLORS.red,
+        textColor: 'white',
+      });
+    }
+  }, [getItemError]);
 
   useEffect(() => {
     if (search) {
@@ -77,20 +93,22 @@ const Docs = ({navigation}: DocsScreenProps) => {
   const onItemScan = async () => {
     try {
       const [inventoryNum] = parseQrCode(docsScan);
-      await getItem(+inventoryNum.substring(inventoryNum.length - 5)).unwrap();
+      const {name, serial_number, model, qr} = await getItem(
+        +inventoryNum.substring(inventoryNum.length - 5),
+      ).unwrap();
+      if (qr !== history[0].qr) {
+        setDocsHistory({
+          name,
+          qr,
+          serial_number,
+          model,
+          data: docsScan,
+        });
+      }
     } catch (e) {
       console.log(e);
     }
   };
-
-  // const onPageReloadHandler = () => {
-  //   getDoc('');
-  //   refetchStatuses();
-  //   refetchPersons();
-  //   refetchStorages();
-  //   refetchOwners();
-  //   refetchTypes();
-  // };
 
   return (
     <PageContainer>
@@ -146,14 +164,7 @@ const Docs = ({navigation}: DocsScreenProps) => {
               setScan: data => {
                 const [inventoryNum, name, model, serial_number] =
                   parseQrCode(data);
-                setDocsScan(data),
-                  setDocsHistory({
-                    name,
-                    qr: +inventoryNum.substring(inventoryNum.length - 5),
-                    serial_number,
-                    model,
-                    data,
-                  });
+                setDocsScan(data);
               },
             })
           }
@@ -170,13 +181,20 @@ const Docs = ({navigation}: DocsScreenProps) => {
             <FlatList
               horizontal={true}
               data={history}
+              ref={historyRef}
               ItemSeparatorComponent={() => <HorizontalListSeparator />}
               renderItem={({
                 item: {name, qr, serial_number, data, model},
                 index,
               }) => (
                 <TouchableOpacity
-                  onPress={() => setDocsScan(data)}
+                  onPress={() => {
+                    setDocsScan(data);
+                    historyRef?.current?.scrollToOffset({
+                      animated: true,
+                      offset: 0,
+                    });
+                  }}
                   activeOpacity={0.7}
                   style={{
                     borderColor:
@@ -201,8 +219,8 @@ const Docs = ({navigation}: DocsScreenProps) => {
         </ContentBlock>
         {itemData ? (
           <>
-            <ContentBlock title={itemData?.name}>
-              <View>
+            <ContentBlock title={`${itemData?.name} - ${QRzeros(itemData.qr)}`}>
+              {/* <View>
                 <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
                   <AppText style={{fontSize: 15}}>В наличии:</AppText>
                   <AppText
@@ -217,17 +235,90 @@ const Docs = ({navigation}: DocsScreenProps) => {
                     {itemData?.analysis.in_stock}
                   </AppText>
                 </View>
-              </View>
+              </View> */}
+              <AppText style={[styles.itemInfo, {fontWeight: '700'}]}>
+                Анализ: {itemData?.analysis.in_stock || 0}/
+                {itemData?.analysis.listed || 0}
+              </AppText>
+              <AppText style={styles.itemInfo}>
+                Модель: {itemData?.model}
+              </AppText>
+              <AppText style={styles.itemInfo}>
+                Серийный номер: {itemData?.serial_number}
+              </AppText>
+              {itemData?.description ? (
+                <AppText style={styles.itemInfo}>
+                  Описание: {itemData?.description}
+                </AppText>
+              ) : null}
 
-              <AppText>Наименование </AppText>
-              <AppText>Модель {itemData?.model}</AppText>
-              <AppText>Серийный номер {itemData?.serial_number}</AppText>
-              <AppText>Пользователь {itemData?.user?.name}</AppText>
-              <AppText>Местоположение {itemData?.place?.name}</AppText>
-              <AppText>Cтатус {itemData?.status?.name}</AppText>
-              <AppText>Номенкулатура {itemData?.device?.name}</AppText>
-              <AppText>МОЛ {itemData?.person?.name}</AppText>
+              {itemData?.additional_information ? (
+                <AppText style={styles.itemInfo}>
+                  Доп. описание: {itemData?.additional_information}
+                </AppText>
+              ) : null}
+              <View style={styles.itemInfoContainer}>
+                <Icon
+                  name="person-outline"
+                  size={22}
+                  color={COLORS.black}
+                  style={{marginRight: 5}}
+                />
+                <AppText style={styles.itemInfo}>
+                  {/* Пользователь */}
+                  {itemData?.user?.name}
+                </AppText>
+              </View>
+              <View style={styles.itemInfoContainer}>
+                <Icon
+                  name="archive-outline"
+                  size={22}
+                  color={COLORS.black}
+                  style={{marginRight: 5}}
+                />
+                <AppText style={styles.itemInfo}>
+                  {/* Местоположение */}
+                  {itemData?.place?.name}
+                </AppText>
+              </View>
+              <View style={styles.itemInfoContainer}>
+                <Icon
+                  name="checkmark-done-circle-outline"
+                  size={22}
+                  color={COLORS.black}
+                  style={{marginRight: 5}}
+                />
+                <AppText style={styles.itemInfo}>
+                  {/* Cтатус */}
+                  {itemData?.status?.name}
+                </AppText>
+              </View>
+              <View style={styles.itemInfoContainer}>
+                <Icon
+                  name="print-outline"
+                  size={22}
+                  color={COLORS.black}
+                  style={{marginRight: 5}}
+                />
+                <AppText style={styles.itemInfo}>
+                  {/* Номенкулатура */}
+                  {itemData?.device?.name}
+                </AppText>
+              </View>
+              <View style={styles.itemInfoContainer}>
+                <Icon
+                  name="ios-man-outline"
+                  size={22}
+                  color={COLORS.black}
+                  style={{marginRight: 5}}
+                />
+                <AppText style={styles.itemInfo}>
+                  {/* МОЛ */}
+                  {itemData?.person?.name}
+                </AppText>
+              </View>
               <Button
+                style={{marginTop: 10}}
                 onPress={() =>
                   navigation.navigate('DocsEdit', {
                     id: itemData.qr,
@@ -328,6 +419,15 @@ const styles = StyleSheet.create({
   tableHeaderText: {
     color: COLORS.darkgray,
     fontSize: 12,
+    fontWeight: '600',
+  },
+  itemInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  itemInfo: {
+    fontSize: 17,
     fontWeight: '600',
   },
 });

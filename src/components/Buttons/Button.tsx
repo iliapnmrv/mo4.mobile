@@ -1,4 +1,12 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import React from 'react';
 import {COLORS} from 'constants/colors';
 import AppText from 'components/Text/AppText';
@@ -6,16 +14,20 @@ import AppText from 'components/Text/AppText';
 type Props = {
   text: string;
   onPress: () => void;
-  type?: 'primary' | 'outlined';
+  type?: 'primary' | 'outlined' | 'text';
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 };
 
-const Button = ({text, onPress, type = 'primary'}: Props) => {
+const Button = ({text, onPress, type = 'primary', style, textStyle}: Props) => {
   return (
     <TouchableOpacity
       activeOpacity={0.8}
-      style={[styles.button, styles[type]]}
+      style={[styles.button, styles[type], style]}
       onPress={onPress}>
-      <AppText style={[styles.text, styles[`${type}Text`]]}>{text}</AppText>
+      <AppText style={[styles.commonText, styles[`${type}Text`], textStyle]}>
+        {text}
+      </AppText>
     </TouchableOpacity>
   );
 };
@@ -32,9 +44,9 @@ const styles = StyleSheet.create({
   },
   primary: {
     backgroundColor: COLORS.primary,
-    borderRadius: 3,
+    borderRadius: 8,
   },
-  text: {
+  commonText: {
     textAlign: 'center',
     width: '100%',
     fontSize: 16,
@@ -49,6 +61,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   outlinedText: {
+    color: COLORS.primary,
+    fontWeight: '500',
+  },
+  text: {
+    backgroundColor: 'white',
+  },
+  textText: {
     color: COLORS.primary,
     fontWeight: '500',
   },

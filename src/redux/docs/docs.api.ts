@@ -63,12 +63,16 @@ export const docsApi = createApi({
       }),
       providesTags: ['Suggestions'],
     }),
-    updateDoc: builder.mutation<IItem, Partial<IItem> & Pick<IItem, 'id'>>({
-      query: ({id, ...patch}) => ({
-        url: `total/${id}`,
-        method: 'PUT',
-        body: patch,
+    updateItem: builder.mutation<IItem, Partial<Omit<IItem, 'id'>>>({
+      query: ({qr, ...body}) => ({
+        url: `item/${qr}`,
+        method: 'PATCH',
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }),
+      invalidatesTags: ['Item'],
     }),
     uploadFiles: builder.mutation<IFile[], {qr: number; body: FormData}>({
       query: ({qr, body}) => ({
@@ -91,7 +95,7 @@ export const {
   useGetCatalogsQuery,
   useGetItemQuery,
   useGetItemsQuery,
-  useUpdateDocMutation,
+  useUpdateItemMutation,
   useUploadFilesMutation,
   useLazyGetItemQuery,
   useLazyGetSearchSuggestionsQuery,

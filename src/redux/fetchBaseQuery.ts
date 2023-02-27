@@ -15,11 +15,6 @@ export const baseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, WebApi, extraOptions) => {
-  console.log(
-    'store.getState().settings.serverUrl',
-    store.getState().settings.serverUrl,
-  );
-
   const baseUrl = store.getState().settings.serverUrl;
   const rawBaseQuery = fetchBaseQuery({
     baseUrl,
@@ -27,6 +22,7 @@ export const baseQuery: BaseQueryFn<
       'Content-Type': 'multipart/form-data',
       Accept: 'application/json',
     },
+    timeout: 4000,
   });
   return rawBaseQuery(args, WebApi, extraOptions);
 };
