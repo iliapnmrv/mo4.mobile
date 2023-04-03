@@ -1,6 +1,28 @@
+import {ItemsExport} from 'redux/inventory/inventory.api';
 import {IInventory} from 'types/inventory';
 
-export const createInventoryQuery = `
+export const createItemsTableQuery = `
+CREATE TABLE IF NOT EXISTS items(
+  id                      INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
+  qr                      INTEGER  UNIQUE,
+  name                    VARCHAR(500) NOT NULL,
+  month                   INTEGER,
+  year                    INTEGER,
+  serial_number           VARCHAR(100) NOT NULL,
+  model                   VARCHAR(100), 
+  description             VARCHAR(2048),
+  additional_information  VARCHAR(100),
+  createdAt               DATETIME,
+  updatedAt               DATETIME,
+  person_name             VARCHAR(100) NOT NULL,
+  status_name             VARCHAR(100) NOT NULL,
+  user_name               VARCHAR(100) NOT NULL,
+  place_name              VARCHAR(100) NOT NULL,
+  device_name             VARCHAR(100) NOT NULL,
+  type_name               VARCHAR(100) NOT NULL
+);`;
+
+export const createInventoryTableQuery = `
 CREATE TABLE IF NOT EXISTS inventory(
     id            INTEGER  NOT NULL PRIMARY KEY,
     vedpos        INTEGER  NOT NULL,
@@ -11,22 +33,24 @@ CREATE TABLE IF NOT EXISTS inventory(
     updatedAt    DATETIME
 );`;
 
-export const createScannedQuery = `
+export const createScannedTableQuery = `
 CREATE TABLE IF NOT EXISTS scanned(
-    id            INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
-    inventoryNum  INTEGER  NOT NULL,
-    name          VARCHAR(200) NOT NULL,
-    status        INTEGER NOT NULL,
-    model         VARCHAR(200),
-    serialNum     VARCHAR(100),
-    position      INT(63), 
-    place         VARCHAR(127),
-    trace         VARCHAR(100),
-    createdAt     DATETIME
+  id            INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
+  inventoryNum  INTEGER  NOT NULL,
+  name          VARCHAR(200) NOT NULL,
+  status        INTEGER NOT NULL,
+  model         VARCHAR(200),
+  serialNum     VARCHAR(100),
+  position      INT(63), 
+  place         VARCHAR(127),
+  trace         VARCHAR(100),
+  createdAt     DATETIME
 );`;
 
-export const dropInventoryQuery = `DROP TABLE IF EXISTS inventory;`;
-export const dropScannedQuery = `DROP TABLE IF EXISTS scanned;`;
+export const dropTablesQuery = `
+DROP TABLE IF EXISTS inventory;
+DROP TABLE IF EXISTS scanned;
+DROP TABLE IF EXISTS items;`;
 
 export const insertInventoryQuery = (data: IInventory[]) =>
   `INSERT INTO inventory
@@ -36,6 +60,17 @@ export const insertInventoryQuery = (data: IInventory[]) =>
         ?.map(
           item =>
             `(${item.id}, ${item.vedpos}, '${item.name}', '${item.place}', '${item.kolvo}', '${item.placepriority}')`,
+        )
+        .join(',\n')}`;
+
+export const insertItemsQuery = (data: ItemsExport[]) =>
+  `INSERT INTO items
+      ( id, qr, name, month, year, serial_number, model, description, additional_information, createdAt, updatedAt, person_name, status_name, user_name, place_name, device_name, type_name )
+    VALUES
+      ${data
+        ?.map(
+          item =>
+            `(${item.id}, ${item.qr}, '${item.name}', '${item.month}', '${item.year}', '${item.serial_number}', '${item.model}', '${item.description}', '${item.additional_information}', '${item.createdAt}', '${item.updatedAt}', '${item.person?.name}', '${item.status?.name}', '${item.user?.name}', '${item.place?.name}', '${item.device?.name}', '${item.type?.name}')`,
         )
         .join(',\n')}`;
 
@@ -59,7 +94,7 @@ export const findUpdatedRow =
   'SELECT * from inventory ORDER BY updatedAt DESC LIMIT 1';
 
 export const addScannedItemQuery = `INSERT INTO scanned (inventoryNum, name, status, model, serialNum, position, place, createdAt)
-  VALUES(?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`;
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
 
 export const findLastScannedQuery = `SELECT * FROM scanned ORDER BY id DESC LIMIT 10`;
 
@@ -67,3 +102,6 @@ export const findScannedQuery = (status: number | undefined) =>
   `SELECT * FROM scanned ${status ? `WHERE status = ${status}` : ''}`;
 
 export const findInventoryQuery = `SELECT * FROM inventory`;
+export const findItemsQuery = `SELECT * FROM items`;
+
+export const findItemsByQRQuery = `SELECT * FROM items WHERE qr = ?`;

@@ -268,26 +268,6 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   </View>
                 )}
               />
-              {prevValues?.device_id ? (
-                <Button
-                  onPress={() => {
-                    setValue(
-                      'device_id',
-                      catalogs?.devices.find(
-                        device => device.id === prevValues.device_id,
-                      )?.id,
-                    );
-                  }}
-                  textStyle={{textAlign: 'right'}}
-                  style={{marginBottom: 8}}
-                  text={`Предыдущее значение ${
-                    catalogs?.devices.find(
-                      device => device.id === prevValues.device_id,
-                    )?.name
-                  }`}
-                  type="text"
-                />
-              ) : null}
             </View>
             <View>
               <AppText style={styles.label}>Пользователь</AppText>

@@ -5,6 +5,7 @@ import {ScrollView, Text, View} from 'react-native';
 import {IInventory, IScanned} from 'types/inventory';
 import {COLORS} from './colors';
 import AppText from 'components/Text/AppText';
+import {QRzeros} from 'utils/utils';
 
 // export const SERVER_URL = '192.168.26.75:8000/api/';
 
@@ -65,7 +66,6 @@ export type IColor = {
   getContent: (
     inventory: (IScanned | Omit<IScanned, 'status'>) & {
       kolvo?: number;
-      position?: number;
     },
   ) => ReactNode;
   textColor: string;
@@ -80,14 +80,14 @@ export const scanResultModalColors: IColor[] = [
     getContent: item => (
       <View style={{flex: 1}}>
         <ListItem isFirst name="Статус" value="В учете" />
-        <ListItem name="Инвентарный номер" value={item.inventoryNum} />
+        <ListItem name="Инвентарный номер" value={QRzeros(item.inventoryNum)} />
         <ListItem name="Место" value={item.place} />
         <ListItem name="Строка" value={item.position} />
         <ListItem isLast name="Осталось" value={item.kolvo} />
       </View>
     ),
-    textColor: '#006100',
-    backgroundColor: '#00f000',
+    textColor: '#39910a',
+    backgroundColor: '#39910a',
     type: 'success',
   },
   {
@@ -96,7 +96,7 @@ export const scanResultModalColors: IColor[] = [
     getContent: item => (
       <View style={{flex: 1, width: '100%'}}>
         <ListItem isFirst name="Статус" value="Не в учете" />
-        <ListItem name="Инвентарный номер" value={item.inventoryNum} />
+        <ListItem name="Инвентарный номер" value={QRzeros(item.inventoryNum)} />
         <ListItem isLast name="Наименование" value={item.name} />
       </View>
     ),
@@ -109,12 +109,12 @@ export const scanResultModalColors: IColor[] = [
     title: 'Сверх учета',
     getContent: item => (
       <View style={{flex: 1, width: '100%'}}>
-        <ListItem name="Статус" value="Сверх учета" />
-        <ListItem name="Инвентарный номер" value={item.inventoryNum} />
-        <ListItem name="Наименование" value={item.name} />
+        <ListItem name="Статус" isFirst value="Сверх учета" />
+        <ListItem name="Инвентарный номер" value={QRzeros(item.inventoryNum)} />
+        <ListItem name="Наименование" isLast value={item.name} />
       </View>
     ),
-    textColor: '#B28800',
+    textColor: '#c9c900',
     backgroundColor: '#FFC300',
     type: 'over',
   },
@@ -123,13 +123,12 @@ export const scanResultModalColors: IColor[] = [
     title: 'Повторное считывание',
     getContent: item => (
       <View style={{flex: 1, width: '100%'}}>
-        <ListItem isFirst isLast name="Статус" value="Повторное сканирование" />
-        <AppText style={{color: COLORS.white, fontWeight: '500', marginTop: 5}}>
+        <AppText style={{color: COLORS.black, fontWeight: '500', marginTop: 5}}>
           Предыдущее значение
         </AppText>
         <ListItem
           isFirst
-          isLast={item.position == null}
+          isLast={!item.position}
           name="Статус"
           value={
             //@ts-ignore

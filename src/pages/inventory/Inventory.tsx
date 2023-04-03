@@ -1,129 +1,77 @@
+import {CompositeScreenProps} from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import QRButton from 'components/Buttons/QRButton';
+import ContentBlock from 'components/ContentBlock/ContentBlock';
+import Input from 'components/Inputs/Input';
+import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
+import PageContainer from 'components/PageContainer/PageContainer';
+import Search from 'components/Search/Search';
+import AppText from 'components/Text/AppText';
+import {COLORS} from 'constants/colors';
+import {scanResultModalColors} from 'constants/constants';
+import useDebounce from 'hooks/debounce';
+import {useInventory} from 'hooks/inventory';
+import moment from 'moment';
+import {InventoryParamList} from 'navigation/Home/Inventory';
+import {RootStackParamList} from 'navigation/Navigation';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
-  Animated,
   Dimensions,
   FlatList,
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useAppSelector} from 'hooks/redux';
-import moment from 'moment';
-import ContentBlock from 'components/ContentBlock/ContentBlock';
-import QRButton from 'components/Buttons/QRButton';
-import {
-  SQLiteDatabase,
-  openDatabase,
-  enablePromise,
-} from 'react-native-sqlite-storage';
-import {
-  inventoryApi,
-  useLazyGetInventoryQuery,
-  useUploadInventoryMutation,
-} from 'redux/inventory/inventory.api';
-import {
-  createInventoryQuery,
-  createScannedQuery,
-  insertInventoryQuery,
-  isScannedItemQuery,
-  addScannedItemQuery,
-  updateInventoryQuery,
-  findByNameQuery,
-  findLastScannedQuery,
-  findUpdatedRow,
-  findScannedQuery,
-  dropScannedQuery,
-  dropInventoryQuery,
-} from 'utils/inventoryQueries';
-import Snackbar from 'react-native-snackbar';
-import {IScanned} from 'types/inventory';
-import {scanResultModalColors} from 'constants/constants';
-import ScanResultModal, {
-  ScanModalProps,
-} from 'components/Inventory/ScanResultModal';
-import {useActions} from 'hooks/actions';
-import PageContainer from 'components/PageContainer/PageContainer';
-import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
-import Button from 'components/Buttons/Button';
-import {CompositeScreenProps} from '@react-navigation/native';
-import {RootStackParamList} from 'navigation/Navigation';
-import {InventoryParamList} from 'navigation/Home/Inventory';
-import {COLORS} from 'constants/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {parseQrCode} from 'utils/utils';
-import AppText from 'components/Text/AppText';
+import {ItemExtended} from 'redux/inventory/inventory.api';
+import {findItemsByQRQuery} from 'utils/inventoryQueries';
+import {QRzeros} from 'utils/utils';
 
 type InventoryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<InventoryParamList, 'Inventory', 'MyStack'>,
   NativeStackScreenProps<RootStackParamList>
 >;
-let db: SQLiteDatabase;
-
-//важная часть для работы бд с промисами
-enablePromise(true);
 
 const Inventory = ({navigation}: InventoryScreenProps) => {
-  const [getInventory] = useLazyGetInventoryQuery();
+  const [search, setSearch] = useState<string>('');
+  const [suggestions, setSuggestions] = useState<ItemExtended[]>();
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const [uploadInventory] = useUploadInventoryMutation();
+  const {
+    db,
+    date,
+    lastScanned,
+    closeInventory,
+    getItemInfo,
+    openInventory,
+    scan,
+  } = useInventory();
 
-  const {inventoryScan} = useAppSelector(state => state.scan);
-  const {date} = useAppSelector(state => state.inventory);
-  const {serverUrl} = useAppSelector(state => state.settings);
+  const {textColor, title, getContent} =
+    scanResultModalColors.filter(color => color.status === scan?.status)?.[0] ??
+    {};
 
-  const {setInventoryDate, setInventoryScan} = useActions();
-
-  const [scanModal, setScanModal] = useState<ScanModalProps>({
-    visible: false,
-    status: 1,
-  });
-  const [scanned, setScanned] = useState<IScanned[]>([]);
-
-  const widthAnimation = useRef(new Animated.Value(date ? 55 : 0)).current;
+  const debouncedSearch = useDebounce(search, 500);
 
   useEffect(() => {
-    const openDB = async () => {
-      db = await openDatabase({name: 'inventory.db'});
-      date ? getLastScanned() : null;
+    const searchItem = async () => {
+      const [{rows}] = await db.executeSql(findItemsByQRQuery, [
+        debouncedSearch,
+      ]);
+      setSuggestions(rows.raw());
+      setShowSuggestions(true);
     };
-    openDB();
-  }, []);
-
-  const useShowInventoryAnimation = () => {
-    Animated.timing(widthAnimation, {
-      toValue: 55,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const useHideInventoryAnimation = () => {
-    Animated.timing(widthAnimation, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const getLastScanned = async () => {
-    try {
-      const [{rows: lastScanned}] = await db.executeSql(findLastScannedQuery);
-      setScanned(lastScanned.raw());
-    } catch (e) {
-      console.error(e);
-    }
-  };
+    searchItem();
+  }, [debouncedSearch]);
 
   const switchInventory = (value: boolean) => {
     if (!value) {
       Alert.alert(
         'Подтвердите действие',
-        'Вы уверены, что хотите закрыть инвентаризационную сессию?',
+        'Вы уверены, что хотите закрыть инвентаризацию?',
         [
           {
             text: 'Не закрывать',
@@ -141,157 +89,9 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     }
   };
 
-  const closeInventory = async () => {
-    useHideInventoryAnimation();
-
-    try {
-      setInventoryDate(undefined);
-      setInventoryScan('');
-      await db.executeSql(dropInventoryQuery);
-      await db.executeSql(dropScannedQuery);
-      Snackbar.show({
-        text: `Инвентаризация успешно закрыта`,
-        duration: Snackbar.LENGTH_LONG,
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const openInventory = async () => {
-    const today = new Date().toDateString();
-    setInventoryDate(today);
-    await getInventoryData();
-  };
-
-  const getInventoryData = async () => {
-    useShowInventoryAnimation();
-
-    try {
-      const inventoryData = await getInventory().unwrap();
-
-      console.log('inventoryData', inventoryData);
-
-      if (!inventoryData) {
-        throw new Error(
-          `Ошибка при скачивании данных, убедитесь что вы подключены к серверу ${serverUrl}`,
-        );
-      }
-
-      await db.executeSql(createInventoryQuery);
-      await db.executeSql(createScannedQuery);
-
-      await db.executeSql(insertInventoryQuery(inventoryData));
-
-      Snackbar.show({
-        text: `Данные скачаны, ${inventoryData?.length} строк`,
-        duration: 5000,
-      });
-    } catch (e: any) {
-      Snackbar.show({
-        text: `${JSON.stringify(e)}`,
-        duration: 5000,
-      });
-      console.error(e);
-      setInventoryDate(undefined);
-
-      // Snackbar.show({
-      //   text: `Ошибка при скачивании ${serverUrl}`,
-      //   duration: 5000,
-      // });
-    }
-  };
-
-  useEffect(() => {
-    getAnalysis();
-  }, [inventoryScan]);
-
-  const getAnalysis = async () => {
-    try {
-      const [inventoryNum, name, model, serialNum] = parseQrCode(inventoryScan);
-
-      //проверка на повторное считывание
-      const [{rows}] = await db.executeSql(isScannedItemQuery, [+inventoryNum]);
-
-      if (rows.length) {
-        const prevScanned: IScanned = rows.raw()[0];
-        setScanModal({scanned: prevScanned, status: 4, visible: true});
-        return;
-      }
-
-      //проверка на наличие в бд
-      const [{rows: nameRows}] = await db.executeSql(findByNameQuery, [name]);
-
-      const resData: Omit<IScanned, 'status'> = {
-        inventoryNum: +inventoryNum,
-        name,
-        model,
-        serialNum,
-      };
-
-      if (!nameRows.length) {
-        setScanModal({
-          scanned: resData,
-          status: 2,
-          visible: true,
-        });
-        await db.executeSql(addScannedItemQuery, [
-          +inventoryNum,
-          name,
-          2,
-          model,
-          serialNum,
-        ]);
-        return;
-      }
-
-      if (!nameRows.raw().filter(item => item.kolvo > 0).length) {
-        setScanModal({
-          scanned: resData,
-          status: 3,
-          visible: true,
-        });
-        await db.executeSql(addScannedItemQuery, [
-          +inventoryNum,
-          name,
-          3,
-          model,
-          serialNum,
-        ]);
-        return;
-      }
-
-      await db.executeSql(updateInventoryQuery, [name, name]);
-
-      const [{rows: updatedRow}] = await db.executeSql(findUpdatedRow);
-
-      const {place, kolvo, vedpos: position} = updatedRow.raw()[0];
-
-      setScanModal({
-        scanned: {...resData, place, position, kolvo},
-        status: 1,
-        visible: true,
-      });
-
-      await db.executeSql(addScannedItemQuery, [
-        +inventoryNum,
-        name,
-        1,
-        model,
-        serialNum,
-        position,
-        place,
-      ]);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      getLastScanned();
-    }
-  };
-
   return (
     <PageContainer>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="handled">
         <View
           style={{
             display: 'flex',
@@ -299,23 +99,23 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
             alignItems: 'flex-end',
             width: '100%',
           }}>
-          <Animated.View style={{width: widthAnimation}}>
-            <TouchableOpacity
-              style={{
-                padding: 10,
-                height: 60,
-                justifyContent: 'center',
-                backgroundColor: COLORS.white,
-                margin: 5,
-                borderRadius: 8,
-              }}
-              activeOpacity={0.7}
-              onPress={() => {
-                navigation.navigate('InventoryDownload');
-              }}>
-              <Icon name="download-outline" size={25} color={COLORS.black} />
-            </TouchableOpacity>
-          </Animated.View>
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              height: 60,
+              justifyContent: 'center',
+              backgroundColor: COLORS.white,
+              margin: 5,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: COLORS.primary,
+            }}
+            activeOpacity={0.7}
+            onPress={() => {
+              navigation.navigate('InventoryDownload');
+            }}>
+            <Icon name="server-outline" size={25} color={COLORS.primary} />
+          </TouchableOpacity>
           <View style={{flexGrow: 1}}>
             <ContentBlock
               button={{
@@ -347,18 +147,45 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
           </View>
         </View>
 
-        <ScanResultModal scanModal={scanModal} setScanModal={setScanModal} />
-
+        <Search
+          search={search}
+          setSearch={setSearch}
+          onSuggestionPress={({qr, name, model, serial_number}) => {
+            setSuggestions(undefined);
+            setShowSuggestions(false);
+            getItemInfo([qr.toString(), name, model, serial_number]);
+          }}
+          suggestions={suggestions}
+          showSuggestions={!!suggestions?.length}
+        />
         {date ? (
           <View>
             <QRButton
               action={() => {
                 navigation.navigate('Scanner', {
-                  setScan: (data: string) => setInventoryScan(data),
+                  setScan: (data: string) => getItemInfo(data),
                 });
               }}
             />
-            {scanned.length ? (
+            {scan ? (
+              <ContentBlock title="Сканирование">
+                <AppText style={[styles.scanResultHeader, {color: textColor}]}>
+                  {title}
+                </AppText>
+                <ScrollView>{getContent(scan.scan)}</ScrollView>
+                {suggestions?.[0]?.place_name ? (
+                  <AppText style={{color: COLORS.black, fontSize: 16}}>
+                    {suggestions?.[0].place_name}
+                  </AppText>
+                ) : null}
+                {suggestions?.[0]?.user_name ? (
+                  <AppText style={{color: COLORS.black, fontSize: 16}}>
+                    {suggestions?.[0].user_name}
+                  </AppText>
+                ) : null}
+              </ContentBlock>
+            ) : null}
+            {lastScanned.length ? (
               <ContentBlock
                 transparent
                 helperText="10 последних"
@@ -370,7 +197,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
                 }}>
                 <FlatList
                   horizontal={true}
-                  data={scanned}
+                  data={lastScanned}
                   ItemSeparatorComponent={() => <HorizontalListSeparator />}
                   renderItem={({item}) => {
                     const colorItem = scanResultModalColors.filter(
@@ -387,7 +214,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
                           maxWidth: Dimensions.get('screen').width - 20,
                         }}>
                         <AppText style={styles.prevScanText}>
-                          {item.inventoryNum}
+                          {QRzeros(item.inventoryNum)}
                         </AppText>
                         <AppText style={styles.prevScanText}>
                           {item.name !== 'Не в учете' ? item.name : item.model}
@@ -416,7 +243,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
         ) : (
           <ContentBlock>
             <AppText style={[styles.inventoryText, {color: COLORS.black}]}>
-              Для начала работы откройте инвентаризационную сессию
+              Для начала работы откройте инвентаризацию
             </AppText>
           </ContentBlock>
         )}
@@ -441,5 +268,11 @@ const styles = StyleSheet.create({
     // fontSize: 18,
     fontWeight: '500',
     color: COLORS.white,
+  },
+  scanResultHeader: {
+    fontSize: 20,
+    textAlign: 'left',
+    paddingVertical: 2,
+    fontWeight: '500',
   },
 });

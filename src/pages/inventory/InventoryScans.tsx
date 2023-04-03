@@ -1,39 +1,34 @@
-import {FlatList, StyleSheet, Text, View, ScrollView} from 'react-native';
+import ContentBlock from 'components/ContentBlock/ContentBlock';
+import PageContainer from 'components/PageContainer/PageContainer';
+import AppText from 'components/Text/AppText';
+import {COLORS} from 'constants/colors';
+import {btnStatus} from 'constants/constants';
+import {useInventory} from 'hooks/inventory';
+import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {
-  enablePromise,
-  openDatabase,
-  SQLiteDatabase,
-} from 'react-native-sqlite-storage';
-import {findScannedQuery} from 'utils/inventoryQueries';
-import {IScanned} from 'types/inventory';
-import PageContainer from 'components/PageContainer/PageContainer';
-import {btnStatus} from 'constants/constants';
-import ContentBlock from 'components/ContentBlock/ContentBlock';
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {DataTable} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native';
-import {COLORS} from 'constants/colors';
-import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
 import Snackbar from 'react-native-snackbar';
-import AppText from 'components/Text/AppText';
-
-let db: SQLiteDatabase;
-
-//важная часть для работы бд с промисами
-enablePromise(true);
+import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
+import {IScanned} from 'types/inventory';
+import {findScannedQuery} from 'utils/inventoryQueries';
 
 const InventoryStatus = () => {
   const [status, setStatus] = useState<number | undefined>(0);
   const [scanned, setScanned] = useState<IScanned[]>([]);
 
+  const {db} = useInventory();
+
   const [uploadInventory] = useUploadInventoryMutation();
 
   useEffect(() => {
-    const openDB = async () => {
-      db = await openDatabase({name: 'inventory.db'});
-      getInventoryScans();
-    };
-    openDB();
+    getInventoryScans();
   }, [status]);
 
   const getInventoryScans = async () => {
@@ -168,6 +163,13 @@ const InventoryStatus = () => {
                       </AppText>
                     </DataTable.Title>
                   </View>
+                  <View style={styles.tableHeader}>
+                    <DataTable.Title>
+                      <AppText style={styles.tableHeaderText}>
+                        Дата сканирования
+                      </AppText>
+                    </DataTable.Title>
+                  </View>
                 </DataTable.Header>
                 <FlatList
                   data={scanned}
@@ -214,7 +216,7 @@ const InventoryStatus = () => {
                       </View>
                       {item.position ? (
                         <>
-                          <View style={styles.table}>
+                          <View style={[styles.table, {width: 220}]}>
                             <AppText style={styles.tableText}>
                               {item!.place}
                             </AppText>
@@ -224,13 +226,13 @@ const InventoryStatus = () => {
                               {item!.position}
                             </AppText>
                           </View>
-                          <View style={styles.table}>
-                            <AppText style={styles.tableText}>
-                              {item!.trace}
-                            </AppText>
-                          </View>
                         </>
                       ) : null}
+                      <View style={styles.table}>
+                        <AppText style={styles.tableText}>
+                          {moment(item?.createdAt).format('LLL')}
+                        </AppText>
+                      </View>
                     </View>
                   )}
                   keyExtractor={(_, index) => index.toString()}

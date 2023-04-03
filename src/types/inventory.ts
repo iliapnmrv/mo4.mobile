@@ -17,4 +17,5 @@ export type IScanned = {
   position?: number | 'undefined';
   place?: string | 'undefined';
   trace?: string | 'undefined';
+  createdAt?: Date;
 };

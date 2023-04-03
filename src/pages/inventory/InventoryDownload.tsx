@@ -1,51 +1,26 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {
-  enablePromise,
-  openDatabase,
-  SQLiteDatabase,
-} from 'react-native-sqlite-storage';
-import {
-  dropInventoryQuery,
-  findInventoryQuery,
-  findScannedQuery,
-} from 'utils/inventoryQueries';
-import {IInventory} from 'types/inventory';
-import PageContainer from 'components/PageContainer/PageContainer';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
-import {DataTable} from 'react-native-paper';
-import {COLORS} from 'constants/colors';
-import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
+import PageContainer from 'components/PageContainer/PageContainer';
 import AppText from 'components/Text/AppText';
-
-let db: SQLiteDatabase;
-
-//важная часть для работы бд с промисами
-enablePromise(true);
+import {COLORS} from 'constants/colors';
+import {useInventory} from 'hooks/inventory';
+import React, {useEffect, useState} from 'react';
+import {FlatList, ScrollView, StyleSheet, View} from 'react-native';
+import {DataTable} from 'react-native-paper';
+import {IInventory} from 'types/inventory';
 
 const InventoryDownload = () => {
   const [inventory, setInventory] = useState<IInventory[]>([]);
+
+  const {getTables} = useInventory();
+
   useEffect(() => {
-    const openDB = async () => {
-      db = await openDatabase({name: 'inventory.db'});
-      getInventory();
-    };
-    openDB();
+    getInventory();
   }, []);
 
   const getInventory = async () => {
     try {
-      const [{rows: foundInventory}] = await db.executeSql(findInventoryQuery);
-
-      setInventory(foundInventory.raw());
+      const {inventory: downloadedInventory} = await getTables();
+      setInventory(downloadedInventory);
     } catch (e) {
       console.log(e);
     }

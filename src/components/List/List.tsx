@@ -16,7 +16,13 @@ const ListItem = ({name, value, isFirst = false, isLast = false}: Props) => {
       style={[
         styles.infoItemContainer,
         isFirst
-          ? {marginTop: 2, borderTopLeftRadius: 5, borderTopRightRadius: 5}
+          ? {
+              marginTop: 2,
+              borderTopLeftRadius: 5,
+              borderTopRightRadius: 5,
+              borderWidth: 1,
+              borderColor: 'lightgray',
+            }
           : null,
         isLast
           ? {

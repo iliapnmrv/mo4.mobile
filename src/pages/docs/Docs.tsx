@@ -32,6 +32,7 @@ import {DataTable} from 'react-native-paper';
 import Snackbar from 'react-native-snackbar';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Search from 'components/Search/Search';
 
 type DocsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DocsParamList, 'Docs', 'MyStack'>,
@@ -117,45 +118,23 @@ const Docs = ({navigation}: DocsScreenProps) => {
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={() => {}} />
         }>
-        <Input
-          setValue={setSearch}
-          value={search}
-          iconName="search"
-          placeholder="Поиск по номеру QR..."
+        <Search
+          setSearch={setSearch}
+          search={search}
+          onSuggestionPress={({name, qr, serial_number, model}) => {
+            setDocsHistory({
+              name,
+              qr,
+              serial_number,
+              model,
+              data: QRzeros(qr),
+            });
+            setDocsScan(QRzeros(qr));
+            setShowSuggestions(false);
+          }}
+          showSuggestions={showSuggestions}
+          suggestions={suggestions}
         />
-        {showSuggestions ? (
-          <View
-            style={{
-              width: '100%',
-            }}>
-            {suggestions?.map(({name, qr, serial_number, model, id}) => (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                key={id}
-                style={{
-                  padding: 10,
-                  borderBottomWidth: 1,
-                  borderBottomColor: COLORS.primary,
-                  backgroundColor: 'white',
-                }}
-                onPress={() => {
-                  setDocsHistory({
-                    name,
-                    qr,
-                    serial_number,
-                    model,
-                    data: QRzeros(qr),
-                  });
-                  setDocsScan(QRzeros(qr));
-                  setShowSuggestions(false);
-                }}>
-                <AppText style={{fontSize: 16}}>
-                  {QRzeros(qr)} - {name}
-                </AppText>
-              </TouchableOpacity>
-            ))}
-          </View>
-        ) : null}
 
         <QRButton
           style={{marginTop: 10}}
