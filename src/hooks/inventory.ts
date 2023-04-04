@@ -15,7 +15,9 @@ import {
   createInventoryTableQuery,
   createItemsTableQuery,
   createScannedTableQuery,
-  dropTablesQuery,
+  dropInventoryTableQuery,
+  dropItemsTableQuery,
+  dropScannedTableQuery,
   findByNameQuery,
   findInventoryQuery,
   findItemsQuery,
@@ -73,8 +75,9 @@ export function useInventory() {
           `Ошибка при скачивании данных, убедитесь что вы подключены к серверу ${serverUrl}`,
         );
       }
-
-      await db.executeSql(dropTablesQuery);
+      await db.executeSql(dropInventoryTableQuery);
+      await db.executeSql(dropItemsTableQuery);
+      await db.executeSql(dropScannedTableQuery);
 
       await db.executeSql(createItemsTableQuery);
       await db.executeSql(createScannedTableQuery);
@@ -208,7 +211,9 @@ export function useInventory() {
   const closeInventory = async () => {
     try {
       setInventoryDate(undefined);
-      await db.executeSql(dropTablesQuery);
+      await db.executeSql(dropInventoryTableQuery);
+      await db.executeSql(dropItemsTableQuery);
+      await db.executeSql(dropScannedTableQuery);
       Snackbar.show({
         text: `Инвентаризация успешно закрыта`,
         duration: Snackbar.LENGTH_LONG,

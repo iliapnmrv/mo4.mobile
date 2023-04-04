@@ -47,10 +47,9 @@ CREATE TABLE IF NOT EXISTS scanned(
   createdAt     DATETIME
 );`;
 
-export const dropTablesQuery = `
-DROP TABLE IF EXISTS inventory;
-DROP TABLE IF EXISTS scanned;
-DROP TABLE IF EXISTS items;`;
+export const dropInventoryTableQuery = `DROP TABLE IF EXISTS inventory;`;
+export const dropScannedTableQuery = `DROP TABLE IF EXISTS scanned;`;
+export const dropItemsTableQuery = `DROP TABLE IF EXISTS items;`;
 
 export const insertInventoryQuery = (data: IInventory[]) =>
   `INSERT INTO inventory
