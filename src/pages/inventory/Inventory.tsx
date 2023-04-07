@@ -147,19 +147,19 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
           </View>
         </View>
 
-        <Search
-          search={search}
-          setSearch={setSearch}
-          onSuggestionPress={({qr, name, model, serial_number}) => {
-            setSuggestions(undefined);
-            setShowSuggestions(false);
-            getItemInfo([qr.toString(), name, model, serial_number]);
-          }}
-          suggestions={suggestions}
-          showSuggestions={!!suggestions?.length}
-        />
         {date ? (
           <View>
+            <Search
+              search={search}
+              setSearch={setSearch}
+              onSuggestionPress={({qr, name, model, serial_number}) => {
+                setSuggestions(undefined);
+                setShowSuggestions(false);
+                getItemInfo([qr.toString(), name, model, serial_number]);
+              }}
+              suggestions={suggestions}
+              showSuggestions={!!suggestions?.length}
+            />
             <QRButton
               action={() => {
                 navigation.navigate('Scanner', {

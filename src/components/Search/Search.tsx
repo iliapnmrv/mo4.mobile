@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Keyboard, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {Dispatch, FC, SetStateAction} from 'react';
 import Input from 'components/Inputs/Input';
 import {COLORS} from 'constants/colors';
@@ -44,7 +44,10 @@ const Search = <T extends IItem>({
                 borderBottomColor: COLORS.primary,
                 backgroundColor: 'white',
               }}
-              onPress={() => onSuggestionPress(suggestion)}>
+              onPress={() => {
+                Keyboard.dismiss();
+                onSuggestionPress(suggestion);
+              }}>
               <AppText style={{fontSize: 16}}>
                 {QRzeros(suggestion.qr)} - {suggestion.name}
               </AppText>

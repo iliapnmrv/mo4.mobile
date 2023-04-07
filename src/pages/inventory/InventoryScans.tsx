@@ -48,11 +48,19 @@ const InventoryStatus = () => {
         findScannedQuery(undefined),
       );
 
-      const result = await uploadInventory(inventoryResult.raw());
+      const result = await uploadInventory({
+        qrs: inventoryResult
+          .raw()
+          .map(
+            scan =>
+              +scan.inventoryNum
+                .toString()
+                .substring(scan.inventoryNum.toString().length - 5),
+          ),
+      }).unwrap();
 
       Snackbar.show({
-        //@ts-ignore
-        text: result.data,
+        text: result,
         duration: Snackbar.LENGTH_LONG,
       });
     } catch (e) {

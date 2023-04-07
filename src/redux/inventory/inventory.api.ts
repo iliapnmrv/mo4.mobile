@@ -36,11 +36,14 @@ export const inventoryApi = createApi({
     getAllTables: builder.query<ExportResponse, void>({
       query: () => `item/export`,
     }),
-    uploadInventory: builder.mutation<boolean, IScanned[]>({
-      query: inventory => ({
-        url: `inventory`,
+    uploadInventory: builder.mutation<string, {qrs: number[]}>({
+      query: body => ({
+        url: `inventory/import-report`,
         method: 'POST',
-        body: {inventory},
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }),
     }),
   }),
