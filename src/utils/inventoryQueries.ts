@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS inventory(
     name          VARCHAR(200) NOT NULL,
     place         VARCHAR(100) NOT NULL,
     kolvo         INTEGER  NOT NULL,
-    placepriority INTEGER  NOT NULL,
+    place_priority INTEGER  NOT NULL,
     updatedAt    DATETIME
 );`;
 
@@ -53,12 +53,12 @@ export const dropItemsTableQuery = `DROP TABLE IF EXISTS items;`;
 
 export const insertInventoryQuery = (data: IInventory[]) =>
   `INSERT INTO inventory
-      ( id, vedpos, name, place, kolvo, placepriority )
+      ( id, vedpos, name, place, kolvo, place_priority )
     VALUES
       ${data
         ?.map(
           item =>
-            `(${item.id}, ${item.vedpos}, '${item.name}', '${item.place}', '${item.kolvo}', '${item.placepriority}')`,
+            `(${item.id}, ${item.vedpos}, '${item.name}', '${item.place}', '${item.kolvo}', '${item.place_priority}')`,
         )
         .join(',\n')}`;
 
@@ -80,7 +80,7 @@ export const updateInventoryQuery = `
             (SELECT * FROM 
               (SELECT id FROM inventory 
                   WHERE name = ? AND kolvo > 0
-                    ORDER BY placepriority ASC, kolvo LIMIT 1) 
+                    ORDER BY place_priority ASC, kolvo LIMIT 1) 
             AS k);
       OUTPUT INSERTED.PrimaryKeyID
       RETURNING inventory.*`;

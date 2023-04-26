@@ -17,7 +17,7 @@ import {DataTable} from 'react-native-paper';
 import Snackbar from 'react-native-snackbar';
 import {useUploadInventoryMutation} from 'redux/inventory/inventory.api';
 import {IScanned} from 'types/inventory';
-import {findScannedQuery} from 'utils/inventoryQueries';
+import {findInventoryQuery, findScannedQuery} from 'utils/inventoryQueries';
 
 const InventoryStatus = () => {
   const [status, setStatus] = useState<number | undefined>(0);
@@ -47,6 +47,7 @@ const InventoryStatus = () => {
       const [{rows: inventoryResult}] = await db.executeSql(
         findScannedQuery(undefined),
       );
+      const [{rows: inventoryReport}] = await db.executeSql(findInventoryQuery);
 
       const result = await uploadInventory({
         qrs: inventoryResult
@@ -57,10 +58,11 @@ const InventoryStatus = () => {
                 .toString()
                 .substring(scan.inventoryNum.toString().length - 5),
           ),
+        inventory: inventoryReport.raw(),
       }).unwrap();
 
       Snackbar.show({
-        text: result,
+        text: result.data,
         duration: Snackbar.LENGTH_LONG,
       });
     } catch (e) {

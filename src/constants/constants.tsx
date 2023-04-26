@@ -1,32 +1,12 @@
 import ListItem from 'components/List/List';
-import List from 'components/List/List';
-import React, {ReactNode} from 'react';
-import {ScrollView, Text, View} from 'react-native';
-import {IInventory, IScanned} from 'types/inventory';
-import {COLORS} from './colors';
 import AppText from 'components/Text/AppText';
+import React, {ReactNode} from 'react';
+import {View} from 'react-native';
+import {IScanned} from 'types/inventory';
 import {QRzeros} from 'utils/utils';
+import {COLORS} from './colors';
 
 // export const SERVER_URL = '192.168.26.75:8000/api/';
-
-export const inventorySampleData: IInventory[] = [
-  {
-    id: 1,
-    vedpos: 1,
-    name: '123',
-    place: 'place',
-    kolvo: 1,
-    placepriority: 1,
-  },
-  {
-    id: 2,
-    vedpos: 2,
-    name: '312',
-    place: 'place2',
-    kolvo: 2,
-    placepriority: 2,
-  },
-];
 
 export const btnStatus = [
   {

@@ -38,7 +38,7 @@ type InventoryScreenProps = CompositeScreenProps<
 const Inventory = ({navigation}: InventoryScreenProps) => {
   const [search, setSearch] = useState<string>('');
   const [suggestions, setSuggestions] = useState<ItemExtended[]>();
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  // const [showSuggestions, setShowSuggestions] = useState(false);
 
   const {
     db,
@@ -62,7 +62,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
         debouncedSearch,
       ]);
       setSuggestions(rows.raw());
-      setShowSuggestions(true);
+      // setShowSuggestions(true);
     };
     searchItem();
   }, [debouncedSearch]);
@@ -80,7 +80,11 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
           },
           {
             text: 'Да, закрыть',
-            onPress: () => closeInventory(),
+            onPress: () => {
+              closeInventory();
+              setSearch('');
+              setSuggestions([]);
+            },
           },
         ],
       );
@@ -154,7 +158,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
               setSearch={setSearch}
               onSuggestionPress={({qr, name, model, serial_number}) => {
                 setSuggestions(undefined);
-                setShowSuggestions(false);
+                // setShowSuggestions(false);
                 getItemInfo([qr.toString(), name, model, serial_number]);
               }}
               suggestions={suggestions}

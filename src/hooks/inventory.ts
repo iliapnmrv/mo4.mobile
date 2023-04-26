@@ -209,6 +209,8 @@ export function useInventory() {
   };
 
   const closeInventory = async () => {
+    setLastScanned([]);
+    setScan(undefined);
     try {
       setInventoryDate(undefined);
       await db.executeSql(dropInventoryTableQuery);

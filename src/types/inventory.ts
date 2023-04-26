@@ -4,7 +4,7 @@ export type IInventory = {
   name: string;
   place: string;
   kolvo: number;
-  placepriority: number;
+  place_priority: number;
 };
 
 export type IScanned = {
