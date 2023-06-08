@@ -20,6 +20,7 @@ import {
   dropScannedTableQuery,
   findByNameQuery,
   findInventoryQuery,
+  findItemsByQRQuery,
   findItemsQuery,
   findLastScannedQuery,
   findUpdatedRow,
@@ -116,15 +117,17 @@ export function useInventory() {
     inventoryScan: string | [string, string, string, string],
   ) => {
     try {
-      let inventoryNum, name, model, serialNum;
+      let qr;
       if (typeof inventoryScan === 'string') {
-        [inventoryNum, name, model, serialNum] = parseQrCode(inventoryScan);
+        [qr] = parseQrCode(inventoryScan);
       } else {
-        [inventoryNum, name, model, serialNum] = inventoryScan;
+        [qr] = inventoryScan;
       }
 
+      qr = qr.substring(qr.length - 5, qr.length);
+
       //проверка на повторное считывание
-      const [{rows}] = await db.executeSql(isScannedItemQuery, [+inventoryNum]);
+      const [{rows}] = await db.executeSql(isScannedItemQuery, [+qr]);
 
       if (rows.length) {
         const prevScanned: IScanned = rows.raw()[0];
@@ -133,6 +136,15 @@ export function useInventory() {
         setScan({scan: prevScanned, status: 4});
         return;
       }
+
+      const [{rows: items}] = await db.executeSql(findItemsByQRQuery, [+qr]);
+
+      const {
+        name,
+        model,
+        serial_number: serialNum,
+        qr: inventoryNum,
+      } = items.raw()[0];
 
       //проверка на наличие в бд
       const [{rows: nameRows}] = await db.executeSql(findByNameQuery, [name]);

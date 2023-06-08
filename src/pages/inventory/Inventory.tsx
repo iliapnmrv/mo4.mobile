@@ -2,7 +2,6 @@ import {CompositeScreenProps} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import QRButton from 'components/Buttons/QRButton';
 import ContentBlock from 'components/ContentBlock/ContentBlock';
-import Input from 'components/Inputs/Input';
 import HorizontalListSeparator from 'components/List/HorizontalListSeparator';
 import PageContainer from 'components/PageContainer/PageContainer';
 import Search from 'components/Search/Search';
@@ -54,7 +53,7 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
     scanResultModalColors.filter(color => color.status === scan?.status)?.[0] ??
     {};
 
-  const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(search, 300);
 
   useEffect(() => {
     const searchItem = async () => {
@@ -62,7 +61,6 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
         debouncedSearch,
       ]);
       setSuggestions(rows.raw());
-      // setShowSuggestions(true);
     };
     searchItem();
   }, [debouncedSearch]);
@@ -158,7 +156,6 @@ const Inventory = ({navigation}: InventoryScreenProps) => {
               setSearch={setSearch}
               onSuggestionPress={({qr, name, model, serial_number}) => {
                 setSuggestions(undefined);
-                // setShowSuggestions(false);
                 getItemInfo([qr.toString(), name, model, serial_number]);
               }}
               suggestions={suggestions}
