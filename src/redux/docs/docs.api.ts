@@ -29,6 +29,10 @@ export const docsApi = createApi({
   baseQuery,
   tagTypes: ['AllCatalogs', 'Item', 'Catalog', 'Suggestions'],
   endpoints: builder => ({
+    // getCatalogs: builder.query<IAllCatalogsResponse, void>({
+    //   query: () => `catalog`,
+    //   providesTags: ['AllCatalogs'],
+    // }),
     getCatalogs: builder.query<IAllCatalogsResponse, void>({
       query: () => `catalog`,
       providesTags: ['AllCatalogs'],

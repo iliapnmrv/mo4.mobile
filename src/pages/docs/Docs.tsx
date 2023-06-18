@@ -84,8 +84,12 @@ const Docs = ({navigation}: DocsScreenProps) => {
 
   useEffect(() => {
     if (search) {
-      setShowSuggestions(true);
-      searchSuggestions({q: search});
+      try {
+        setShowSuggestions(true);
+        searchSuggestions({q: search});
+      } catch (e) {
+        console.log('suggestions error', e);
+      }
     } else {
       setShowSuggestions(false);
     }
