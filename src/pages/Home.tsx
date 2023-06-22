@@ -36,7 +36,7 @@ const Screens: IHomeItem[] = [
     icon: 'md-document-text-outline',
     path: 'DocsStack',
   },
-  {id: '3', title: 'Картриджи', icon: 'md-print-outline', path: 'Cartridges'},
+  // {id: '3', title: 'Картриджи', icon: 'md-print-outline', path: 'Cartridges'},
 ];
 
 type HomeScreenProps = CompositeScreenProps<

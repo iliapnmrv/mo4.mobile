@@ -1,15 +1,14 @@
+import AppText from 'components/Text/AppText';
+import {COLORS} from 'constants/colors';
+import React, {Dispatch, SetStateAction} from 'react';
 import {
   KeyboardTypeOptions,
   StyleSheet,
-  Text,
   TextInput,
   TextInputProps,
   View,
 } from 'react-native';
-import React, {Dispatch, ReactNode, SetStateAction} from 'react';
-import {COLORS} from 'constants/colors';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AppText from 'components/Text/AppText';
 
 type Props = {
   setValue: Dispatch<SetStateAction<string>>;
@@ -18,8 +17,9 @@ type Props = {
   keyboardType?: KeyboardTypeOptions;
   label?: string;
   iconName?: string;
-  [key: string]: any;
-};
+  postfix?: string;
+  prefix?: string;
+} & TextInputProps;
 
 const Input = ({
   setValue,
@@ -28,15 +28,20 @@ const Input = ({
   label,
   keyboardType = 'default',
   iconName,
+  postfix,
+  prefix,
   ...rest
 }: Props) => {
   return (
     <>
       {label ? <AppText style={styles.labelText}>{label}</AppText> : null}
       <View style={[styles.container, iconName ? styles.iconContainer : null]}>
-        {iconName ? (
-          <Icon style={styles.icon} name={iconName} size={20} color="#000" />
-        ) : null}
+        {iconName && <Icon name={iconName} size={20} color="#000" />}
+        {prefix && (
+          <AppText style={[styles.postfix_prefix, {marginLeft: 5}]}>
+            {prefix}
+          </AppText>
+        )}
         <TextInput
           {...rest}
           onChangeText={setValue}
@@ -47,6 +52,7 @@ const Input = ({
           placeholderTextColor={COLORS.gray}
           selectionColor="#757575"
         />
+        {postfix && <AppText style={styles.postfix_prefix}>{postfix}</AppText>}
       </View>
     </>
   );
@@ -72,7 +78,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   container: {
-    // paddingHorizontal: 10,
+    paddingHorizontal: 10,
   },
   labelText: {
     color: '#808080',
@@ -88,7 +94,10 @@ const styles = StyleSheet.create({
     // borderLeftColor: COLORS.primary,
     // borderLeftWidth: 2,
   },
-  icon: {
-    paddingLeft: 15,
+  // icon: {
+  //   paddingLeft: 15,
+  // },
+  postfix_prefix: {
+    fontSize: 16,
   },
 });

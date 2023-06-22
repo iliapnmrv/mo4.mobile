@@ -1,30 +1,31 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import Button from 'components/Buttons/Button';
+import PageContainer from 'components/PageContainer/PageContainer';
+import {useActions} from 'hooks/actions';
+import React, {useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {Snackbar} from 'react-native-paper';
+import ContentBlock from '../components/ContentBlock/ContentBlock';
 import Input from '../components/Inputs/Input';
 import {useAppSelector} from '../hooks/redux';
-import ContentBlock from '../components/ContentBlock/ContentBlock';
-import {Snackbar} from 'react-native-paper';
-import {useActions} from 'hooks/actions';
-import PageContainer from 'components/PageContainer/PageContainer';
-import {COLORS} from 'constants/colors';
-import Button from 'components/Buttons/Button';
+import {WebView} from 'react-native-webview';
+
+export const SERVER_POSTFIX = '/api/';
+export const SERVER_PREFIX = 'http://';
 
 const Settings = () => {
-  const {serverUrl, cartridgeServerUrl} = useAppSelector(
-    state => state.settings,
-  );
+  const {serverUrl} = useAppSelector(state => state.settings);
 
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
-  const [inventoryServer, setInventoryServer] = useState(serverUrl);
-  const [cartridgeServer, setCartridgeServer] = useState(cartridgeServerUrl);
+  const [inventoryServer, setInventoryServer] = useState<string>(serverUrl);
 
-  const {setServerUrl, setCartridgeServerUrl} = useActions();
+  const {setServerUrl} = useActions();
 
   const saveSettings = () => {
     setSnackbarVisible(true);
     setServerUrl(inventoryServer);
-    setCartridgeServerUrl(cartridgeServer);
   };
+
+  console.log(SERVER_PREFIX + serverUrl.substring(0, serverUrl.indexOf(':')));
 
   return (
     <PageContainer>
@@ -35,12 +36,8 @@ const Settings = () => {
             value={inventoryServer}
             setValue={setInventoryServer}
             label="Инвентаризация/документооборот"
-          />
-          <Input
-            iconName="md-print-outline"
-            value={cartridgeServer}
-            setValue={setCartridgeServer}
-            label="Картриджи"
+            postfix={SERVER_POSTFIX}
+            prefix={SERVER_PREFIX}
           />
           <Button
             // color={COLORS.primary}
@@ -49,6 +46,14 @@ const Settings = () => {
           />
         </ContentBlock>
       </View>
+      {/* <WebView
+        sharedCookiesEnabled
+        source={{
+          uri: serverUrl.substring(0, serverUrl.indexOf(':') - 1),
+        }}
+        onError={e => console.log(e)}
+        style={{marginTop: 20, flex: 1}}
+      /> */}
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
