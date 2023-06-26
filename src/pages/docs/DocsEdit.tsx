@@ -11,6 +11,7 @@ import {useActions} from 'hooks/actions';
 import {useAppSelector} from 'hooks/redux';
 import {DocsParamList} from 'navigation/Home/Docs';
 import {RootStackParamList} from 'navigation/Navigation';
+import {SERVER_PREFIX} from 'pages/Settings';
 import React, {useMemo, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
@@ -172,8 +173,6 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
     setViewImages(false);
   };
 
-  const staticUrl = serverUrl.replace('api/', '');
-
   return (
     <PageContainer>
       <ScrollView
@@ -193,7 +192,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                 }}>
                 <Image
                   style={{width: '100%', height: 200}}
-                  source={{uri: staticUrl + file.path}}
+                  source={{uri: `${SERVER_PREFIX}${serverUrl}/${file.path}`}}
                 />
               </TouchableOpacity>
             ))}
@@ -220,7 +219,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
               //   },
               // ]}
               imageUrls={item?.files?.map(file => ({
-                url: staticUrl + file.path,
+                url: `${SERVER_PREFIX}${serverUrl}/${file.path}`,
               }))}
             />
           </Modal>
