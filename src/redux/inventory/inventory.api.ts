@@ -14,12 +14,12 @@ export type ItemExtended = IItem & {
 };
 
 export type ItemsExport = IItem & {
-  persons: ICatalog[];
-  statuses: ICatalog[];
-  types: ICatalog[];
-  devices: ICatalog[];
-  places: ICatalog[];
-  users: ICatalog[];
+  person: ICatalog[];
+  status: ICatalog[];
+  type: ICatalog[];
+  device: ICatalog[];
+  place: ICatalog[];
+  user: ICatalog[];
 };
 type ExportResponse = {
   file: string;

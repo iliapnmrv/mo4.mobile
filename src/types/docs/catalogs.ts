@@ -12,10 +12,10 @@ export type ICatalog = {
 };
 
 export type IAllCatalogsResponse = {
-  persons: ICatalog[];
-  statuses: ICatalog[];
-  users: ICatalog[];
-  places: ICatalog[];
-  devices: ICatalog[];
-  types: ICatalog[];
+  person: ICatalog[];
+  status: ICatalog[];
+  user: ICatalog[];
+  place: ICatalog[];
+  device: ICatalog[];
+  type: ICatalog[];
 };

@@ -242,7 +242,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
           <Button text="Сделать фото" onPress={onTakeImage} />
         </View>
 
-        {item ? (
+        {item && catalogs ? (
           <ContentBlock title="Изменить информацию">
             <View>
               <AppText style={styles.label}>Номенкулатура</AppText>
@@ -256,7 +256,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
-                      {catalogs?.devices?.map((catalog, index) => (
+                      {catalogs?.device?.map((catalog, index) => (
                         <Picker.Item
                           key={index}
                           label={catalog.name}
@@ -280,7 +280,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
-                      {catalogs?.users?.map((catalog, index) => (
+                      {catalogs?.user?.map((catalog, index) => (
                         <Picker.Item
                           key={index}
                           label={catalog.name}
@@ -296,7 +296,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   onPress={() => {
                     setValue(
                       'user_id',
-                      catalogs?.users.find(
+                      catalogs?.user.find(
                         user => user.id === prevValues.user_id,
                       )?.id,
                     );
@@ -304,7 +304,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   textStyle={{textAlign: 'right'}}
                   style={{marginBottom: 8}}
                   text={`Предыдущее значение ${
-                    catalogs?.users.find(user => user.id === prevValues.user_id)
+                    catalogs?.user.find(user => user.id === prevValues.user_id)
                       ?.name
                   }`}
                   type="text"
@@ -323,7 +323,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
-                      {catalogs?.statuses?.map((catalog, index) => (
+                      {catalogs?.status?.map((catalog, index) => (
                         <Picker.Item
                           key={index}
                           label={catalog.name}
@@ -339,7 +339,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   onPress={() => {
                     setValue(
                       'status_id',
-                      catalogs?.statuses.find(
+                      catalogs?.status.find(
                         status => status.id === prevValues.status_id,
                       )?.id,
                     );
@@ -347,7 +347,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   textStyle={{textAlign: 'right'}}
                   style={{marginBottom: 8}}
                   text={`Предыдущее значение ${
-                    catalogs?.statuses.find(
+                    catalogs?.status.find(
                       status => status.id === prevValues.status_id,
                     )?.name
                   }`}
@@ -367,7 +367,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
-                      {catalogs?.persons?.map((catalog, index) => (
+                      {catalogs?.person?.map((catalog, index) => (
                         <Picker.Item
                           key={index}
                           label={catalog.name}
@@ -383,7 +383,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   onPress={() => {
                     setValue(
                       'person_id',
-                      catalogs?.persons.find(
+                      catalogs?.person.find(
                         person => person.id === prevValues.person_id,
                       )?.id,
                     );
@@ -391,7 +391,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   textStyle={{textAlign: 'right'}}
                   style={{marginBottom: 8}}
                   text={`Предыдущее значение ${
-                    catalogs?.persons.find(
+                    catalogs?.person.find(
                       person => person.id === prevValues.person_id,
                     )?.name
                   }`}
@@ -411,7 +411,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                       mode="dropdown"
                       selectedValue={value}
                       onValueChange={onChange}>
-                      {catalogs?.places?.map((catalog, index) => (
+                      {catalogs?.place?.map((catalog, index) => (
                         <Picker.Item
                           key={index}
                           label={catalog.name}
@@ -427,7 +427,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   onPress={() => {
                     setValue(
                       'place_id',
-                      catalogs?.places.find(
+                      catalogs?.place.find(
                         place => place.id === prevValues.place_id,
                       )?.id,
                     );
@@ -435,7 +435,7 @@ const DocsEdit = ({navigation, route}: DocsScreenProps) => {
                   textStyle={{textAlign: 'right'}}
                   style={{marginBottom: 8}}
                   text={`Предыдущее значение ${
-                    catalogs?.places.find(
+                    catalogs?.place.find(
                       place => place.id === prevValues.place_id,
                     )?.name
                   }`}
@@ -498,5 +498,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: COLORS.darkgray,
+    flex: 1,
   },
 });
