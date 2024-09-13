@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS items(
   serial_number           VARCHAR(100) NOT NULL,
   model                   VARCHAR(100), 
   description             VARCHAR(2048),
-  additional_information  VARCHAR(100),
+  additional_information  VARCHAR(2048),
   createdAt               DATETIME,
   updatedAt               DATETIME,
   person_name             VARCHAR(100) NOT NULL,
@@ -69,7 +69,21 @@ export const insertItemsQuery = (data: ItemsExport[]) =>
       ${data
         ?.map(
           item =>
-            `(${item.id}, ${item.qr}, '${item.name}', '${item.month}', '${item.year}', '${item.serial_number}', '${item.model}', '${item.description}', '${item.additional_information}', '${item.createdAt}', '${item.updatedAt}', '${item.person?.name}', '${item.status?.name}', '${item.user?.name}', '${item.place?.name}', '${item.device?.name}', '${item.type?.name}')`,
+            `(${item.id}, ${item.qr}, '${item.name}', ${item.month}, ${
+              item.year
+            }, '${item.serial_number}', '${item.model?.replace(
+              /'/g,
+              '',
+            )}', '${item.description?.replace(
+              /'/g,
+              '',
+            )}', '${item.additional_information?.replace(/'/g, '')}', '${
+              item.createdAt
+            }', '${item.updatedAt}', '${item.person?.name}', '${
+              item.status?.name
+            }', '${item.user?.name}', '${item.place?.name}', '${
+              item.device?.name
+            }', '${item.type?.name}')`,
         )
         .join(',\n')}`;
 
